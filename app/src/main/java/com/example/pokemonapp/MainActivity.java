@@ -2,17 +2,17 @@ package com.example.pokemonapp;
 
 import static com.example.pokemonapp.util.Tools.loadingDialog;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.MoveDAO;
@@ -26,10 +26,10 @@ import com.example.pokemonapp.room.PokemonAppDatabase;
 import com.example.pokemonapp.services.PokemonDbService;
 import com.example.pokemonapp.util.Tools;
 
-import java.io.IOException;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,15 +38,18 @@ public class MainActivity extends AppCompatActivity {
     private MoveDAO moveDAO;
     private PokemonDAO pokemonDAO;
     private TypeDAO typeDAO;
+    private PokemonDbService pokemonDbService;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        loadingDialog = loadingDialog(this);
         moveDAO = PokemonAppDatabase.getInstance(this).getMoveDAO();
         pokemonDAO = PokemonAppDatabase.getInstance(this).getPokemonDAO();
         typeDAO = PokemonAppDatabase.getInstance(this).getTypeDAO();
+        pokemonDbService = new PokemonDbRetrofit().getPokemonDbService();
+        handler = new Handler();
     }
 
     @Override
@@ -63,54 +66,14 @@ public class MainActivity extends AppCompatActivity {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            Toast.makeText(getApplicationContext(),"Perform synchro",Toast.LENGTH_LONG).show();
+                            loadingDialog = loadingDialog(MainActivity.this);
                             loadingDialog.show();
-                            PokemonDbService pokemonDbService = new PokemonDbRetrofit().getPokemonDbService();
-                            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                            handler.postDelayed(new Runnable() {
                                 @Override
-                                public List<Object> doInBackground() {
-                                    try {
-                                        Call<List<Pokemon>> callPokemon = pokemonDbService.getAllPokemonFromRemote();
-                                        Response<List<Pokemon>> responsePokemon = callPokemon.execute();
-                                        List<Pokemon> pokemons = responsePokemon.body();
-                                        if (pokemons != null) {
-                                            Log.i("numberOfPokemons",pokemons.size()+"");
-                                            Log.i("pokemon",pokemons.get(0).getFName());
-                                        }else{
-                                            Log.i("numberOfPokemons","null");
-                                        }
-                                        pokemonDAO.save(pokemons);
-
-                                        Call<List<Move>> callMove = pokemonDbService.getAllMovesFromRemote();
-                                        Response<List<Move>> responseMove = callMove.execute();
-                                        List<Move> moves = responseMove.body();
-                                        if (moves != null) {
-                                            Log.i("numberOfMoves",moves.size()+"");
-                                        }else{
-                                            Log.i("numberOfMoves","null");
-                                        }
-                                        moveDAO.save(moves);
-
-                                        Call<List<Type>> callType = pokemonDbService.getAllTypesFromRemote();
-                                        Response<List<Type>> responseType = callType.execute();
-                                        List<Type> types = responseType.body();
-                                        if (types != null) {
-                                            Log.i("numberOfTypes",types.size()+"");
-                                        }else{
-                                            Log.i("numberOfTypes","null");
-                                        }
-                                        typeDAO.save(types);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                    return null;
+                                public void run() {
+                                    callbackPokemon();
                                 }
-
-                                @Override
-                                public void onPostExecute(List<Object> objects) {
-                                    loadingDialog.dismiss();
-                                }
-                            }).execute();
+                            },2000);
                         }
                     }, null);
             dialog.show();
@@ -118,4 +81,186 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void callbackPokemon() {
+        loadingDialog.setMessage("Fetching pokémon database");
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Call<List<Pokemon>> callPokemon = pokemonDbService.getAllPokemonFromRemote();
+                callPokemon.enqueue(new Callback<List<Pokemon>>() {
+                    @Override
+                    public void onResponse(Call<List<Pokemon>> call, Response<List<Pokemon>> responsePokemon) {
+                        if (responsePokemon.isSuccessful()){
+                            List<Pokemon> pokemons = responsePokemon.body();
+                            if (pokemons != null) {
+                                Log.i("numberOfPokemons",pokemons.size()+"");
+                                Log.i("pokemon",pokemons.get(0).getFName());
+                            }else{
+                                Log.i("numberOfPokemons","null");
+                            }
+                            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                                @Override
+                                public List<Object> doInBackground() {
+                                    pokemonDAO.save(pokemons);
+                                    return null;
+                                }
+
+                                @Override
+                                public void onPostExecute(List<Object> objects) {
+                                    loadingDialog.setMessage("Pokémon database downloaded");
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            callbackMove();
+                                        }
+                                    },2000);
+                                }
+                            }).execute();
+                        }else{
+                            loadingDialog.setMessage("Fail to get pokémon database");
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callbackMove();
+                                }
+                            },2000);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Pokemon>> call, Throwable t) {
+                        loadingDialog.setMessage("Fail to get pokémon database");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                callbackMove();
+                            }
+                        },2000);
+                    }
+                });
+            }
+        },2000);
+    }
+
+    private void callbackMove() {
+        loadingDialog.setMessage("Fetching move database");
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Call<List<Move>> callMove = pokemonDbService.getAllMovesFromRemote();
+                callMove.enqueue(new Callback<List<Move>>() {
+                    @Override
+                    public void onResponse(Call<List<Move>> call, Response<List<Move>> responseMove) {
+                        if (responseMove.isSuccessful()){
+                            List<Move> moves = responseMove.body();
+                            if (moves != null) {
+                                Log.i("numberOfMoves",moves.size()+"");
+                            }else{
+                                Log.i("numberOfMoves","null");
+                            }
+                            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                                @Override
+                                public List<Object> doInBackground() {
+                                    moveDAO.save(moves);
+                                    return null;
+                                }
+
+                                @Override
+                                public void onPostExecute(List<Object> objects) {
+                                    loadingDialog.setMessage("Move database downloaded");
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            callbackType();
+                                        }
+                                    },2000);
+                                }
+                            }).execute();
+                        }else{
+                            loadingDialog.setMessage("Fail to get move database");
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callbackType();
+                                }
+                            },2000);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Move>> call, Throwable t) {
+                        loadingDialog.setMessage("Fail to get move database");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                callbackType();
+                            }
+                        },2000);
+                    }
+                });
+            }
+        },2000);
+    }
+
+    private void callbackType() {
+        loadingDialog.setMessage("Fetching type database");
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Call<List<Type>> callType = pokemonDbService.getAllTypesFromRemote();
+                callType.enqueue(new Callback<List<Type>>() {
+                    @Override
+                    public void onResponse(Call<List<Type>> call, Response<List<Type>> responseType) {
+                        if (responseType.isSuccessful()){
+                            List<Type> types = responseType.body();
+                            if (types != null) {
+                                Log.i("numberOfTypes",types.size()+"");
+                            }else{
+                                Log.i("numberOfTypes","null");
+                            }
+                            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                                @Override
+                                public List<Object> doInBackground() {
+                                    typeDAO.save(types);
+                                    return null;
+                                }
+
+                                @Override
+                                public void onPostExecute(List<Object> objects) {
+                                    loadingDialog.setMessage("Type database downloaded");
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            loadingDialog.dismiss();
+                                        }
+                                    },2000);
+                                }
+                            }).execute();
+                        }else{
+                            loadingDialog.setMessage("Fail to get type database");
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loadingDialog.dismiss();
+                                }
+                            },2000);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Type>> call, Throwable t) {
+                        loadingDialog.setMessage("Fail to get type database");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadingDialog.dismiss();
+                            }
+                        },2000);
+                    }
+                });
+            }
+        },2000);
+    }
+
 }
