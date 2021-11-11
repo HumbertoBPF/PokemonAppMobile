@@ -24,7 +24,7 @@ public class MovesDatabaseActivity extends DatabaseNavigationActivity {
         super.onCreate(savedInstanceState);
 
         setAppbarColor(this, getResources().getColor(R.color.moves_theme_color));
-        setTitle("Moves Database");
+        setTitle(getResources().getString(R.string.title_appbar_moves_db));
         moveDAO = PokemonAppDatabase.getInstance(this).getMoveDAO();
 
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {

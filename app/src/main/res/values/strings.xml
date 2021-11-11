@@ -18,4 +18,17 @@
     <string name="message_synchronization_dialog">Would you like to perform a synchronization now ?</string>
     <string name="confirm_button_text_synchronization_dialog">Confirm</string>
     <string name="cancel_button_text_synchronization_dialog">Cancel</string>
+    <string name="category_move_label">Category</string>
+    <string name="power_move_label">Power</string>
+    <string name="accuracy_move_label">Accuracy</string>
+    <string name="pp_move_label">PP</string>
+    <string name="attack_pokemon_label">Att.</string>
+    <string name="defense_pokemon_label">Def.</string>
+    <string name="sp_attack_pokemon_label">Sp.Att.</string>
+    <string name="sp_defense_pokemon_label">Sp.Def.</string>
+    <string name="speed_pokemon_label">Speed</string>
+    <string name="hp_pokemon_label">HP</string>
+    <string name="title_appbar_pokemon_db">Pokémon Database</string>
+    <string name="title_appbar_moves_db">Moves Database</string>
+    <string name="title_appbar_types_db">Types Database</string>
 </resources>

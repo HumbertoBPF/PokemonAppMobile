@@ -25,7 +25,7 @@ public class TypesDatabaseActivity extends DatabaseNavigationActivity {
         super.onCreate(savedInstanceState);
 
         setAppbarColor(this, getResources().getColor(R.color.types_theme_color));
-        setTitle("Types Database");
+        setTitle(getResources().getString(R.string.title_appbar_types_db));
         typeDAO = PokemonAppDatabase.getInstance(this).getTypeDAO();
 
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {

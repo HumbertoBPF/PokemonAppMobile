@@ -24,7 +24,7 @@ public class PokemonDatabaseActivity extends DatabaseNavigationActivity {
         super.onCreate(savedInstanceState);
 
         setAppbarColor(this,getResources().getColor(R.color.pokemon_theme_color));
-        setTitle("Pokémon Database");
+        setTitle(getResources().getString(R.string.title_appbar_pokemon_db));
         pokemonDAO = PokemonAppDatabase.getInstance(this).getPokemonDAO();
 
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {

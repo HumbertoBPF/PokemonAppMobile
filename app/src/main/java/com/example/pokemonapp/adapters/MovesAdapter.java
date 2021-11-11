@@ -64,10 +64,10 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
         public void bind(Move move){
             this.moveName.setText(move.getFName());
             this.moveType.setText("Move type");
-            this.moveCategory.setText("Category\n"+move.getFCategory());
-            this.movePower.setText("Power\n"+move.getFPower().toString());
-            this.moveAccuracy.setText("Accuracy\n"+move.getFAccuracy());
-            this.movePp.setText("PP\n"+move.getFPp());
+            this.moveCategory.setText(context.getResources().getString(R.string.category_move_label)+"\n"+move.getFCategory());
+            this.movePower.setText(context.getResources().getString(R.string.power_move_label)+"\n"+move.getFPower().toString());
+            this.moveAccuracy.setText(context.getResources().getString(R.string.accuracy_move_label)+"\n"+move.getFAccuracy());
+            this.movePp.setText(context.getResources().getString(R.string.pp_move_label)+"\n"+move.getFPp());
         }
 
     }

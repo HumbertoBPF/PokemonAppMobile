@@ -68,12 +68,18 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
         public void bind(Pokemon pokemon){
             this.pokemonName.setText(pokemon.getFName());
             this.pokemonTypes.setText("Types");
-            this.pokemonAttack.setText("Att.\n"+pokemon.getFAttack().toString());
-            this.pokemonDefense.setText("Def.\n"+pokemon.getFDefense().toString());
-            this.pokemonSpAttack.setText("Sp.Att.\n"+pokemon.getFSpAttack().toString());
-            this.pokemonSpDefense.setText("Sp.Def.\n"+pokemon.getFSpDefense().toString());
-            this.pokemonSpeed.setText("Speed\n"+pokemon.getFSpeed().toString());
-            this.pokemonHp.setText("Hp\n"+pokemon.getFHp().toString());
+            this.pokemonAttack.setText(context.getResources().getString(R.string.attack_pokemon_label)+
+                    "\n"+pokemon.getFAttack().toString());
+            this.pokemonDefense.setText(context.getResources().getString(R.string.defense_pokemon_label)+
+                    "\n"+pokemon.getFDefense().toString());
+            this.pokemonSpAttack.setText(context.getResources().getString(R.string.sp_attack_pokemon_label)+
+                    "\n"+pokemon.getFSpAttack().toString());
+            this.pokemonSpDefense.setText(context.getResources().getString(R.string.sp_defense_pokemon_label)+
+                    "\n"+pokemon.getFSpDefense().toString());
+            this.pokemonSpeed.setText(context.getResources().getString(R.string.speed_pokemon_label)+
+                    "\n"+pokemon.getFSpeed().toString());
+            this.pokemonHp.setText(context.getResources().getString(R.string.hp_pokemon_label)+
+                    "\n"+pokemon.getFHp().toString());
         }
 
     }
