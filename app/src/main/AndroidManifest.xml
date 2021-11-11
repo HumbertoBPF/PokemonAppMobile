@@ -14,6 +14,9 @@
         android:theme="@style/Theme.PokemonApp"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activities.DatabaseNavigationActivity"
+            android:exported="true" />
+        <activity
             android:name=".activities.TypesDatabaseActivity"
             android:exported="true" />
         <activity
