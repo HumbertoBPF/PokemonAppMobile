@@ -1,8 +1,8 @@
-package com.example.pokemonapp.activities;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.example.pokemonapp.activities.game;
 
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pokemonapp.R;
 

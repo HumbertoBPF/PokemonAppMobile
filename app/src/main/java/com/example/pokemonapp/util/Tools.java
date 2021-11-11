@@ -4,6 +4,9 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pokemonapp.models.Move;
 import com.example.pokemonapp.models.Type;
@@ -26,6 +29,11 @@ public class Tools {
             stringMoves += move.getFName() + ",";
         }
         return stringMoves;
+    }
+
+    public static void setAppbarColor(AppCompatActivity activity, int color){
+        ColorDrawable colorDrawable = new ColorDrawable(color);
+        activity.getSupportActionBar().setBackgroundDrawable(colorDrawable);
     }
 
     public static AlertDialog yesOrNoDialog(Context context, String title, String message, String yesOption, String noOption,

@@ -9,4 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red">#D11919</color>
     <color name="background_red">#E68080</color>
+    <color name="pokemon_theme_color">#cd120e</color>
+    <color name="moves_theme_color">#f6c71c</color>
+    <color name="types_theme_color">#3399ff</color>
 </resources>

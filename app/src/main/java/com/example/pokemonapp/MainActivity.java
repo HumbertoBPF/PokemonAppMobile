@@ -17,8 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
-import com.example.pokemonapp.activities.DatabasesActivity;
-import com.example.pokemonapp.activities.GameActivity;
+import com.example.pokemonapp.activities.databases_navigation.DatabasesActivity;
+import com.example.pokemonapp.activities.game.GameActivity;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.MoveDAO;
 import com.example.pokemonapp.dao.PokemonDAO;

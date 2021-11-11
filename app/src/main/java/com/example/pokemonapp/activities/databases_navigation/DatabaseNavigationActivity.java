@@ -1,9 +1,9 @@
-package com.example.pokemonapp.activities;
+package com.example.pokemonapp.activities.databases_navigation;
+
+import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.Bundle;
 
 import com.example.pokemonapp.R;
 

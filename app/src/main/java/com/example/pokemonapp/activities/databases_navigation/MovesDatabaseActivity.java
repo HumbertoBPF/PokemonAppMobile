@@ -1,7 +1,10 @@
-package com.example.pokemonapp.activities;
+package com.example.pokemonapp.activities.databases_navigation;
+
+import static com.example.pokemonapp.util.Tools.setAppbarColor;
 
 import android.os.Bundle;
 
+import com.example.pokemonapp.R;
 import com.example.pokemonapp.adapters.MovesAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.MoveDAO;
@@ -20,6 +23,8 @@ public class MovesDatabaseActivity extends DatabaseNavigationActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setAppbarColor(this, getResources().getColor(R.color.moves_theme_color));
+        setTitle("Moves Database");
         moveDAO = PokemonAppDatabase.getInstance(this).getMoveDAO();
 
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {

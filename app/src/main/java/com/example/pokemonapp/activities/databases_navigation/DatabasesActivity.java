@@ -1,11 +1,11 @@
-package com.example.pokemonapp.activities;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
+package com.example.pokemonapp.activities.databases_navigation;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import com.example.pokemonapp.R;
 
@@ -27,21 +27,21 @@ public class DatabasesActivity extends AppCompatActivity {
         pokemonDbButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(),PokemonDatabaseActivity.class));
+                startActivity(new Intent(getApplicationContext(), PokemonDatabaseActivity.class));
             }
         });
 
         movesDbButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(),MovesDatabaseActivity.class));
+                startActivity(new Intent(getApplicationContext(), MovesDatabaseActivity.class));
             }
         });
 
         typesDbButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(),TypesDatabaseActivity.class));
+                startActivity(new Intent(getApplicationContext(), TypesDatabaseActivity.class));
             }
         });
 
