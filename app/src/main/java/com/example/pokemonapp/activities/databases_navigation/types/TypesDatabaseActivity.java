@@ -1,10 +1,9 @@
-package com.example.pokemonapp.activities.databases_navigation;
-
-import static com.example.pokemonapp.util.Tools.setAppbarColor;
+package com.example.pokemonapp.activities.databases_navigation.types;
 
 import android.os.Bundle;
 
 import com.example.pokemonapp.R;
+import com.example.pokemonapp.activities.databases_navigation.DatabaseNavigationActivity;
 import com.example.pokemonapp.adapters.TypesAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.TypeDAO;
@@ -21,13 +20,14 @@ public class TypesDatabaseActivity extends DatabaseNavigationActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-
-        setAppbarColor(this, getResources().getColor(R.color.types_theme_color));
-        setTitle(getResources().getString(R.string.title_appbar_types_db));
+        colorAppbar = getResources().getColor(R.color.types_theme_color);
+        titleAppbar = getResources().getString(R.string.title_appbar_types_db);
         typeDAO = PokemonAppDatabase.getInstance(this).getTypeDAO();
+        super.onCreate(savedInstanceState);
+    }
 
+    @Override
+    protected void configureRecyclerView() {
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
             @Override
             public List<Object> doInBackground() {
@@ -42,6 +42,5 @@ public class TypesDatabaseActivity extends DatabaseNavigationActivity {
                 recyclerView.setAdapter(new TypesAdapter(getApplicationContext(),types));
             }
         }).execute();
-
     }
 }

@@ -14,16 +14,19 @@
         android:theme="@style/Theme.PokemonApp"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activities.databases_navigation.pokemon.PokemonDetailsActivity"
+            android:exported="true" />
+        <activity
             android:name=".activities.databases_navigation.DatabaseNavigationActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.databases_navigation.TypesDatabaseActivity"
+            android:name=".activities.databases_navigation.types.TypesDatabaseActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.databases_navigation.MovesDatabaseActivity"
+            android:name=".activities.databases_navigation.moves.MovesDatabaseActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.databases_navigation.PokemonDatabaseActivity"
+            android:name=".activities.databases_navigation.pokemon.PokemonDatabaseActivity"
             android:exported="true" />
         <activity
             android:name=".activities.game.GameActivity"

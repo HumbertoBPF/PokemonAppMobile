@@ -3,8 +3,10 @@ package com.example.pokemonapp.models;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
 @Entity
-public class Pokemon {
+public class Pokemon implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private Long fId;

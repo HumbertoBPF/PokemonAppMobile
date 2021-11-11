@@ -18,10 +18,12 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
     private Context context;
     private List<Pokemon> pokemons;
+    private OnClickListener onClickListener;
 
-    public PokemonAdapter(Context context, List<Pokemon> pokemons){
+    public PokemonAdapter(Context context, List<Pokemon> pokemons, OnClickListener onClickListener){
         this.context = context;
         this.pokemons = pokemons;
+        this.onClickListener = onClickListener;
     }
 
     @NonNull
@@ -44,6 +46,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
     class PokemonViewHolder extends RecyclerView.ViewHolder{
 
+        private View pokemonView;
         private TextView pokemonName;
         private TextView pokemonTypes;
         private TextView pokemonAttack;
@@ -55,6 +58,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
         public PokemonViewHolder(@NonNull View itemView) {
             super(itemView);
+            this.pokemonView = itemView;
             this.pokemonName = itemView.findViewById(R.id.pokemon_name);
             this.pokemonTypes = itemView.findViewById(R.id.pokemon_types);
             this.pokemonAttack = itemView.findViewById(R.id.pokemon_attack);
@@ -80,8 +84,18 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
                     "\n"+pokemon.getFSpeed().toString());
             this.pokemonHp.setText(context.getResources().getString(R.string.hp_pokemon_label)+
                     "\n"+pokemon.getFHp().toString());
+            this.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onClickListener.onClick(pokemon);
+                }
+            });
         }
 
+    }
+
+    public interface OnClickListener{
+        void onClick(Pokemon pokemon);
     }
 
 }

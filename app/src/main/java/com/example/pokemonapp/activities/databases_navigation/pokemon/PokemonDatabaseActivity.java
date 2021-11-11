@@ -1,10 +1,10 @@
-package com.example.pokemonapp.activities.databases_navigation;
+package com.example.pokemonapp.activities.databases_navigation.pokemon;
 
-import static com.example.pokemonapp.util.Tools.setAppbarColor;
-
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.pokemonapp.R;
+import com.example.pokemonapp.activities.databases_navigation.DatabaseNavigationActivity;
 import com.example.pokemonapp.adapters.PokemonAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.PokemonDAO;
@@ -21,12 +21,13 @@ public class PokemonDatabaseActivity extends DatabaseNavigationActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setAppbarColor(this,getResources().getColor(R.color.pokemon_theme_color));
-        setTitle(getResources().getString(R.string.title_appbar_pokemon_db));
+        colorAppbar = getResources().getColor(R.color.pokemon_theme_color);
+        titleAppbar = getResources().getString(R.string.title_appbar_pokemon_db);
         pokemonDAO = PokemonAppDatabase.getInstance(this).getPokemonDAO();
+        super.onCreate(savedInstanceState);
+    }
 
+    protected void configureRecyclerView() {
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
             @Override
             public List<Object> doInBackground() {
@@ -38,9 +39,15 @@ public class PokemonDatabaseActivity extends DatabaseNavigationActivity {
 
             @Override
             public void onPostExecute(List<Object> objects) {
-                recyclerView.setAdapter(new PokemonAdapter(getApplicationContext(),pokemons));
+                recyclerView.setAdapter(new PokemonAdapter(getApplicationContext(), pokemons, new PokemonAdapter.OnClickListener() {
+                    @Override
+                    public void onClick(Pokemon pokemon) {
+                        Intent intent = new Intent(getApplicationContext(),PokemonDetailsActivity.class);
+                        intent.putExtra("pokemon",pokemon);
+                        startActivity(intent);
+                    }
+                }));
             }
         }).execute();
-
     }
 }

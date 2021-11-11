@@ -8,6 +8,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import com.example.pokemonapp.R;
+import com.example.pokemonapp.activities.databases_navigation.moves.MovesDatabaseActivity;
+import com.example.pokemonapp.activities.databases_navigation.pokemon.PokemonDatabaseActivity;
+import com.example.pokemonapp.activities.databases_navigation.types.TypesDatabaseActivity;
 
 public class DatabasesActivity extends AppCompatActivity {
 
