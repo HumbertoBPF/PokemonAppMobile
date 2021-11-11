@@ -4,18 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".activities.DatabasesActivity">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/game_button"
+        android:id="@+id/pokemon_db_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginVertical="10dp"
-        android:layout_marginHorizontal="5dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/moves_db_button"
+        app:layout_constraintEnd_toEndOf="@id/moves_db_button"
+        app:layout_constraintBottom_toTopOf="@id/moves_db_button"
         app:cardCornerRadius="10dp"
         android:backgroundTint="#cd120e">
 
@@ -24,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:padding="20dp"
-            android:text="@string/game_button_text"
+            android:text="@string/pokemon_button_text"
             android:textStyle="bold"
             android:textSize="18sp"/>
 
@@ -35,9 +33,33 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginVertical="10dp"
-        app:layout_constraintStart_toStartOf="@id/game_button"
-        app:layout_constraintEnd_toEndOf="@id/game_button"
-        app:layout_constraintTop_toBottomOf="@id/game_button"
+        android:layout_marginHorizontal="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardCornerRadius="10dp"
+        android:backgroundTint="#f6c71c">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="20dp"
+            android:text="@string/moves_button_text"
+            android:textStyle="bold"
+            android:textSize="18sp"/>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/types_db_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        app:layout_constraintStart_toStartOf="@id/moves_db_button"
+        app:layout_constraintEnd_toEndOf="@id/moves_db_button"
+        app:layout_constraintTop_toBottomOf="@id/moves_db_button"
         app:cardCornerRadius="10dp"
         android:backgroundTint="#3399ff">
 
@@ -46,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:padding="20dp"
-            android:text="@string/databases_button_text"
+            android:text="@string/types_button_text"
             android:textStyle="bold"
             android:textSize="18sp"/>
 

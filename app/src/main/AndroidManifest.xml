@@ -2,17 +2,32 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.pokemonapp">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
-        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.PokemonApp">
+        android:theme="@style/Theme.PokemonApp"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".activities.TypesDatabaseActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.MovesDatabaseActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.PokemonDatabaseActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.GameActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.DatabasesActivity"
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">PokemonApp</string>
+    <string name="game_button_text">Game</string>
+    <string name="databases_button_text">Databases</string>
+    <string name="pokemon_button_text">Pokémon</string>
+    <string name="moves_button_text">Moves</string>
+    <string name="types_button_text">Types</string>
+    <string name="fail_moves_download">Fail to get move database</string>
+    <string name="success_moves_download">Move database downloaded</string>
+    <string name="success_types_donwload">Type database downloaded</string>
+    <string name="fail_types_download">Fail to get type database</string>
+    <string name="success_pokemon_download">Pokémon database downloaded</string>
+    <string name="fail_pokemon_download">Fail to get pokémon database</string>
+    <string name="fetch_pokemon_db">Fetching pokémon database</string>
+    <string name="fetch_move_db">Fetching move database</string>
+    <string name="fetch_type_db">Fetching type database</string>
+    <string name="title_synchronization_dialog">Database Synchronization</string>
+    <string name="message_synchronization_dialog">Would you like to perform a synchronization now ?</string>
+    <string name="confirm_button_text_synchronization_dialog">Confirm</string>
+    <string name="cancel_button_text_synchronization_dialog">Cancel</string>
 </resources>

@@ -5,15 +5,20 @@ import static com.example.pokemonapp.util.Tools.loadingDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
+import com.example.pokemonapp.activities.DatabasesActivity;
+import com.example.pokemonapp.activities.GameActivity;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.MoveDAO;
 import com.example.pokemonapp.dao.PokemonDAO;
@@ -40,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     private TypeDAO typeDAO;
     private PokemonDbService pokemonDbService;
     private Handler handler;
+    private CardView databasesButton;
+    private CardView gameButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +57,34 @@ public class MainActivity extends AppCompatActivity {
         typeDAO = PokemonAppDatabase.getInstance(this).getTypeDAO();
         pokemonDbService = new PokemonDbRetrofit().getPokemonDbService();
         handler = new Handler();
+
+        getLayoutElements();
+        configureDatabaseButton();
+        configureGameButton();
+
+    }
+
+    private void getLayoutElements() {
+        databasesButton = findViewById(R.id.moves_db_button);
+        gameButton = findViewById(R.id.game_button);
+    }
+
+    private void configureGameButton() {
+        gameButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), GameActivity.class));
+            }
+        });
+    }
+
+    private void configureDatabaseButton() {
+        databasesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), DatabasesActivity.class));
+            }
+        });
     }
 
     @Override
@@ -61,8 +96,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.item_sync) {
-            Dialog dialog = Tools.yesOrNoDialog(this, "Database Synchronization",
-                    "Would you like to perform a synchronization now ?", "Confirm", "Cancel",
+            Dialog dialog = Tools.yesOrNoDialog(this, getString(R.string.title_synchronization_dialog),
+                    getString(R.string.message_synchronization_dialog), getString(R.string.confirm_button_text_synchronization_dialog),
+                    getString(R.string.cancel_button_text_synchronization_dialog),
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -83,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void callbackPokemon() {
-        loadingDialog.setMessage("Fetching pokémon database");
+        loadingDialog.setMessage(getString(R.string.fetch_pokemon_db));
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -108,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onPostExecute(List<Object> objects) {
-                                    loadingDialog.setMessage("Pokémon database downloaded");
+                                    loadingDialog.setMessage(getString(R.string.success_pokemon_download));
                                     handler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
@@ -118,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }).execute();
                         }else{
-                            loadingDialog.setMessage("Fail to get pokémon database");
+                            loadingDialog.setMessage(getString(R.string.fail_pokemon_download));
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -130,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<List<Pokemon>> call, Throwable t) {
-                        loadingDialog.setMessage("Fail to get pokémon database");
+                        loadingDialog.setMessage(getString(R.string.fail_pokemon_download));
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -144,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void callbackMove() {
-        loadingDialog.setMessage("Fetching move database");
+        loadingDialog.setMessage(getString(R.string.fetch_move_db));
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -168,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onPostExecute(List<Object> objects) {
-                                    loadingDialog.setMessage("Move database downloaded");
+                                    loadingDialog.setMessage(getString(R.string.success_moves_download));
                                     handler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
@@ -178,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }).execute();
                         }else{
-                            loadingDialog.setMessage("Fail to get move database");
+                            loadingDialog.setMessage(getString(R.string.fail_moves_download));
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -190,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<List<Move>> call, Throwable t) {
-                        loadingDialog.setMessage("Fail to get move database");
+                        loadingDialog.setMessage(getString(R.string.fail_moves_download));
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -204,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void callbackType() {
-        loadingDialog.setMessage("Fetching type database");
+        loadingDialog.setMessage(getString(R.string.fetch_type_db));
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -228,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onPostExecute(List<Object> objects) {
-                                    loadingDialog.setMessage("Type database downloaded");
+                                    loadingDialog.setMessage(getString(R.string.success_types_donwload));
                                     handler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
@@ -238,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }).execute();
                         }else{
-                            loadingDialog.setMessage("Fail to get type database");
+                            loadingDialog.setMessage(getString(R.string.fail_types_download));
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -250,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<List<Type>> call, Throwable t) {
-                        loadingDialog.setMessage("Fail to get type database");
+                        loadingDialog.setMessage(getString(R.string.fail_types_download));
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
