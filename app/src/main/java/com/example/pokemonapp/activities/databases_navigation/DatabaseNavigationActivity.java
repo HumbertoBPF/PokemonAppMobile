@@ -14,6 +14,7 @@ public abstract class DatabaseNavigationActivity extends AppCompatActivity {
     protected RecyclerView recyclerView;
     protected int colorAppbar;
     protected String titleAppbar;
+    protected Class detailsActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

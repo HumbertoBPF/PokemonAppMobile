@@ -23,6 +23,7 @@ public class PokemonDatabaseActivity extends DatabaseNavigationActivity {
     protected void onCreate(Bundle savedInstanceState) {
         colorAppbar = getResources().getColor(R.color.pokemon_theme_color);
         titleAppbar = getResources().getString(R.string.title_appbar_pokemon_db);
+        detailsActivity = PokemonDetailsActivity.class;
         pokemonDAO = PokemonAppDatabase.getInstance(this).getPokemonDAO();
         super.onCreate(savedInstanceState);
     }
@@ -42,7 +43,7 @@ public class PokemonDatabaseActivity extends DatabaseNavigationActivity {
                 recyclerView.setAdapter(new PokemonAdapter(getApplicationContext(), pokemons, new PokemonAdapter.OnClickListener() {
                     @Override
                     public void onClick(Pokemon pokemon) {
-                        Intent intent = new Intent(getApplicationContext(),PokemonDetailsActivity.class);
+                        Intent intent = new Intent(getApplicationContext(),detailsActivity);
                         intent.putExtra("pokemon",pokemon);
                         startActivity(intent);
                     }

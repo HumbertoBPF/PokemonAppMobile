@@ -1,5 +1,6 @@
 package com.example.pokemonapp.activities.databases_navigation.moves;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.pokemonapp.R;
@@ -22,6 +23,7 @@ public class MovesDatabaseActivity extends DatabaseNavigationActivity {
     protected void onCreate(Bundle savedInstanceState) {
         colorAppbar = getResources().getColor(R.color.moves_theme_color);
         titleAppbar = getResources().getString(R.string.title_appbar_moves_db);
+        detailsActivity = MovesDetailsActivity.class;
         moveDAO = PokemonAppDatabase.getInstance(this).getMoveDAO();
         super.onCreate(savedInstanceState);
     }
@@ -39,7 +41,14 @@ public class MovesDatabaseActivity extends DatabaseNavigationActivity {
 
             @Override
             public void onPostExecute(List<Object> objects) {
-                recyclerView.setAdapter(new MovesAdapter(getApplicationContext(),moves));
+                recyclerView.setAdapter(new MovesAdapter(getApplicationContext(), moves, new MovesAdapter.OnClickListener() {
+                    @Override
+                    public void onClick(Move move) {
+                        Intent intent = new Intent(getApplicationContext(),detailsActivity);
+                        intent.putExtra("move",move);
+                        startActivity(intent);
+                    }
+                }));
             }
         }).execute();
     }

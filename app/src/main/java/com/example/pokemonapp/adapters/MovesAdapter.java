@@ -18,10 +18,12 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
 
     private Context context;
     private List<Move> moves;
+    private OnClickListener onClickListener;
 
-    public MovesAdapter(Context context, List<Move> moves){
+    public MovesAdapter(Context context, List<Move> moves, OnClickListener onClickListener){
         this.context = context;
         this.moves = moves;
+        this.onClickListener = onClickListener;
     }
 
     @NonNull
@@ -44,6 +46,7 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
 
     class MovesViewHolder extends RecyclerView.ViewHolder{
 
+        private View moveView;
         private TextView moveName;
         private TextView moveType;
         private TextView moveCategory;
@@ -53,6 +56,7 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
 
         public MovesViewHolder(@NonNull View itemView) {
             super(itemView);
+            this.moveView = itemView;
             this.moveName = itemView.findViewById(R.id.move_name);
             this.moveType = itemView.findViewById(R.id.move_type);
             this.moveCategory = itemView.findViewById(R.id.move_category);
@@ -68,8 +72,18 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
             this.movePower.setText(context.getResources().getString(R.string.power_move_label)+"\n"+move.getFPower().toString());
             this.moveAccuracy.setText(context.getResources().getString(R.string.accuracy_move_label)+"\n"+move.getFAccuracy());
             this.movePp.setText(context.getResources().getString(R.string.pp_move_label)+"\n"+move.getFPp());
+            this.moveView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onClickListener.onClick(move);
+                }
+            });
         }
 
+    }
+
+    public interface OnClickListener{
+        void onClick(Move move);
     }
 
 }
