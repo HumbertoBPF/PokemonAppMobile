@@ -3,12 +3,11 @@ package com.example.pokemonapp.activities.databases_navigation.pokemon;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.pokemonapp.R;
+import com.example.pokemonapp.activities.databases_navigation.DatabaseDetailsActivity;
 import com.example.pokemonapp.models.Pokemon;
 
-public class PokemonDetailsActivity extends AppCompatActivity {
+public class PokemonDetailsActivity extends DatabaseDetailsActivity {
 
     private Pokemon pokemon;
     private TextView pokemonName;
@@ -26,8 +25,10 @@ public class PokemonDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        colorAppbar = getResources().getColor(R.color.pokemon_theme_color);
+        titleAppbar = getResources().getString(R.string.title_appbar_pokemon_db);
+        layout = R.layout.activity_pokemon_details;
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pokemon_details);
 
         pokemon = (Pokemon) getIntent().getSerializableExtra("pokemon");
 
@@ -35,7 +36,7 @@ public class PokemonDetailsActivity extends AppCompatActivity {
         bind();
     }
 
-    private void getLayoutElements() {
+    protected void getLayoutElements() {
         pokemonName = findViewById(R.id.pokemon_name);
         pokemonCategory = findViewById(R.id.pokemon_category);
         pokemonDescription = findViewById(R.id.pokemon_description);
@@ -50,7 +51,7 @@ public class PokemonDetailsActivity extends AppCompatActivity {
         pokemonHp = findViewById(R.id.pokemon_hp);
     }
 
-    private void bind() {
+    protected void bind() {
         pokemonName.setText("Name : "+pokemon.getFName());
         pokemonCategory.setText("Category : "+pokemon.getFCategory());
         pokemonDescription.setText("Description : "+pokemon.getFDescription());

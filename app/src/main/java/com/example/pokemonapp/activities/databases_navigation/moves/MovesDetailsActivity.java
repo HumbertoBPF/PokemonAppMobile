@@ -1,14 +1,13 @@
 package com.example.pokemonapp.activities.databases_navigation.moves;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.widget.TextView;
 
 import com.example.pokemonapp.R;
+import com.example.pokemonapp.activities.databases_navigation.DatabaseDetailsActivity;
 import com.example.pokemonapp.models.Move;
 
-public class MovesDetailsActivity extends AppCompatActivity {
+public class MovesDetailsActivity extends DatabaseDetailsActivity {
 
     private Move move;
     private TextView moveName;
@@ -25,8 +24,10 @@ public class MovesDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        colorAppbar = getResources().getColor(R.color.moves_theme_color);
+        titleAppbar = getResources().getString(R.string.title_appbar_moves_db);
+        layout = R.layout.activity_moves_details;
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_moves_details);
 
         move = (Move) getIntent().getSerializableExtra("move");
 
@@ -34,7 +35,7 @@ public class MovesDetailsActivity extends AppCompatActivity {
         bind();
     }
 
-    private void getLayoutElements() {
+    protected void getLayoutElements() {
         moveName = findViewById(R.id.move_name);
         moveCategory = findViewById(R.id.move_category);
         movePower = findViewById(R.id.move_power);
@@ -48,7 +49,7 @@ public class MovesDetailsActivity extends AppCompatActivity {
         flinchingProbability = findViewById(R.id.flinching_probability);
     }
 
-    private void bind() {
+    protected void bind() {
         moveName.setText("Name : "+move.getFName());
         moveCategory.setText("Category\n"+move.getFCategory());
         movePower.setText("Power\n"+move.getFPower());
