@@ -9,14 +9,17 @@
     <string name="success_moves_download">Move database downloaded</string>
     <string name="success_types_download">Type database downloaded</string>
     <string name="success_move_types_download">move_type database downloaded</string>
+    <string name="success_pokemon_types_download">pokemon_type database downloaded</string>
     <string name="fail_types_download">Fail to get type database</string>
     <string name="fail_move_types_download">Fail to get move_type database</string>
+    <string name="fail_pokemon_types_download">Fail to get pokemon_type database</string>
     <string name="success_pokemon_download">Pokémon database downloaded</string>
     <string name="fail_pokemon_download">Fail to get pokémon database</string>
     <string name="fetch_pokemon_db">Fetching pokémon database</string>
     <string name="fetch_move_db">Fetching move database</string>
     <string name="fetch_type_db">Fetching type database</string>
     <string name="fetch_move_type_db">Fetching move_type database</string>
+    <string name="fetch_pokemon_type_db">Fetching pokemon_type database</string>
     <string name="title_synchronization_dialog">Database Synchronization</string>
     <string name="message_synchronization_dialog">Would you like to perform a synchronization now ?</string>
     <string name="confirm_button_text_synchronization_dialog">Confirm</string>

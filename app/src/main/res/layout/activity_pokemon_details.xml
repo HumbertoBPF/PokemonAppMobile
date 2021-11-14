@@ -22,7 +22,7 @@
             tools:text="Pokémon name"/>
 
         <TextView
-            android:id="@+id/pokemon_category"
+            android:id="@+id/pokemon_types"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginVertical="5dp"
@@ -30,6 +30,17 @@
             app:layout_constraintTop_toBottomOf="@id/pokemon_name"
             app:layout_constraintStart_toStartOf="@id/pokemon_name"
             app:layout_constraintEnd_toEndOf="@id/pokemon_name"
+            tools:text="Pokémon types"/>
+
+        <TextView
+            android:id="@+id/pokemon_category"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/pokemon_types"
+            app:layout_constraintStart_toStartOf="@id/pokemon_types"
+            app:layout_constraintEnd_toEndOf="@id/pokemon_types"
             tools:text="Pokémon category"/>
 
         <TextView

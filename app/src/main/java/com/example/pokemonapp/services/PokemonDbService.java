@@ -3,6 +3,7 @@ package com.example.pokemonapp.services;
 import com.example.pokemonapp.models.Move;
 import com.example.pokemonapp.models.MoveType;
 import com.example.pokemonapp.models.Pokemon;
+import com.example.pokemonapp.models.PokemonType;
 import com.example.pokemonapp.models.Type;
 
 import java.util.List;
@@ -23,5 +24,8 @@ public interface PokemonDbService {
 
     @GET("moveTypes")
     Call<List<MoveType>> getAllMoveTypesFromRemote();
+
+    @GET("pokemonTypes")
+    Call<List<PokemonType>> getAllPokemonTypesFromRemote();
 
 }

@@ -1,5 +1,7 @@
 package com.example.pokemonapp.adapters;
 
+import static com.example.pokemonapp.util.Tools.listOfTypesAsString;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
+import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.models.Pokemon;
+import com.example.pokemonapp.room.PokemonAppDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonViewHolder> {
@@ -19,11 +25,13 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
     private Context context;
     private List<Pokemon> pokemons;
     private OnClickListener onClickListener;
+    private PokemonTypeDAO pokemonTypeDAO;
 
     public PokemonAdapter(Context context, List<Pokemon> pokemons, OnClickListener onClickListener){
         this.context = context;
         this.pokemons = pokemons;
         this.onClickListener = onClickListener;
+        this.pokemonTypeDAO = PokemonAppDatabase.getInstance(this.context).getPokemonTypeDAO();
     }
 
     @NonNull
@@ -71,7 +79,19 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
         public void bind(Pokemon pokemon){
             this.pokemonName.setText(pokemon.getFName());
-            this.pokemonTypes.setText("Types");
+            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                @Override
+                public List<Object> doInBackground() {
+                    List<Object> objects = new ArrayList<>();
+                    objects.addAll(pokemonTypeDAO.getTypesOfPokemon(pokemon.getFId()));
+                    return objects;
+                }
+
+                @Override
+                public void onPostExecute(List<Object> objects) {
+                    pokemonTypes.setText(listOfTypesAsString(objects));
+                }
+            }).execute();
             this.pokemonAttack.setText(context.getResources().getString(R.string.attack_pokemon_label)+
                     "\n"+pokemon.getFAttack().toString());
             this.pokemonDefense.setText(context.getResources().getString(R.string.defense_pokemon_label)+

@@ -75,7 +75,7 @@ public class MovesDetailsActivity extends DatabaseDetailsActivity {
 
             @Override
             public void onPostExecute(List<Object> objects) {
-                moveType.setText(listOfTypesAsString(objects));
+                moveType.setText("Type : "+listOfTypesAsString(objects));
             }
         }).execute();
         moveCategory.setText("Category\n"+move.getFCategory());

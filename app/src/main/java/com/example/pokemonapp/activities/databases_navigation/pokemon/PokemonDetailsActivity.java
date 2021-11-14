@@ -1,16 +1,25 @@
 package com.example.pokemonapp.activities.databases_navigation.pokemon;
 
+import static com.example.pokemonapp.util.Tools.listOfTypesAsString;
+
 import android.os.Bundle;
 import android.widget.TextView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.databases_navigation.DatabaseDetailsActivity;
+import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.models.Pokemon;
+import com.example.pokemonapp.room.PokemonAppDatabase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PokemonDetailsActivity extends DatabaseDetailsActivity {
 
     private Pokemon pokemon;
     private TextView pokemonName;
+    private TextView pokemonTypes;
     private TextView pokemonCategory;
     private TextView pokemonDescription;
     private TextView pokemonHeight;
@@ -23,12 +32,16 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
     private TextView pokemonSpeed;
     private TextView pokemonHp;
 
+    private PokemonTypeDAO pokemonTypeDAO;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         colorAppbar = getResources().getColor(R.color.pokemon_theme_color);
         titleAppbar = getResources().getString(R.string.title_appbar_pokemon_db);
         layout = R.layout.activity_pokemon_details;
         super.onCreate(savedInstanceState);
+
+        pokemonTypeDAO = PokemonAppDatabase.getInstance(this).getPokemonTypeDAO();
 
         pokemon = (Pokemon) getIntent().getSerializableExtra("pokemon");
 
@@ -38,6 +51,7 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
 
     protected void getLayoutElements() {
         pokemonName = findViewById(R.id.pokemon_name);
+        pokemonTypes = findViewById(R.id.pokemon_types);
         pokemonCategory = findViewById(R.id.pokemon_category);
         pokemonDescription = findViewById(R.id.pokemon_description);
         pokemonWeight = findViewById(R.id.pokemon_weight);
@@ -53,6 +67,19 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
 
     protected void bind() {
         pokemonName.setText("Name : "+pokemon.getFName());
+        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+            @Override
+            public List<Object> doInBackground() {
+                List<Object> objects = new ArrayList<>();
+                objects.addAll(pokemonTypeDAO.getTypesOfPokemon(pokemon.getFId()));
+                return objects;
+            }
+
+            @Override
+            public void onPostExecute(List<Object> objects) {
+                pokemonTypes.setText("Types : "+listOfTypesAsString(objects));
+            }
+        }).execute();
         pokemonCategory.setText("Category : "+pokemon.getFCategory());
         pokemonDescription.setText("Description : "+pokemon.getFDescription());
         pokemonWeight.setText("Weight\n"+pokemon.getFWeight());

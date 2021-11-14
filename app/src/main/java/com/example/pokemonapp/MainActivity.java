@@ -23,10 +23,12 @@ import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.MoveDAO;
 import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.dao.PokemonDAO;
+import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.dao.TypeDAO;
 import com.example.pokemonapp.models.Move;
 import com.example.pokemonapp.models.MoveType;
 import com.example.pokemonapp.models.Pokemon;
+import com.example.pokemonapp.models.PokemonType;
 import com.example.pokemonapp.models.Type;
 import com.example.pokemonapp.retrofit.PokemonDbRetrofit;
 import com.example.pokemonapp.room.PokemonAppDatabase;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private PokemonDAO pokemonDAO;
     private TypeDAO typeDAO;
     private MoveTypeDAO moveTypeDAO;
+    private PokemonTypeDAO pokemonTypeDAO;
     private PokemonDbService pokemonDbService;
     private Handler handler;
     private CardView databasesButton;
@@ -55,10 +58,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        moveDAO = PokemonAppDatabase.getInstance(this).getMoveDAO();
-        pokemonDAO = PokemonAppDatabase.getInstance(this).getPokemonDAO();
-        typeDAO = PokemonAppDatabase.getInstance(this).getTypeDAO();
-        moveTypeDAO = PokemonAppDatabase.getInstance(this).getMoveTypeDAO();
+        getDAOs();
         pokemonDbService = new PokemonDbRetrofit().getPokemonDbService();
         handler = new Handler();
 
@@ -66,6 +66,14 @@ public class MainActivity extends AppCompatActivity {
         configureDatabaseButton();
         configureGameButton();
 
+    }
+
+    private void getDAOs() {
+        moveDAO = PokemonAppDatabase.getInstance(this).getMoveDAO();
+        pokemonDAO = PokemonAppDatabase.getInstance(this).getPokemonDAO();
+        typeDAO = PokemonAppDatabase.getInstance(this).getTypeDAO();
+        moveTypeDAO = PokemonAppDatabase.getInstance(this).getMoveTypeDAO();
+        pokemonTypeDAO = PokemonAppDatabase.getInstance(this).getPokemonTypeDAO();
     }
 
     private void getLayoutElements() {
@@ -311,9 +319,9 @@ public class MainActivity extends AppCompatActivity {
                 Call<List<MoveType>> callMoveType = pokemonDbService.getAllMoveTypesFromRemote();
                 callMoveType.enqueue(new Callback<List<MoveType>>() {
                     @Override
-                    public void onResponse(Call<List<MoveType>> call, Response<List<MoveType>> responseType) {
-                        if (responseType.isSuccessful()){
-                            List<MoveType> moveTypes = responseType.body();
+                    public void onResponse(Call<List<MoveType>> call, Response<List<MoveType>> responseMoveType) {
+                        if (responseMoveType.isSuccessful()){
+                            List<MoveType> moveTypes = responseMoveType.body();
                             if (moveTypes != null) {
                                 Log.i("numberOfMoveTypes",moveTypes.size()+"");
                             }else{
@@ -332,13 +340,73 @@ public class MainActivity extends AppCompatActivity {
                                     handler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
-                                            loadingDialog.dismiss();
+                                            callbackPokemonType();
                                         }
                                     },2000);
                                 }
                             }).execute();
                         }else{
                             loadingDialog.setMessage(getString(R.string.fail_move_types_download));
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callbackPokemonType();
+                                }
+                            },2000);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<MoveType>> call, Throwable t) {
+                        loadingDialog.setMessage(getString(R.string.fail_move_types_download));
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                callbackPokemonType();
+                            }
+                        },2000);
+                    }
+                });
+            }
+        },2000);
+    }
+
+    private void callbackPokemonType(){
+        loadingDialog.setMessage(getString(R.string.fetch_pokemon_type_db));
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Call<List<PokemonType>> callMoveType = pokemonDbService.getAllPokemonTypesFromRemote();
+                callMoveType.enqueue(new Callback<List<PokemonType>>() {
+                    @Override
+                    public void onResponse(Call<List<PokemonType>> call, Response<List<PokemonType>> responsePokemonType) {
+                        if (responsePokemonType.isSuccessful()){
+                            List<PokemonType> pokemonTypes = responsePokemonType.body();
+                            if (pokemonTypes != null) {
+                                Log.i("numberOfPokemonTypes", pokemonTypes.size()+"");
+                            }else{
+                                Log.i("numberOfPokemonTypes","null");
+                            }
+                            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                                @Override
+                                public List<Object> doInBackground() {
+                                    pokemonTypeDAO.save(pokemonTypes);
+                                    return null;
+                                }
+
+                                @Override
+                                public void onPostExecute(List<Object> objects) {
+                                    loadingDialog.setMessage(getString(R.string.success_pokemon_types_download));
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            loadingDialog.dismiss();
+                                        }
+                                    },2000);
+                                }
+                            }).execute();
+                        }else{
+                            loadingDialog.setMessage(getString(R.string.fail_pokemon_types_download));
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -349,8 +417,8 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<List<MoveType>> call, Throwable t) {
-                        loadingDialog.setMessage(getString(R.string.fail_move_types_download));
+                    public void onFailure(Call<List<PokemonType>> call, Throwable t) {
+                        loadingDialog.setMessage(getString(R.string.fail_pokemon_types_download));
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
