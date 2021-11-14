@@ -10,18 +10,24 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
+import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.models.Type;
+import com.example.pokemonapp.room.PokemonAppDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TypesAdapter extends RecyclerView.Adapter<TypesAdapter.TypeViewHolder> {
 
     private Context context;
     private List<Type> types;
+    private PokemonTypeDAO pokemonTypeDAO;
 
     public TypesAdapter(Context context, List<Type> types){
         this.context = context;
         this.types = types;
+        this.pokemonTypeDAO = PokemonAppDatabase.getInstance(this.context).getPokemonTypeDAO();
     }
 
     @NonNull
@@ -55,7 +61,20 @@ public class TypesAdapter extends RecyclerView.Adapter<TypesAdapter.TypeViewHold
 
         public void bind(Type type){
             this.typeName.setText(type.getFName());
-            this.nbPokemonType.setText("Number of pokémon with this type");
+            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                @Override
+                public List<Object> doInBackground() {
+                    List<Object> objects = new ArrayList<>();
+                    objects.add(pokemonTypeDAO.getPokemonWithThisType(type.getFId()));
+                    return objects;
+                }
+
+                @Override
+                public void onPostExecute(List<Object> objects) {
+                    Integer nbOfPokemon = (Integer) objects.get(0);
+                    nbPokemonType.setText(nbOfPokemon+" pokemon with this type");
+                }
+            }).execute();
         }
 
     }
