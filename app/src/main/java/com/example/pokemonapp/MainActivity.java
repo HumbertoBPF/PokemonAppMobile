@@ -21,9 +21,11 @@ import com.example.pokemonapp.activities.databases_navigation.DatabasesActivity;
 import com.example.pokemonapp.activities.game.GameActivity;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.MoveDAO;
+import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.dao.PokemonDAO;
 import com.example.pokemonapp.dao.TypeDAO;
 import com.example.pokemonapp.models.Move;
+import com.example.pokemonapp.models.MoveType;
 import com.example.pokemonapp.models.Pokemon;
 import com.example.pokemonapp.models.Type;
 import com.example.pokemonapp.retrofit.PokemonDbRetrofit;
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private MoveDAO moveDAO;
     private PokemonDAO pokemonDAO;
     private TypeDAO typeDAO;
+    private MoveTypeDAO moveTypeDAO;
     private PokemonDbService pokemonDbService;
     private Handler handler;
     private CardView databasesButton;
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         moveDAO = PokemonAppDatabase.getInstance(this).getMoveDAO();
         pokemonDAO = PokemonAppDatabase.getInstance(this).getPokemonDAO();
         typeDAO = PokemonAppDatabase.getInstance(this).getTypeDAO();
+        moveTypeDAO = PokemonAppDatabase.getInstance(this).getMoveTypeDAO();
         pokemonDbService = new PokemonDbRetrofit().getPokemonDbService();
         handler = new Handler();
 
@@ -264,7 +268,67 @@ public class MainActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onPostExecute(List<Object> objects) {
-                                    loadingDialog.setMessage(getString(R.string.success_types_donwload));
+                                    loadingDialog.setMessage(getString(R.string.success_types_download));
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            callbackMoveType();
+                                        }
+                                    },2000);
+                                }
+                            }).execute();
+                        }else{
+                            loadingDialog.setMessage(getString(R.string.fail_types_download));
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callbackMoveType();
+                                }
+                            },2000);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Type>> call, Throwable t) {
+                        loadingDialog.setMessage(getString(R.string.fail_types_download));
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                callbackMoveType();
+                            }
+                        },2000);
+                    }
+                });
+            }
+        },2000);
+    }
+
+    private void callbackMoveType(){
+        loadingDialog.setMessage(getString(R.string.fetch_move_type_db));
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Call<List<MoveType>> callMoveType = pokemonDbService.getAllMoveTypesFromRemote();
+                callMoveType.enqueue(new Callback<List<MoveType>>() {
+                    @Override
+                    public void onResponse(Call<List<MoveType>> call, Response<List<MoveType>> responseType) {
+                        if (responseType.isSuccessful()){
+                            List<MoveType> moveTypes = responseType.body();
+                            if (moveTypes != null) {
+                                Log.i("numberOfMoveTypes",moveTypes.size()+"");
+                            }else{
+                                Log.i("numberOfMoveTypes","null");
+                            }
+                            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                                @Override
+                                public List<Object> doInBackground() {
+                                    moveTypeDAO.save(moveTypes);
+                                    return null;
+                                }
+
+                                @Override
+                                public void onPostExecute(List<Object> objects) {
+                                    loadingDialog.setMessage(getString(R.string.success_move_types_download));
                                     handler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
@@ -274,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }).execute();
                         }else{
-                            loadingDialog.setMessage(getString(R.string.fail_types_download));
+                            loadingDialog.setMessage(getString(R.string.fail_move_types_download));
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -285,8 +349,8 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<List<Type>> call, Throwable t) {
-                        loadingDialog.setMessage(getString(R.string.fail_types_download));
+                    public void onFailure(Call<List<MoveType>> call, Throwable t) {
+                        loadingDialog.setMessage(getString(R.string.fail_move_types_download));
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {

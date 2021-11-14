@@ -1,5 +1,7 @@
 package com.example.pokemonapp.adapters;
 
+import static com.example.pokemonapp.util.Tools.listOfTypesAsString;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
+import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.models.Move;
+import com.example.pokemonapp.room.PokemonAppDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHolder> {
@@ -19,11 +25,13 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
     private Context context;
     private List<Move> moves;
     private OnClickListener onClickListener;
+    private MoveTypeDAO moveTypeDAO;
 
     public MovesAdapter(Context context, List<Move> moves, OnClickListener onClickListener){
         this.context = context;
         this.moves = moves;
         this.onClickListener = onClickListener;
+        this.moveTypeDAO = PokemonAppDatabase.getInstance(this.context).getMoveTypeDAO();
     }
 
     @NonNull
@@ -67,7 +75,19 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
 
         public void bind(Move move){
             this.moveName.setText(move.getFName());
-            this.moveType.setText("Move type");
+            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                @Override
+                public List<Object> doInBackground() {
+                    List<Object> objects = new ArrayList<>();
+                    objects.addAll(moveTypeDAO.getTypesOfMove(move.getFId()));
+                    return objects;
+                }
+
+                @Override
+                public void onPostExecute(List<Object> objects) {
+                    moveType.setText(listOfTypesAsString(objects));
+                }
+            }).execute();
             this.moveCategory.setText(context.getResources().getString(R.string.category_move_label)+"\n"+move.getFCategory());
             this.movePower.setText(context.getResources().getString(R.string.power_move_label)+"\n"+move.getFPower().toString());
             this.moveAccuracy.setText(context.getResources().getString(R.string.accuracy_move_label)+"\n"+move.getFAccuracy());

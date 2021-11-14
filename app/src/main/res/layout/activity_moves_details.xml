@@ -12,14 +12,26 @@
 
         <TextView
             android:id="@+id/move_name"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:textSize="16sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             tools:text="Move name"/>
+
+        <TextView
+            android:id="@+id/move_type"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:textSize="16sp"
+            android:gravity="end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@id/move_name"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Move type" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/container_extra_info"
@@ -28,7 +40,7 @@
             android:layout_marginVertical="5dp"
             app:layout_constraintTop_toBottomOf="@id/move_name"
             app:layout_constraintStart_toStartOf="@id/move_name"
-            app:layout_constraintEnd_toEndOf="@id/move_name"
+            app:layout_constraintEnd_toEndOf="@id/move_type"
             >
 
             <TextView
@@ -93,7 +105,7 @@
             android:textSize="16sp"
             app:layout_constraintTop_toBottomOf="@id/container_extra_info"
             app:layout_constraintStart_toStartOf="@id/move_name"
-            app:layout_constraintEnd_toEndOf="@id/move_name"
+            app:layout_constraintEnd_toEndOf="@id/move_type"
             tools:text="The attack hits at least : "/>
 
         <TextView
@@ -104,7 +116,7 @@
             android:textSize="16sp"
             app:layout_constraintTop_toBottomOf="@id/minimum_nb_hits"
             app:layout_constraintStart_toStartOf="@id/move_name"
-            app:layout_constraintEnd_toEndOf="@id/move_name"
+            app:layout_constraintEnd_toEndOf="@id/move_type"
             tools:text="The attack hits at most : "/>
 
         <TextView
@@ -115,7 +127,7 @@
             android:textSize="16sp"
             app:layout_constraintTop_toBottomOf="@id/maximum_nb_hits"
             app:layout_constraintStart_toStartOf="@id/move_name"
-            app:layout_constraintEnd_toEndOf="@id/move_name"
+            app:layout_constraintEnd_toEndOf="@id/move_type"
             tools:text="Pokémon faints after attacking : "/>
 
         <TextView
@@ -126,7 +138,7 @@
             android:textSize="16sp"
             app:layout_constraintTop_toBottomOf="@id/user_faints"
             app:layout_constraintStart_toStartOf="@id/move_name"
-            app:layout_constraintEnd_toEndOf="@id/move_name"
+            app:layout_constraintEnd_toEndOf="@id/move_type"
             tools:text="Number of rounds to load the attack : "/>
 
         <TextView
@@ -137,7 +149,7 @@
             android:textSize="16sp"
             app:layout_constraintTop_toBottomOf="@id/nb_rounds_to_load"
             app:layout_constraintStart_toStartOf="@id/move_name"
-            app:layout_constraintEnd_toEndOf="@id/move_name"
+            app:layout_constraintEnd_toEndOf="@id/move_type"
             tools:text="Attack traps the opponent for 4 or 5 turns : "/>
 
         <TextView
@@ -148,7 +160,7 @@
             android:textSize="16sp"
             app:layout_constraintTop_toBottomOf="@id/traps_opponent"
             app:layout_constraintStart_toStartOf="@id/move_name"
-            app:layout_constraintEnd_toEndOf="@id/move_name"
+            app:layout_constraintEnd_toEndOf="@id/move_type"
             tools:text="Flinching probability : "/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

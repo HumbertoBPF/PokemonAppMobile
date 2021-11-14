@@ -15,10 +15,14 @@ import java.util.List;
 
 public class Tools {
 
-    public static String listOfTypesAsString(List<Type> types) {
+    public static String listOfTypesAsString(List<Object> objects) {
         String stringTypes = "";
-        for (Type type : types) {
-            stringTypes += type.getFName() + ",";
+        for (int i = 0;i<objects.size();i++){
+            Type type = (Type) objects.get(i);
+            stringTypes += type.getFName();
+            if (i<objects.size()-1){
+                stringTypes += ",";
+            }
         }
         return stringTypes;
     }

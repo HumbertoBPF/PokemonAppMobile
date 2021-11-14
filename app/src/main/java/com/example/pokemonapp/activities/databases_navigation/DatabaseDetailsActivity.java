@@ -2,11 +2,9 @@ package com.example.pokemonapp.activities.databases_navigation;
 
 import static com.example.pokemonapp.util.Tools.setAppbarColor;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 
-import com.example.pokemonapp.R;
+import androidx.appcompat.app.AppCompatActivity;
 
 public abstract class DatabaseDetailsActivity extends AppCompatActivity {
 
