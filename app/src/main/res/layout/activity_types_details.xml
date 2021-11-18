@@ -48,7 +48,7 @@
 
         <TextView
             android:id="@+id/type_effective"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:text="This type is effective against : "
@@ -59,7 +59,7 @@
 
         <TextView
             android:id="@+id/type_not_effective"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:text="This type is not effective against : "
@@ -70,7 +70,7 @@
 
         <TextView
             android:id="@+id/type_no_effect"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:text="This type has no effect against : "

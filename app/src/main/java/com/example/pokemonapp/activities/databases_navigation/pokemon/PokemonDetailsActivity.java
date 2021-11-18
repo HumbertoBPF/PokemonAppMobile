@@ -32,6 +32,7 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
     private TextView pokemonSpDefense;
     private TextView pokemonSpeed;
     private TextView pokemonHp;
+    private TextView pokemonForce;
 
     private PokemonTypeDAO pokemonTypeDAO;
 
@@ -64,6 +65,7 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
         pokemonSpDefense = findViewById(R.id.pokemon_sp_defense);
         pokemonSpeed = findViewById(R.id.pokemon_speed);
         pokemonHp = findViewById(R.id.pokemon_hp);
+        pokemonForce = findViewById(R.id.pokemon_force);
     }
 
     protected void bind() {
@@ -92,6 +94,8 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
         pokemonSpDefense.setText("Sp.Def.\n"+pokemon.getFSpDefense());
         pokemonSpeed.setText("Speed\n"+pokemon.getFSpeed());
         pokemonHp.setText("HP\n"+pokemon.getFHp());
+        pokemonForce.setText("Force(sum of the stats) : "+(pokemon.getFAttack()+pokemon.getFDefense()+
+                pokemon.getFSpAttack()+pokemon.getFSpDefense()+pokemon.getFSpeed()+pokemon.getFHp()));
     }
 
 }
