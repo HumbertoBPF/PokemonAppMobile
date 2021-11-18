@@ -18,6 +18,7 @@ import java.util.List;
 public class PokemonDetailsActivity extends DatabaseDetailsActivity {
 
     private Pokemon pokemon;
+
     private TextView pokemonName;
     private TextView pokemonTypes;
     private TextView pokemonCategory;

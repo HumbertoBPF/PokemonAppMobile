@@ -27,6 +27,18 @@ public class Tools {
         return stringTypes;
     }
 
+    public static String listOfTypesAsStringFromTypeList(List<Type> types) {
+        String stringTypes = "";
+        for (int i = 0;i<types.size();i++){
+            Type type = types.get(i);
+            stringTypes += type.getFName();
+            if (i<types.size()-1){
+                stringTypes += ",";
+            }
+        }
+        return stringTypes;
+    }
+
     public static String listOfMovesAsString(List<Move> moves) {
         String stringMoves = "";
         for (Move move : moves) {

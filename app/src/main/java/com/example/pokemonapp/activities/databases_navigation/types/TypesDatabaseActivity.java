@@ -1,5 +1,6 @@
 package com.example.pokemonapp.activities.databases_navigation.types;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.pokemonapp.R;
@@ -39,7 +40,15 @@ public class TypesDatabaseActivity extends DatabaseNavigationActivity {
 
             @Override
             public void onPostExecute(List<Object> objects) {
-                recyclerView.setAdapter(new TypesAdapter(getApplicationContext(),types));
+                recyclerView.setAdapter(new TypesAdapter(getApplicationContext(), types,
+                        new TypesAdapter.OnClickListener() {
+                            @Override
+                            public void onClick(Type type) {
+                                Intent intent = new Intent(getApplicationContext(),TypesDetailsActivity.class);
+                                intent.putExtra("type",type);
+                                startActivity(intent);
+                            }
+                        }));
             }
         }).execute();
     }

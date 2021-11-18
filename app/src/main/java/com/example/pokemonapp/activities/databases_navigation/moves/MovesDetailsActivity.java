@@ -18,6 +18,7 @@ import java.util.List;
 public class MovesDetailsActivity extends DatabaseDetailsActivity {
 
     private Move move;
+
     private TextView moveName;
     private TextView moveType;
     private TextView moveCategory;

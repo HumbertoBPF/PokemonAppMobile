@@ -23,11 +23,13 @@ public class TypesAdapter extends RecyclerView.Adapter<TypesAdapter.TypeViewHold
     private Context context;
     private List<Type> types;
     private PokemonTypeDAO pokemonTypeDAO;
+    private OnClickListener onClickListener;
 
-    public TypesAdapter(Context context, List<Type> types){
+    public TypesAdapter(Context context, List<Type> types, OnClickListener onClickListener){
         this.context = context;
         this.types = types;
         this.pokemonTypeDAO = PokemonAppDatabase.getInstance(this.context).getPokemonTypeDAO();
+        this.onClickListener = onClickListener;
     }
 
     @NonNull
@@ -50,6 +52,7 @@ public class TypesAdapter extends RecyclerView.Adapter<TypesAdapter.TypeViewHold
 
     class TypeViewHolder extends RecyclerView.ViewHolder{
 
+        private View itemView;
         private TextView typeName;
         private TextView nbPokemonType;
 
@@ -57,6 +60,7 @@ public class TypesAdapter extends RecyclerView.Adapter<TypesAdapter.TypeViewHold
             super(itemView);
             this.typeName = itemView.findViewById(R.id.type_name);
             this.nbPokemonType = itemView.findViewById(R.id.nb_pokemon_type);
+            this.itemView = itemView;
         }
 
         public void bind(Type type){
@@ -75,8 +79,18 @@ public class TypesAdapter extends RecyclerView.Adapter<TypesAdapter.TypeViewHold
                     nbPokemonType.setText(nbOfPokemon+" pokemon with this type");
                 }
             }).execute();
+            this.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onClickListener.onClick(type);
+                }
+            });
         }
 
+    }
+
+    public interface OnClickListener{
+        void onClick(Type type);
     }
 
 }
