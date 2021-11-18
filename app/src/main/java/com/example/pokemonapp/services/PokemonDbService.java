@@ -3,8 +3,12 @@ package com.example.pokemonapp.services;
 import com.example.pokemonapp.models.Move;
 import com.example.pokemonapp.models.MoveType;
 import com.example.pokemonapp.models.Pokemon;
+import com.example.pokemonapp.models.PokemonMove;
 import com.example.pokemonapp.models.PokemonType;
 import com.example.pokemonapp.models.Type;
+import com.example.pokemonapp.models.TypeEffective;
+import com.example.pokemonapp.models.TypeNoEffect;
+import com.example.pokemonapp.models.TypeNotEffective;
 
 import java.util.List;
 
@@ -27,5 +31,17 @@ public interface PokemonDbService {
 
     @GET("pokemonTypes")
     Call<List<PokemonType>> getAllPokemonTypesFromRemote();
+
+    @GET("pokemonMoves")
+    Call<List<PokemonMove>> getAllPokemonMovesFromRemote();
+
+    @GET("effectiveTypes")
+    Call<List<TypeEffective>> getAllTypeEffectiveFromRemote();
+
+    @GET("notEffectiveTypes")
+    Call<List<TypeNotEffective>> getAllNotEffectiveTypesFromRemote();
+
+    @GET("noEffectTypes")
+    Call<List<TypeNoEffect>> getAllNoEffectTypesFromRemote();
 
 }

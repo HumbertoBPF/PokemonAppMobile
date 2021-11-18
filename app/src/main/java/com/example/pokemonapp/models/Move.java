@@ -11,8 +11,6 @@ public class Move implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private Long fId;
     private String fName;
-//    @ManyToMany
-//    private List<Type> type;
     private String fCategory;
     private Long fPower;
     private Integer fAccuracy;

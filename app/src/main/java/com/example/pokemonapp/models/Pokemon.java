@@ -15,8 +15,6 @@ public class Pokemon implements Serializable {
     private Double fHeight;
     private Double fWeight;
     private String fGender;
-//    @ManyToMany
-//    private List<Type> type;
     private String fCategory;
     private Integer fAttack;
     private Integer fDefense;
@@ -24,8 +22,6 @@ public class Pokemon implements Serializable {
     private Integer fSpDefense;
     private Integer fSpeed;
     private Integer fHp;
-//    @ManyToMany
-//    private List<Move> moves;
     private Integer fAccuracy = 100;
     private Integer fEvasion = 0;
 

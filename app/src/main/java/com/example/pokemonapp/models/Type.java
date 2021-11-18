@@ -11,12 +11,6 @@ public class Type implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private Long fId;
     private String fName;
-//    @ManyToMany
-//    private List<Type> effective = new ArrayList<>();
-//    @ManyToMany
-//    private List<Type> notEffective = new ArrayList<>();
-//    @ManyToMany
-//    private List<Type> noEffect = new ArrayList<>();
 
     public Type() {
     }
