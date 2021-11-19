@@ -17,26 +17,26 @@ import androidx.annotation.NonNull;
 
 import com.example.pokemonapp.activities.ButtonsActivity;
 import com.example.pokemonapp.activities.databases_navigation.DatabasesActivity;
-import com.example.pokemonapp.activities.game.GameActivity;
+import com.example.pokemonapp.activities.game.GameModeSelectionActivity;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
-import com.example.pokemonapp.dao.MoveDAO;
-import com.example.pokemonapp.dao.MoveTypeDAO;
-import com.example.pokemonapp.dao.PokemonDAO;
-import com.example.pokemonapp.dao.PokemonMoveDAO;
-import com.example.pokemonapp.dao.PokemonTypeDAO;
-import com.example.pokemonapp.dao.TypeDAO;
-import com.example.pokemonapp.dao.TypeEffectiveDAO;
-import com.example.pokemonapp.dao.TypeNoEffectDAO;
-import com.example.pokemonapp.dao.TypeNotEffectiveDAO;
-import com.example.pokemonapp.entities.Move;
-import com.example.pokemonapp.entities.MoveType;
-import com.example.pokemonapp.entities.Pokemon;
-import com.example.pokemonapp.entities.PokemonMove;
-import com.example.pokemonapp.entities.PokemonType;
-import com.example.pokemonapp.entities.Type;
-import com.example.pokemonapp.entities.TypeEffective;
-import com.example.pokemonapp.entities.TypeNoEffect;
-import com.example.pokemonapp.entities.TypeNotEffective;
+import com.example.pokemonapp.dao.server_side.MoveDAO;
+import com.example.pokemonapp.dao.server_side.MoveTypeDAO;
+import com.example.pokemonapp.dao.server_side.PokemonDAO;
+import com.example.pokemonapp.dao.server_side.PokemonMoveDAO;
+import com.example.pokemonapp.dao.server_side.PokemonTypeDAO;
+import com.example.pokemonapp.dao.server_side.TypeDAO;
+import com.example.pokemonapp.dao.server_side.TypeEffectiveDAO;
+import com.example.pokemonapp.dao.server_side.TypeNoEffectDAO;
+import com.example.pokemonapp.dao.server_side.TypeNotEffectiveDAO;
+import com.example.pokemonapp.entities.server_side.Move;
+import com.example.pokemonapp.entities.server_side.MoveType;
+import com.example.pokemonapp.entities.server_side.Pokemon;
+import com.example.pokemonapp.entities.server_side.PokemonMove;
+import com.example.pokemonapp.entities.server_side.PokemonType;
+import com.example.pokemonapp.entities.server_side.Type;
+import com.example.pokemonapp.entities.server_side.TypeEffective;
+import com.example.pokemonapp.entities.server_side.TypeNoEffect;
+import com.example.pokemonapp.entities.server_side.TypeNotEffective;
 import com.example.pokemonapp.models.RoundedButton;
 import com.example.pokemonapp.retrofit.PokemonDbRetrofit;
 import com.example.pokemonapp.room.PokemonAppDatabase;
@@ -66,7 +66,7 @@ public class MainActivity extends ButtonsActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTitle(getResources().getString(R.string.databases_button_text));
+        setTitle(getResources().getString(R.string.app_name));
         super.onCreate(savedInstanceState);
         getDAOs();
         pokemonDbService = new PokemonDbRetrofit().getPokemonDbService();
@@ -80,7 +80,7 @@ public class MainActivity extends ButtonsActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        startActivity(new Intent(getApplicationContext(), GameActivity.class));
+                        startActivity(new Intent(getApplicationContext(), GameModeSelectionActivity.class));
                     }
                 });
         RoundedButton databaseButton = new RoundedButton(getResources().getString(R.string.databases_button_text),

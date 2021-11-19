@@ -8,8 +8,8 @@ import android.graphics.drawable.ColorDrawable;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.pokemonapp.entities.Move;
-import com.example.pokemonapp.entities.Type;
+import com.example.pokemonapp.entities.server_side.Move;
+import com.example.pokemonapp.entities.server_side.Type;
 
 import java.util.List;
 

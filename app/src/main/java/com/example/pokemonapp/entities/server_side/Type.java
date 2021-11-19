@@ -1,4 +1,4 @@
-package com.example.pokemonapp.entities;
+package com.example.pokemonapp.entities.server_side;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

@@ -1,29 +1,29 @@
-package com.example.pokemonapp.entities;
+package com.example.pokemonapp.entities.server_side;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 
-@Entity(tableName = "pokemon_type",
-        primaryKeys = { "pokemonId", "typeId" },
+@Entity(tableName = "pokemon_moves",
+        primaryKeys = { "pokemonId", "moveId" },
         foreignKeys = {
                 @ForeignKey(entity = Pokemon.class,
                         parentColumns = "fId",
                         childColumns = "pokemonId"),
-                @ForeignKey(entity = Type.class,
+                @ForeignKey(entity = Move.class,
                         parentColumns = "fId",
-                        childColumns = "typeId")
+                        childColumns = "moveId")
         })
-public class PokemonType {
+public class PokemonMove {
 
     @NonNull
     private Long pokemonId;
     @NonNull
-    private Long typeId;
+    private Long moveId;
 
-    public PokemonType(@NonNull Long pokemonId, @NonNull Long typeId) {
+    public PokemonMove(@NonNull Long pokemonId, @NonNull Long moveId) {
         this.pokemonId = pokemonId;
-        this.typeId = typeId;
+        this.moveId = moveId;
     }
 
     @NonNull
@@ -36,12 +36,11 @@ public class PokemonType {
     }
 
     @NonNull
-    public Long getTypeId() {
-        return typeId;
+    public Long getMoveId() {
+        return moveId;
     }
 
-    public void setTypeId(@NonNull Long typeId) {
-        this.typeId = typeId;
+    public void setMoveId(@NonNull Long moveId) {
+        this.moveId = moveId;
     }
-
 }

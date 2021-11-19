@@ -1,14 +1,14 @@
 package com.example.pokemonapp.services;
 
-import com.example.pokemonapp.entities.Move;
-import com.example.pokemonapp.entities.MoveType;
-import com.example.pokemonapp.entities.Pokemon;
-import com.example.pokemonapp.entities.PokemonMove;
-import com.example.pokemonapp.entities.PokemonType;
-import com.example.pokemonapp.entities.Type;
-import com.example.pokemonapp.entities.TypeEffective;
-import com.example.pokemonapp.entities.TypeNoEffect;
-import com.example.pokemonapp.entities.TypeNotEffective;
+import com.example.pokemonapp.entities.server_side.Move;
+import com.example.pokemonapp.entities.server_side.MoveType;
+import com.example.pokemonapp.entities.server_side.Pokemon;
+import com.example.pokemonapp.entities.server_side.PokemonMove;
+import com.example.pokemonapp.entities.server_side.PokemonType;
+import com.example.pokemonapp.entities.server_side.Type;
+import com.example.pokemonapp.entities.server_side.TypeEffective;
+import com.example.pokemonapp.entities.server_side.TypeNoEffect;
+import com.example.pokemonapp.entities.server_side.TypeNotEffective;
 
 import java.util.List;
 

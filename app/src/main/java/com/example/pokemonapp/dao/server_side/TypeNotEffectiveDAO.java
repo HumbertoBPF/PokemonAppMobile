@@ -1,4 +1,4 @@
-package com.example.pokemonapp.dao;
+package com.example.pokemonapp.dao.server_side;
 
 import static androidx.room.OnConflictStrategy.REPLACE;
 
@@ -6,8 +6,8 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.example.pokemonapp.entities.Type;
-import com.example.pokemonapp.entities.TypeNotEffective;
+import com.example.pokemonapp.entities.server_side.Type;
+import com.example.pokemonapp.entities.server_side.TypeNotEffective;
 
 import java.util.List;
 

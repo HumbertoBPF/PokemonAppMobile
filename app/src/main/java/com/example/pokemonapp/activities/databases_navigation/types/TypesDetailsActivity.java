@@ -8,12 +8,12 @@ import android.widget.TextView;
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.databases_navigation.DatabaseDetailsActivity;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
-import com.example.pokemonapp.dao.MoveTypeDAO;
-import com.example.pokemonapp.dao.PokemonTypeDAO;
-import com.example.pokemonapp.dao.TypeEffectiveDAO;
-import com.example.pokemonapp.dao.TypeNoEffectDAO;
-import com.example.pokemonapp.dao.TypeNotEffectiveDAO;
-import com.example.pokemonapp.entities.Type;
+import com.example.pokemonapp.dao.server_side.MoveTypeDAO;
+import com.example.pokemonapp.dao.server_side.PokemonTypeDAO;
+import com.example.pokemonapp.dao.server_side.TypeEffectiveDAO;
+import com.example.pokemonapp.dao.server_side.TypeNoEffectDAO;
+import com.example.pokemonapp.dao.server_side.TypeNotEffectiveDAO;
+import com.example.pokemonapp.entities.server_side.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;

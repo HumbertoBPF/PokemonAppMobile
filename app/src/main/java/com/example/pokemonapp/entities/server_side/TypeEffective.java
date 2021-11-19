@@ -1,29 +1,29 @@
-package com.example.pokemonapp.entities;
+package com.example.pokemonapp.entities.server_side;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 
-@Entity(tableName = "type_not_effective",
-        primaryKeys = { "typeId", "notEffectiveId" },
+@Entity(tableName = "type_effective",
+        primaryKeys = { "typeId", "effectiveId" },
         foreignKeys = {
                 @ForeignKey(entity = Type.class,
                         parentColumns = "fId",
                         childColumns = "typeId"),
                 @ForeignKey(entity = Type.class,
                         parentColumns = "fId",
-                        childColumns = "notEffectiveId")
+                        childColumns = "effectiveId")
         })
-public class TypeNotEffective {
+public class TypeEffective {
 
     @NonNull
     private Long typeId;
     @NonNull
-    private Long notEffectiveId;
+    private Long effectiveId;
 
-    public TypeNotEffective(@NonNull Long typeId, @NonNull Long notEffectiveId) {
+    public TypeEffective(@NonNull Long typeId, @NonNull Long effectiveId) {
         this.typeId = typeId;
-        this.notEffectiveId = notEffectiveId;
+        this.effectiveId = effectiveId;
     }
 
     @NonNull
@@ -36,11 +36,11 @@ public class TypeNotEffective {
     }
 
     @NonNull
-    public Long getNotEffectiveId() {
-        return notEffectiveId;
+    public Long getEffectiveId() {
+        return effectiveId;
     }
 
-    public void setNotEffectiveId(@NonNull Long notEffectiveId) {
-        this.notEffectiveId = notEffectiveId;
+    public void setEffectiveId(@NonNull Long effectiveId) {
+        this.effectiveId = effectiveId;
     }
 }

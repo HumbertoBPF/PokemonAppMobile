@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
-import com.example.pokemonapp.dao.PokemonTypeDAO;
-import com.example.pokemonapp.entities.Pokemon;
+import com.example.pokemonapp.dao.server_side.PokemonTypeDAO;
+import com.example.pokemonapp.entities.server_side.Pokemon;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;

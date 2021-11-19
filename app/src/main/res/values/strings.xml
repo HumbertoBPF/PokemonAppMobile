@@ -49,4 +49,7 @@
     <string name="title_appbar_pokemon_db">Pokémon Database</string>
     <string name="title_appbar_moves_db">Moves Database</string>
     <string name="title_appbar_types_db">Types Database</string>
+    <string name="favorite_team_mode_button_text">Favorite team mode</string>
+    <string name="strategy_mode_button_text">Strategy mode</string>
+    <string name="random_mode_button_text">Random mode</string>
 </resources>

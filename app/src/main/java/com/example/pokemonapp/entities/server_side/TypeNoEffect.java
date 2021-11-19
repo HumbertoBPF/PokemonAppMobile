@@ -1,4 +1,4 @@
-package com.example.pokemonapp.entities;
+package com.example.pokemonapp.entities.server_side;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
