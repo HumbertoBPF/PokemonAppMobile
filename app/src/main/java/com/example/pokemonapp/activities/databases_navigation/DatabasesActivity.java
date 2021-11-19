@@ -4,50 +4,50 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-
 import com.example.pokemonapp.R;
+import com.example.pokemonapp.activities.ButtonsActivity;
 import com.example.pokemonapp.activities.databases_navigation.moves.MovesDatabaseActivity;
 import com.example.pokemonapp.activities.databases_navigation.pokemon.PokemonDatabaseActivity;
 import com.example.pokemonapp.activities.databases_navigation.types.TypesDatabaseActivity;
+import com.example.pokemonapp.models.RoundedButton;
 
-public class DatabasesActivity extends AppCompatActivity {
-
-    private CardView pokemonDbButton;
-    private CardView movesDbButton;
-    private CardView typesDbButton;
+public class DatabasesActivity extends ButtonsActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTitle(getResources().getString(R.string.databases_button_text));
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_databases);
+    }
 
-        pokemonDbButton = findViewById(R.id.pokemon_db_button);
-        movesDbButton = findViewById(R.id.moves_db_button);
-        typesDbButton = findViewById(R.id.types_db_button);
-
-        pokemonDbButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), PokemonDatabaseActivity.class));
-            }
-        });
-
-        movesDbButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), MovesDatabaseActivity.class));
-            }
-        });
-
-        typesDbButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), TypesDatabaseActivity.class));
-            }
-        });
-
+    @Override
+    protected void declareButtons() {
+        RoundedButton pokemonDbButton = new RoundedButton(getResources().getString(R.string.title_appbar_pokemon_db),
+                getResources().getColor(R.color.pokemon_theme_color),
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startActivity(new Intent(getApplicationContext(), PokemonDatabaseActivity.class));
+                    }
+                });
+        RoundedButton movesDbButton = new RoundedButton(getResources().getString(R.string.title_appbar_moves_db),
+                getResources().getColor(R.color.moves_theme_color),
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startActivity(new Intent(getApplicationContext(), MovesDatabaseActivity.class));
+                    }
+                });
+        RoundedButton typesDbButton = new RoundedButton(getResources().getString(R.string.title_appbar_types_db),
+                getResources().getColor(R.color.types_theme_color),
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startActivity(new Intent(getApplicationContext(), TypesDatabaseActivity.class));
+                    }
+                });
+        buttons.add(pokemonDbButton);
+        buttons.add(movesDbButton);
+        buttons.add(typesDbButton);
     }
 
 }

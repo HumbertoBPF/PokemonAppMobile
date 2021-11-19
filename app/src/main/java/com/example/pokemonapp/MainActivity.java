@@ -14,9 +14,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 
+import com.example.pokemonapp.activities.ButtonsActivity;
 import com.example.pokemonapp.activities.databases_navigation.DatabasesActivity;
 import com.example.pokemonapp.activities.game.GameActivity;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
@@ -29,15 +28,16 @@ import com.example.pokemonapp.dao.TypeDAO;
 import com.example.pokemonapp.dao.TypeEffectiveDAO;
 import com.example.pokemonapp.dao.TypeNoEffectDAO;
 import com.example.pokemonapp.dao.TypeNotEffectiveDAO;
-import com.example.pokemonapp.models.Move;
-import com.example.pokemonapp.models.MoveType;
-import com.example.pokemonapp.models.Pokemon;
-import com.example.pokemonapp.models.PokemonMove;
-import com.example.pokemonapp.models.PokemonType;
-import com.example.pokemonapp.models.Type;
-import com.example.pokemonapp.models.TypeEffective;
-import com.example.pokemonapp.models.TypeNoEffect;
-import com.example.pokemonapp.models.TypeNotEffective;
+import com.example.pokemonapp.entities.Move;
+import com.example.pokemonapp.entities.MoveType;
+import com.example.pokemonapp.entities.Pokemon;
+import com.example.pokemonapp.entities.PokemonMove;
+import com.example.pokemonapp.entities.PokemonType;
+import com.example.pokemonapp.entities.Type;
+import com.example.pokemonapp.entities.TypeEffective;
+import com.example.pokemonapp.entities.TypeNoEffect;
+import com.example.pokemonapp.entities.TypeNotEffective;
+import com.example.pokemonapp.models.RoundedButton;
 import com.example.pokemonapp.retrofit.PokemonDbRetrofit;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 import com.example.pokemonapp.services.PokemonDbService;
@@ -49,7 +49,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends ButtonsActivity {
 
     private ProgressDialog loadingDialog;
     private MoveDAO moveDAO;
@@ -63,21 +63,36 @@ public class MainActivity extends AppCompatActivity {
     private TypeNoEffectDAO typeNoEffectDAO;
     private PokemonDbService pokemonDbService;
     private Handler handler;
-    private CardView databasesButton;
-    private CardView gameButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTitle(getResources().getString(R.string.databases_button_text));
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         getDAOs();
         pokemonDbService = new PokemonDbRetrofit().getPokemonDbService();
         handler = new Handler();
+    }
 
-        getLayoutElements();
-        configureDatabaseButton();
-        configureGameButton();
-
+    @Override
+    protected void declareButtons() {
+        RoundedButton gameButton = new RoundedButton(getResources().getString(R.string.game_button_text),
+                getResources().getColor(R.color.pokemon_theme_color),
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startActivity(new Intent(getApplicationContext(), GameActivity.class));
+                    }
+                });
+        RoundedButton databaseButton = new RoundedButton(getResources().getString(R.string.databases_button_text),
+                getResources().getColor(R.color.types_theme_color),
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startActivity(new Intent(getApplicationContext(), DatabasesActivity.class));
+                    }
+                });
+        buttons.add(gameButton);
+        buttons.add(databaseButton);
     }
 
     private void getDAOs() {
@@ -90,29 +105,6 @@ public class MainActivity extends AppCompatActivity {
         typeEffectiveDAO = PokemonAppDatabase.getInstance(this).getTypeEffectiveDAO();
         typeNotEffectiveDAO = PokemonAppDatabase.getInstance(this).getTypeNotEffectiveDAO();
         typeNoEffectDAO = PokemonAppDatabase.getInstance(this).getTypeNoEffectDAO();
-    }
-
-    private void getLayoutElements() {
-        databasesButton = findViewById(R.id.moves_db_button);
-        gameButton = findViewById(R.id.game_button);
-    }
-
-    private void configureGameButton() {
-        gameButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), GameActivity.class));
-            }
-        });
-    }
-
-    private void configureDatabaseButton() {
-        databasesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), DatabasesActivity.class));
-            }
-        });
     }
 
     @Override

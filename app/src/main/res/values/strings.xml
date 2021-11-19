@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">PokemonApp</string>
     <string name="game_button_text">Game</string>
-    <string name="databases_button_text">Databases</string>
+    <string name="databases_button_text">Pokédex</string>
     <string name="pokemon_button_text">Pokémon</string>
     <string name="moves_button_text">Moves</string>
     <string name="types_button_text">Types</string>

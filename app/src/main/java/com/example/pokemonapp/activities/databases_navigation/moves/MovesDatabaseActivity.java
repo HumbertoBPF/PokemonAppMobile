@@ -8,7 +8,7 @@ import com.example.pokemonapp.activities.databases_navigation.DatabaseNavigation
 import com.example.pokemonapp.adapters.MovesAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.MoveDAO;
-import com.example.pokemonapp.models.Move;
+import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;

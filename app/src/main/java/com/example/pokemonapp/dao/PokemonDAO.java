@@ -6,7 +6,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.example.pokemonapp.models.Pokemon;
+import com.example.pokemonapp.entities.Pokemon;
 
 import java.util.List;
 

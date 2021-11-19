@@ -6,7 +6,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.example.pokemonapp.models.Move;
+import com.example.pokemonapp.entities.Move;
 
 import java.util.List;
 

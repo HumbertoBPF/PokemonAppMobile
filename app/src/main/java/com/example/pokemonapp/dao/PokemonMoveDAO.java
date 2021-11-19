@@ -5,7 +5,7 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 import androidx.room.Dao;
 import androidx.room.Insert;
 
-import com.example.pokemonapp.models.PokemonMove;
+import com.example.pokemonapp.entities.PokemonMove;
 
 import java.util.List;
 

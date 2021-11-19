@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.PokemonTypeDAO;
-import com.example.pokemonapp.models.Type;
+import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;

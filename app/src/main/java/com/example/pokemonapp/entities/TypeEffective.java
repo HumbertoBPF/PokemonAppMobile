@@ -1,29 +1,29 @@
-package com.example.pokemonapp.models;
+package com.example.pokemonapp.entities;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 
-@Entity(tableName = "type_no_effect",
-        primaryKeys = { "typeId", "noEffectId" },
+@Entity(tableName = "type_effective",
+        primaryKeys = { "typeId", "effectiveId" },
         foreignKeys = {
                 @ForeignKey(entity = Type.class,
                         parentColumns = "fId",
                         childColumns = "typeId"),
                 @ForeignKey(entity = Type.class,
                         parentColumns = "fId",
-                        childColumns = "noEffectId")
+                        childColumns = "effectiveId")
         })
-public class TypeNoEffect {
+public class TypeEffective {
 
     @NonNull
     private Long typeId;
     @NonNull
-    private Long noEffectId;
+    private Long effectiveId;
 
-    public TypeNoEffect(@NonNull Long typeId, @NonNull Long noEffectId) {
+    public TypeEffective(@NonNull Long typeId, @NonNull Long effectiveId) {
         this.typeId = typeId;
-        this.noEffectId = noEffectId;
+        this.effectiveId = effectiveId;
     }
 
     @NonNull
@@ -36,11 +36,11 @@ public class TypeNoEffect {
     }
 
     @NonNull
-    public Long getNoEffectId() {
-        return noEffectId;
+    public Long getEffectiveId() {
+        return effectiveId;
     }
 
-    public void setNoEffectId(@NonNull Long noEffectId) {
-        this.noEffectId = noEffectId;
+    public void setEffectiveId(@NonNull Long effectiveId) {
+        this.effectiveId = effectiveId;
     }
 }

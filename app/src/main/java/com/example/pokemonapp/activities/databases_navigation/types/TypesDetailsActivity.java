@@ -13,7 +13,7 @@ import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.dao.TypeEffectiveDAO;
 import com.example.pokemonapp.dao.TypeNoEffectDAO;
 import com.example.pokemonapp.dao.TypeNotEffectiveDAO;
-import com.example.pokemonapp.models.Type;
+import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;

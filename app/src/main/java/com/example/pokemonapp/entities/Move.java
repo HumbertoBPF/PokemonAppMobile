@@ -1,4 +1,4 @@
-package com.example.pokemonapp.models;
+package com.example.pokemonapp.entities;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
