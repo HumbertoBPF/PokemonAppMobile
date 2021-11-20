@@ -1,16 +1,25 @@
 package com.example.pokemonapp.util;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.pokemonapp.entities.server_side.Move;
-import com.example.pokemonapp.entities.server_side.Type;
+import com.example.pokemonapp.R;
+import com.example.pokemonapp.entities.Move;
+import com.example.pokemonapp.entities.Type;
+import com.example.pokemonapp.models.InGamePokemon;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Tools {
@@ -67,6 +76,39 @@ public class Tools {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
         return progressDialog;
+    }
+
+    public static List<Integer> getDistinctRandomIntegers(int min,int max,int n){
+        List<Integer> numbers = new ArrayList<>();
+        for (int i = min;i<=max;i++){
+            numbers.add(i);
+        }
+        Collections.shuffle(numbers);
+        return numbers.subList(0,n);
+    }
+
+    public static List<InGamePokemon> loadTeam(Context context, String key) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(
+                context.getResources().getString(R.string.name_shared_preferences_file), MODE_PRIVATE);
+
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(key, null);
+        java.lang.reflect.Type type = new TypeToken<ArrayList<InGamePokemon>>() {}.getType();
+
+        return gson.fromJson(json, type);
+    }
+
+    public static void saveTeam(Context context, String key, List<InGamePokemon> team) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(
+                context.getResources().getString(R.string.name_shared_preferences_file), MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        Gson gson = new Gson();
+        String json = gson.toJson(team);
+        editor.putString(key, json);
+
+        editor.apply();
     }
 
 }

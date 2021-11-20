@@ -7,8 +7,8 @@ import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.databases_navigation.DatabaseNavigationActivity;
 import com.example.pokemonapp.adapters.TypesAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
-import com.example.pokemonapp.dao.server_side.TypeDAO;
-import com.example.pokemonapp.entities.server_side.Type;
+import com.example.pokemonapp.dao.TypeDAO;
+import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;

@@ -23,7 +23,7 @@
             android:name=".activities.game.MovesSelectionActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.ThreeButtonsActivity"
+            android:name=".activities.ButtonsActivity"
             android:exported="true" />
         <activity
             android:name=".activities.databases_navigation.types.TypesDetailsActivity"

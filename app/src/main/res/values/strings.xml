@@ -52,4 +52,11 @@
     <string name="favorite_team_mode_button_text">Favorite team mode</string>
     <string name="strategy_mode_button_text">Strategy mode</string>
     <string name="random_mode_button_text">Random mode</string>
+    <string name="name_shared_preferences_file">MySharedPrefs</string>
+    <string name="key_game_mode">gameMode</string>
+    <string name="label_favorite_team_mode">FAVORITE_TEAM</string>
+    <string name="label_strategy_mode">STRATEGY</string>
+    <string name="label_random_mode">RANDOM</string>
+    <string name="filename_json_player_team">Player</string>
+    <string name="filename_json_cpu_team">CPU</string>
 </resources>
