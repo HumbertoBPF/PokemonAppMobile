@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -80,7 +79,6 @@ public class Tools {
     }
 
     public static List<Integer> getDistinctRandomIntegers(int min,int max,int n){
-        Log.i("max",max+"");
         List<Integer> numbers = new ArrayList<>();
         for (int i = min;i<=max;i++){
             numbers.add(i);
