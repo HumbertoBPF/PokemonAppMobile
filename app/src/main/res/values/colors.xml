@@ -12,4 +12,5 @@
     <color name="pokemon_theme_color">#cd120e</color>
     <color name="moves_theme_color">#f6c71c</color>
     <color name="types_theme_color">#3399ff</color>
+    <color name="green_hp_bar">#339933</color>
 </resources>

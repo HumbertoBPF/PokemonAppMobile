@@ -24,7 +24,7 @@ public abstract class SelectionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setTitle(titleAppbar);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pokemon_selection);
+        setContentView(R.layout.activity_selection);
 
         getLayoutElements();
 
