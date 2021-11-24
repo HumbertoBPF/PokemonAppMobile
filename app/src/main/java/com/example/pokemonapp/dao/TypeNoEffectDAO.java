@@ -21,4 +21,8 @@ public interface TypeNoEffectDAO {
             "WHERE type_no_effect.typeId = :typeId")
     List<Type> getNoEffectTypes(long typeId);
 
+    @Query("SELECT type.fId FROM type INNER JOIN type_no_effect ON type.fId = type_no_effect.noEffectId " +
+            "WHERE type_no_effect.typeId = :typeId")
+    List<Long> getNoEffectTypesIds(long typeId);
+
 }
