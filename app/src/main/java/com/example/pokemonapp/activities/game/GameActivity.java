@@ -70,13 +70,12 @@ public class GameActivity extends AppCompatActivity {
         getLayoutElements();
         getDAOs();
 
-        teamPlayer = loadTeam(this,getResources().getString(R.string.filename_json_player_team));   // get teams from shared preferences
+        teamPlayer = loadTeam(this,getResources().getString(R.string.filename_json_player_team));
         teamCPU = loadTeam(this,getResources().getString(R.string.filename_json_cpu_team));
-        indexesSequenceCPU = getDistinctRandomIntegers(0,teamCPU.size()-1,teamCPU.size()); // sequence of index of the pokémons that
-                                                                                                    // the CPU is going to use
+        indexesSequenceCPU = getDistinctRandomIntegers(0,teamCPU.size()-1,teamCPU.size());
 
-        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {          // async task to get all pokémons from the database and
-            @Override                                                           // only after start the game
+        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+            @Override
             public List<Object> doInBackground() {
                 List<Object> objects = new ArrayList<>();
                 allPokemon = pokemonDAO.getPokemonFromLocal();
@@ -86,7 +85,7 @@ public class GameActivity extends AppCompatActivity {
 
             @Override
             public void onPostExecute(List<Object> objects) {
-                pickPokemonForCPU();       // choose pokémon for the CPU and for the player, and only when both are chosen, the battle starts
+                pickPokemonForCPU();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -124,8 +123,8 @@ public class GameActivity extends AppCompatActivity {
     private void battle() {
         Log.i(TAG,"Pokemon player HP : "+pokemonPlayer.getPokemonServer().getFHp());
         Log.i(TAG,"CPU player HP : "+pokemonCPU.getPokemonServer().getFHp());
-        if ((pokemonPlayer.getPokemonServer().getFHp()>0)&&(pokemonCPU.getPokemonServer().getFHp()>0)){ // the battle continues only if both
-            handler.postDelayed(new Runnable() {                                                        // pokémon are alive
+        if ((pokemonPlayer.getPokemonServer().getFHp()>0)&&(pokemonCPU.getPokemonServer().getFHp()>0)){
+            handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     Log.i(TAG,"Pokemon player speed : "+pokemonPlayer.getPokemonServer().getFSpeed());
@@ -147,8 +146,7 @@ public class GameActivity extends AppCompatActivity {
                                     handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame,3000);
                                 }
                             }
-                        },6000);    // we impose a delay of 6000 ms because the method pickMoveForCPU
-                                            // has a runnable with delay of 3000 ms inside it
+                        },6000);
                     }else{
                         pickMoveForPlayerAndAttack(new OnChoiceListener() {
                             @Override
@@ -185,7 +183,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void pickAnotherCpuPokemonOrEndgame() {
-        if (!indexesSequenceCPU.isEmpty()){         // if there are still some pokémon for the Cpu, pick the next
+        if (!indexesSequenceCPU.isEmpty()){
             Log.i(TAG,"CPU changes its pokemon");
             pickPokemonForCPU();
             handler.postDelayed(new Runnable() {
@@ -194,7 +192,7 @@ public class GameActivity extends AppCompatActivity {
                     battle();
                 }
             },6000);
-        }else{                                    // otherwise, the CPU was defeated
+        }else{
             Log.i(TAG,"CPU was defeated");
            gameDescription.setText("Foe was defeated.");
         }
@@ -234,27 +232,28 @@ public class GameActivity extends AppCompatActivity {
     private void pickPokemonForPlayer(OnChoiceListener onChoiceListener){
         gameDescription.setText("Choose a pokémon");
         playerRecyclerView.setVisibility(View.VISIBLE);
-        playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(),
-                getPokemonPlayer(), new PokemonAdapter.OnClickListener() {
-            @Override
-            public void onClick(Pokemon pokemon) {
-                for (InGamePokemon inGamePokemon : teamPlayer){
-                    if (inGamePokemon.getPokemonServer().getFId().equals(pokemon.getFId())){
-                        pokemonPlayer = inGamePokemon;
-                        playerRecyclerView.setVisibility(View.GONE);
-                    }
-                }
-                Pokemon pokemonServerPlayer = pokemonPlayer.getPokemonServer();
-                gameDescription.setText("You choose "+pokemonServerPlayer.getFName());
-                handler.postDelayed(new Runnable() {
+        playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(), getPokemonPlayer(),
+                new PokemonAdapter.OnClickListener() {
                     @Override
-                    public void run() {
-                        setTextHP(pokemonServerPlayer, playerPokemonName, playerPokemonHP);
-                        onChoiceListener.onChoice();
+                    public void onClick(Pokemon pokemon) {
+                        for (InGamePokemon inGamePokemon : teamPlayer){
+                            if (inGamePokemon.getPokemonServer().getFId().equals(pokemon.getFId())){
+                                pokemonPlayer = inGamePokemon;
+                                playerRecyclerView.setVisibility(View.GONE);
+                            }
+                        }
+                        Pokemon pokemonServerPlayer = pokemonPlayer.getPokemonServer();
+                        gameDescription.setText("You choose "+pokemonServerPlayer.getFName());
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                setTextHP(pokemonServerPlayer, playerPokemonName, playerPokemonHP);
+                                onChoiceListener.onChoice();
+                            }
+                        },3000);
                     }
-                },3000);
-            }
-        }));
+                })
+        );
     }
 
     @NonNull
@@ -271,10 +270,10 @@ public class GameActivity extends AppCompatActivity {
 
     private void pickPokemonForCPU(){
         if (!indexesSequenceCPU.isEmpty()){
-            pokemonCPU = teamCPU.get(indexesSequenceCPU.get(0));        // get the next pokémon from the list of indexes and remove it from it
+            pokemonCPU = teamCPU.get(indexesSequenceCPU.get(0));
             indexesSequenceCPU.remove(0);
-            gameDescription.setText("CPU chooses "+pokemonCPU.getPokemonServer().getFName());   // updates the UI giving always some time for
-            handler.postDelayed(new Runnable() {                                                // the user to read the info
+            gameDescription.setText("CPU chooses "+pokemonCPU.getPokemonServer().getFName());
+            handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     setTextHP(pokemonCPU.getPokemonServer(), cpuPokemonName, cpuPokemonHP);
@@ -415,44 +414,13 @@ public class GameActivity extends AppCompatActivity {
                 List<Long> notEffectiveTypes = (List<Long>) objects.get(4);
                 List<Long> noEffectType = (List<Long>) objects.get(5);
 
-                String messageAfter = null;
-                double stab = 1.0;
-                double typeFactor = 1.0;
-
-                for (Long typeDefending : defendingPokemonTypes){
-                    if (effectiveTypes.contains(typeDefending)){
-                        typeFactor *= 2;
-                    }
-                    if (notEffectiveTypes.contains(typeDefending)){
-                        typeFactor *= 0.5;
-                    }
-                    if (noEffectType.contains(typeDefending)){
-                        typeFactor *= 0;
-                    }
-                }
-
-                if (typeFactor > 1){
-                    messageAfter = "It's super effective!";
-                }else if (typeFactor < 1 && typeFactor >0){
-                    messageAfter = "It's not effective...";
-                }else if (typeFactor == 0){
-                    messageAfter = "It has no effect...";
-                }
-
-                if (attackingPokemonTypes.contains(moveType)){
-                    stab = 1.5;
-                }
-
-                double attackStat;
-                double defenseStat;
+                double stab = attackingPokemonTypes.contains(moveType) ? 1.5 : 1.0;
+                double typeFactor = computeTypeFactor(defendingPokemonTypes, effectiveTypes, notEffectiveTypes, noEffectType);
+                String messageEffectiveness = getMessageEffectiveness(typeFactor);
+                double attackStat = move.getFCategory().equals("Special")?attackingPokemon.getFSpAttack():attackingPokemon.getFAttack();
+                double defenseStat = move.getFCategory().equals("Special")?defendingPokemon.getFSpDefense():defendingPokemon.getFDefense();
                 double random = Math.random()*0.15 + 0.85;
-                if (move.getFCategory().equals("Special")){
-                    attackStat = attackingPokemon.getFSpAttack();
-                    defenseStat = defendingPokemon.getFSpDefense();
-                }else{
-                    attackStat = attackingPokemon.getFAttack();
-                    defenseStat = defendingPokemon.getFDefense();
-                }
+
                 Log.i(TAG,"RANDOM:"+random+" "+"STAB:"+stab+" "+"TYPE_FACTOR:"+typeFactor);
                 double damage = ((42*move.getFPower()*(attackStat/defenseStat))/50 + 2)*random*stab*typeFactor;
                 double defendingPokemonCurrentHP = defendingPokemon.getFHp();
@@ -465,9 +433,37 @@ public class GameActivity extends AppCompatActivity {
                     setTextHP(pokemonPlayer.getPokemonServer(),playerPokemonName,playerPokemonHP);
                     pokemonCPU.setMoves(updatePPs(pokemonCPU,move));
                 }
-                gameDescription.setText(messageAfter);
+                gameDescription.setText(messageEffectiveness);
             }
         }).execute();
+    }
+
+    private String getMessageEffectiveness(double typeFactor) {
+        String messageEffectiveness = null;
+        if (typeFactor > 1){
+            messageEffectiveness = "It's super effective!";
+        }else if (typeFactor < 1 && typeFactor >0){
+            messageEffectiveness = "It's not effective...";
+        }else if (typeFactor == 0){
+            messageEffectiveness = "It has no effect...";
+        }
+        return messageEffectiveness;
+    }
+
+    private double computeTypeFactor(List<Long> defendingPokemonTypes, List<Long> effectiveTypes, List<Long> notEffectiveTypes, List<Long> noEffectType) {
+        double typeFactor = 1.0;
+        for (Long typeDefending : defendingPokemonTypes){
+            if (effectiveTypes.contains(typeDefending)){
+                typeFactor *= 2;
+            }
+            if (notEffectiveTypes.contains(typeDefending)){
+                typeFactor *= 0.5;
+            }
+            if (noEffectType.contains(typeDefending)){
+                typeFactor *= 0;
+            }
+        }
+        return typeFactor;
     }
 
     @NonNull
