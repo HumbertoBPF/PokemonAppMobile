@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.ButtonsActivity;
@@ -23,7 +24,8 @@ public class GameModeSelectionActivity extends ButtonsActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        nextActivity(getResources().getString(R.string.label_favorite_team_mode));
+//                        nextActivity(getResources().getString(R.string.label_favorite_team_mode));
+                        Toast.makeText(getApplicationContext(),"Not available for the moment",Toast.LENGTH_LONG).show();
                     }
                 });
         RoundedButton strategyMode = new RoundedButton(getResources().getString(R.string.strategy_mode_button_text),
@@ -31,7 +33,8 @@ public class GameModeSelectionActivity extends ButtonsActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        nextActivity(getResources().getString(R.string.label_strategy_mode));
+//                        nextActivity(getResources().getString(R.string.label_strategy_mode));
+                        Toast.makeText(getApplicationContext(),"Not available for the moment",Toast.LENGTH_LONG).show();
                     }
                 });
         RoundedButton randomMode = new RoundedButton(getResources().getString(R.string.random_mode_button_text),

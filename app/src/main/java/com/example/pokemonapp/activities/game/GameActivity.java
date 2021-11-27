@@ -130,23 +130,27 @@ public class GameActivity extends AppCompatActivity {
                     Log.i(TAG,"Pokemon player speed : "+pokemonPlayer.getPokemonServer().getFSpeed());
                     Log.i(TAG,"Pokemon CPU speed : "+pokemonCPU.getPokemonServer().getFSpeed());
                     if (pokemonPlayer.getPokemonServer().getFSpeed()<pokemonCPU.getPokemonServer().getFSpeed()){
-                        pickMoveForCpuAndAttack();
-                        handler.postDelayed(new Runnable() {
+                        pickMoveForCpuAndAttack(new OnChoiceListener() {
                             @Override
-                            public void run() {
-                                if (pokemonPlayer.getPokemonServer().getFHp() > 0){
-                                    pickMoveForPlayerAndAttack(new OnChoiceListener() {
-                                        @Override
-                                        public void onChoice() {
-                                            battle();
+                            public void onChoice() {
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (pokemonPlayer.getPokemonServer().getFHp() > 0){
+                                            pickMoveForPlayerAndAttack(new OnChoiceListener() {
+                                                @Override
+                                                public void onChoice() {
+                                                    battle();
+                                                }
+                                            });
+                                        }else{
+                                            gameDescription.setText("Player's "+pokemonPlayer.getPokemonServer().getFName()+" fainted.");
+                                            handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame,3000);
                                         }
-                                    });
-                                }else{
-                                    gameDescription.setText("Player's "+pokemonPlayer.getPokemonServer().getFName()+" fainted.");
-                                    handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame,3000);
-                                }
+                                    }
+                                },3000);
                             }
-                        },6000);
+                        });
                     }else{
                         pickMoveForPlayerAndAttack(new OnChoiceListener() {
                             @Override
@@ -155,13 +159,17 @@ public class GameActivity extends AppCompatActivity {
                                     @Override
                                     public void run() {
                                         if (pokemonCPU.getPokemonServer().getFHp() > 0){
-                                            pickMoveForCpuAndAttack();
-                                            handler.postDelayed(new Runnable() {
+                                            pickMoveForCpuAndAttack(new OnChoiceListener() {
                                                 @Override
-                                                public void run() {
-                                                    battle();
+                                                public void onChoice() {
+                                                    handler.postDelayed(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            battle();
+                                                        }
+                                                    },3000);
                                                 }
-                                            },3000);
+                                            });
                                         }else{
                                             gameDescription.setText("Foe's "+pokemonCPU.getPokemonServer().getFName()+" fainted.");
                                             handler.postDelayed(GameActivity.this::pickAnotherCpuPokemonOrEndgame,3000);
@@ -285,31 +293,74 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void pickMoveForPlayerAndAttack(OnChoiceListener onChoiceListener){
-        gameDescription.setText("Choose a move");
-        playerRecyclerView.setVisibility(View.VISIBLE);
-        List<Move> moves = pokemonPlayer.getMoves();
-        playerRecyclerView.setAdapter(new MovesAdapter(this, moves, new MovesAdapter.OnClickListener() {
-            @Override
-            public void onClick(Move move) {
-                playerRecyclerView.setVisibility(View.GONE);
-                gameDescription.setText("Player's "+pokemonPlayer.getPokemonServer().getFName()+" used "+move.getFName());
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        attack(pokemonPlayer.getPokemonServer(),pokemonCPU.getPokemonServer(),move);
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                onChoiceListener.onChoice();
-                            }
-                        },3000);
-                    }
-                },3000);
-            }
-        }));
+        List<Move> moves = getMovesPlayerPokemon();
+        if (moves.size() == 0){
+            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                @Override
+                public List<Object> doInBackground() {
+                    Move move = moveDAO.getMoveByName("Struggle");
+                    List<Object> objects = new ArrayList<>();
+                    objects.add(move);
+                    return objects;
+                }
+
+                @Override
+                public void onPostExecute(List<Object> objects) {
+                    Move move = (Move) objects.get(0);
+                    gameDescription.setText("Player's pokémon used "+move.getFName());
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            attack(pokemonPlayer.getPokemonServer(),pokemonCPU.getPokemonServer(),move, new OnChoiceListener() {
+                                @Override
+                                public void onChoice() {
+                                    onChoiceListener.onChoice();
+                                }
+                            });
+                        }
+                    },3000);
+                }
+            }).execute();
+        }else{
+            gameDescription.setText("Choose a move");
+            playerRecyclerView.setVisibility(View.VISIBLE);
+            playerRecyclerView.setAdapter(new MovesAdapter(this, moves, new MovesAdapter.OnClickListener() {
+                @Override
+                public void onClick(Move move) {
+                    playerRecyclerView.setVisibility(View.GONE);
+                    gameDescription.setText("Player's "+pokemonPlayer.getPokemonServer().getFName()+" used "+move.getFName());
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            attack(pokemonPlayer.getPokemonServer(), pokemonCPU.getPokemonServer(), move, new OnChoiceListener() {
+                                @Override
+                                public void onChoice() {
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            onChoiceListener.onChoice();
+                                        }
+                                    },3000);
+                                }
+                            });
+                        }
+                    },3000);
+                }
+            }));
+        }
     }
 
-    private void pickMoveForCpuAndAttack(){
+    private List<Move> getMovesPlayerPokemon() {
+        List<Move> moves = new ArrayList<>();
+        for (Move move : pokemonPlayer.getMoves()){
+            if (move.getFPp() > 0){
+                moves.add(move);
+            }
+        }
+        return moves;
+    }
+
+    private void pickMoveForCpuAndAttack(OnChoiceListener onChoiceListener){
         List<Move> availableMoves = new ArrayList<>();
         for (Move move : pokemonCPU.getMoves()){
             if (move.getFPp() > 0){
@@ -333,7 +384,7 @@ public class GameActivity extends AppCompatActivity {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            attack(pokemonCPU.getPokemonServer(),pokemonPlayer.getPokemonServer(),move);
+                            attack(pokemonCPU.getPokemonServer(),pokemonPlayer.getPokemonServer(),move,onChoiceListener);
                         }
                     },3000);
                 }
@@ -345,7 +396,7 @@ public class GameActivity extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    attack(pokemonCPU.getPokemonServer(),pokemonPlayer.getPokemonServer(),move);
+                    attack(pokemonCPU.getPokemonServer(),pokemonPlayer.getPokemonServer(),move,onChoiceListener);
                 }
             },3000);
         }
@@ -374,7 +425,7 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private void attack(Pokemon attackingPokemon, Pokemon defendingPokemon, Move move){
+    private void attack(Pokemon attackingPokemon, Pokemon defendingPokemon, Move move, OnChoiceListener onChoiceListener){
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
             @Override
             public List<Object> doInBackground() {
@@ -434,6 +485,8 @@ public class GameActivity extends AppCompatActivity {
                     pokemonCPU.setMoves(updatePPs(pokemonCPU,move));
                 }
                 gameDescription.setText(messageEffectiveness);
+
+                onChoiceListener.onChoice();
             }
         }).execute();
     }

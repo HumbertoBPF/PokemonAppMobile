@@ -17,6 +17,7 @@ public abstract class SelectionActivity extends AppCompatActivity {
     protected RecyclerView playerRecyclerView;
     protected RecyclerView cpuRecyclerView;
     protected Button nextActivityButton;
+    protected String nextActivityButtonText;
     protected String titleAppbar;
     protected Class nextActivity;
 
@@ -40,6 +41,7 @@ public abstract class SelectionActivity extends AppCompatActivity {
     }
 
     protected void configureNextActivityButton() {
+        nextActivityButton.setText(nextActivityButtonText);
         nextActivityButton.setVisibility(View.VISIBLE);
         nextActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -29,6 +29,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
     protected void onCreate(Bundle savedInstanceState) {
         pokemonDAO = PokemonAppDatabase.getInstance(this).getPokemonDAO();
         titleAppbar = "Pokémon selection";
+        nextActivityButtonText = "Go to move selection";
         nextActivity = MovesSelectionActivity.class;
 
         super.onCreate(savedInstanceState);
