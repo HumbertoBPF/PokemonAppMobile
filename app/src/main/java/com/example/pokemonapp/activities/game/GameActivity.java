@@ -20,6 +20,7 @@ import com.example.pokemonapp.adapters.PokemonAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.MoveDAO;
 import com.example.pokemonapp.dao.MoveTypeDAO;
+import com.example.pokemonapp.dao.PokemonDAO;
 import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.dao.TypeEffectiveDAO;
 import com.example.pokemonapp.dao.TypeNoEffectDAO;
@@ -45,6 +46,7 @@ public class GameActivity extends AppCompatActivity {
 
     private Handler handler = new Handler();
 
+    private PokemonDAO pokemonDAO;
     private MoveDAO moveDAO;
     private MoveTypeDAO moveTypeDAO;
     private PokemonTypeDAO pokemonTypeDAO;
@@ -52,6 +54,7 @@ public class GameActivity extends AppCompatActivity {
     private TypeNotEffectiveDAO typeNotEffectiveDAO;
     private TypeNoEffectDAO typeNoEffectDAO;
 
+    private List<Pokemon> allPokemon;
     private List<InGamePokemon> teamPlayer;
     private InGamePokemon pokemonPlayer;
     private List<InGamePokemon> teamCPU;
@@ -67,22 +70,36 @@ public class GameActivity extends AppCompatActivity {
         getLayoutElements();
         getDAOs();
 
-        teamPlayer = loadTeam(this,getResources().getString(R.string.filename_json_player_team));
+        teamPlayer = loadTeam(this,getResources().getString(R.string.filename_json_player_team));   // get teams from shared preferences
         teamCPU = loadTeam(this,getResources().getString(R.string.filename_json_cpu_team));
-        indexesSequenceCPU = getDistinctRandomIntegers(0,teamCPU.size()-1,teamCPU.size());
+        indexesSequenceCPU = getDistinctRandomIntegers(0,teamCPU.size()-1,teamCPU.size()); // sequence of index of the pokémons that
+                                                                                                    // the CPU is going to use
 
-        pickPokemonForCPU();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                pickPokemonForPlayer(new OnChoiceListener() {
-                    @Override
-                    public void onChoice() {
-                        battle();
-                    }
-                });
+        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {          // async task to get all pokémons from the database and
+            @Override                                                           // only after start the game
+            public List<Object> doInBackground() {
+                List<Object> objects = new ArrayList<>();
+                allPokemon = pokemonDAO.getPokemonFromLocal();
+                objects.addAll(allPokemon);
+                return objects;
             }
-        },5000);
+
+            @Override
+            public void onPostExecute(List<Object> objects) {
+                pickPokemonForCPU();       // choose pokémon for the CPU and for the player, and only when both are chosen, the battle starts
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        pickPokemonForPlayer(new OnChoiceListener() {
+                            @Override
+                            public void onChoice() {
+                                battle();
+                            }
+                        });
+                    }
+                },6000);
+            }
+        }).execute();
     }
 
     private void getLayoutElements() {
@@ -95,6 +112,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void getDAOs() {
+        pokemonDAO = PokemonAppDatabase.getInstance(this).getPokemonDAO();
         moveDAO = PokemonAppDatabase.getInstance(this).getMoveDAO();
         moveTypeDAO = PokemonAppDatabase.getInstance(this).getMoveTypeDAO();
         pokemonTypeDAO = PokemonAppDatabase.getInstance(this).getPokemonTypeDAO();
@@ -106,19 +124,19 @@ public class GameActivity extends AppCompatActivity {
     private void battle() {
         Log.i(TAG,"Pokemon player HP : "+pokemonPlayer.getPokemonServer().getFHp());
         Log.i(TAG,"CPU player HP : "+pokemonCPU.getPokemonServer().getFHp());
-        if ((pokemonPlayer.getPokemonServer().getFHp()>0)&&(pokemonCPU.getPokemonServer().getFHp()>0)){
-            handler.postDelayed(new Runnable() {
+        if ((pokemonPlayer.getPokemonServer().getFHp()>0)&&(pokemonCPU.getPokemonServer().getFHp()>0)){ // the battle continues only if both
+            handler.postDelayed(new Runnable() {                                                        // pokémon are alive
                 @Override
                 public void run() {
                     Log.i(TAG,"Pokemon player speed : "+pokemonPlayer.getPokemonServer().getFSpeed());
                     Log.i(TAG,"Pokemon CPU speed : "+pokemonCPU.getPokemonServer().getFSpeed());
                     if (pokemonPlayer.getPokemonServer().getFSpeed()<pokemonCPU.getPokemonServer().getFSpeed()){
-                        pickMoveForCPU();
+                        pickMoveForCpuAndAttack();
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 if (pokemonPlayer.getPokemonServer().getFHp() > 0){
-                                    pickMoveForPlayer(new OnChoiceListener() {
+                                    pickMoveForPlayerAndAttack(new OnChoiceListener() {
                                         @Override
                                         public void onChoice() {
                                             battle();
@@ -126,19 +144,20 @@ public class GameActivity extends AppCompatActivity {
                                     });
                                 }else{
                                     gameDescription.setText("Player's "+pokemonPlayer.getPokemonServer().getFName()+" fainted.");
+                                    handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame,3000);
                                 }
                             }
                         },6000);    // we impose a delay of 6000 ms because the method pickMoveForCPU
                                             // has a runnable with delay of 3000 ms inside it
                     }else{
-                        pickMoveForPlayer(new OnChoiceListener() {
+                        pickMoveForPlayerAndAttack(new OnChoiceListener() {
                             @Override
                             public void onChoice() {
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
                                         if (pokemonCPU.getPokemonServer().getFHp() > 0){
-                                            pickMoveForCPU();
+                                            pickMoveForCpuAndAttack();
                                             handler.postDelayed(new Runnable() {
                                                 @Override
                                                 public void run() {
@@ -147,6 +166,7 @@ public class GameActivity extends AppCompatActivity {
                                             },3000);
                                         }else{
                                             gameDescription.setText("Foe's "+pokemonCPU.getPokemonServer().getFName()+" fainted.");
+                                            handler.postDelayed(GameActivity.this::pickAnotherCpuPokemonOrEndgame,3000);
                                         }
                                     }
                                 },3000);
@@ -157,23 +177,65 @@ public class GameActivity extends AppCompatActivity {
             },5000);
         }else if (pokemonPlayer.getPokemonServer().getFHp()<=0){
             gameDescription.setText("Player's "+pokemonPlayer.getPokemonServer().getFName()+" fainted.");
+            handler.postDelayed(this::pickAnotherPlayerPokemonOrEndGame,3000);
         }else if (pokemonCPU.getPokemonServer().getFHp()<=0){
             gameDescription.setText("Foe's "+pokemonCPU.getPokemonServer().getFName()+" fainted.");
+            handler.postDelayed(this::pickAnotherCpuPokemonOrEndgame,3000);
         }
+    }
+
+    private void pickAnotherCpuPokemonOrEndgame() {
+        if (!indexesSequenceCPU.isEmpty()){         // if there are still some pokémon for the Cpu, pick the next
+            Log.i(TAG,"CPU changes its pokemon");
+            pickPokemonForCPU();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    battle();
+                }
+            },6000);
+        }else{                                    // otherwise, the CPU was defeated
+            Log.i(TAG,"CPU was defeated");
+           gameDescription.setText("Foe was defeated.");
+        }
+    }
+
+    private void pickAnotherPlayerPokemonOrEndGame() {
+        if (getNbOfRemainingPokemonPlayer() > 0){
+            Log.i(TAG,"Player changes its pokemon");
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    pickPokemonForPlayer(new OnChoiceListener() {
+                        @Override
+                        public void onChoice() {
+                            battle();
+                        }
+                    });
+                }
+            },6000);
+        }else{
+            Log.i(TAG,"Player was defeated");
+            gameDescription.setText("Player was defeated.");
+        }
+    }
+
+    private int getNbOfRemainingPokemonPlayer(){
+        int nbOfRemainingPokemon = 0;
+        for (InGamePokemon inGamePokemon : teamPlayer){
+            if (inGamePokemon.getPokemonServer().getFHp() > 0){
+                nbOfRemainingPokemon++;
+            }
+        }
+        Log.i(TAG,"nbOfRemainingPokemon = "+nbOfRemainingPokemon);
+        return nbOfRemainingPokemon;
     }
 
     private void pickPokemonForPlayer(OnChoiceListener onChoiceListener){
         gameDescription.setText("Choose a pokémon");
         playerRecyclerView.setVisibility(View.VISIBLE);
-        List<Pokemon> pokemonList = new ArrayList<>();
-        for (InGamePokemon inGamePokemon : teamPlayer){
-            Pokemon pokemon = inGamePokemon.getPokemonServer();
-            if (pokemon.getFHp() > 0){
-                pokemonList.add(pokemon);
-            }
-        }
         playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(),
-                pokemonList, new PokemonAdapter.OnClickListener() {
+                getPokemonPlayer(), new PokemonAdapter.OnClickListener() {
             @Override
             public void onClick(Pokemon pokemon) {
                 for (InGamePokemon inGamePokemon : teamPlayer){
@@ -190,28 +252,40 @@ public class GameActivity extends AppCompatActivity {
                         setTextHP(pokemonServerPlayer, playerPokemonName, playerPokemonHP);
                         onChoiceListener.onChoice();
                     }
-                },2000);
+                },3000);
             }
         }));
     }
 
+    @NonNull
+    private List<Pokemon> getPokemonPlayer() {
+        List<Pokemon> pokemonList = new ArrayList<>();
+        for (InGamePokemon inGamePokemon : teamPlayer){
+            Pokemon pokemon = inGamePokemon.getPokemonServer();
+            if (pokemon.getFHp() > 0){
+                pokemonList.add(pokemon);
+            }
+        }
+        return pokemonList;
+    }
+
     private void pickPokemonForCPU(){
         if (!indexesSequenceCPU.isEmpty()){
-            pokemonCPU = teamCPU.get(indexesSequenceCPU.get(0));
+            pokemonCPU = teamCPU.get(indexesSequenceCPU.get(0));        // get the next pokémon from the list of indexes and remove it from it
             indexesSequenceCPU.remove(0);
-            gameDescription.setText("CPU chooses "+pokemonCPU.getPokemonServer().getFName());
-            handler.postDelayed(new Runnable() {
+            gameDescription.setText("CPU chooses "+pokemonCPU.getPokemonServer().getFName());   // updates the UI giving always some time for
+            handler.postDelayed(new Runnable() {                                                // the user to read the info
                 @Override
                 public void run() {
                     setTextHP(pokemonCPU.getPokemonServer(), cpuPokemonName, cpuPokemonHP);
                 }
-            },2000);
+            },3000);
         }else{
             Toast.makeText(this,"The game is finished",Toast.LENGTH_LONG).show();
         }
     }
 
-    private void pickMoveForPlayer(OnChoiceListener onChoiceListener){
+    private void pickMoveForPlayerAndAttack(OnChoiceListener onChoiceListener){
         gameDescription.setText("Choose a move");
         playerRecyclerView.setVisibility(View.VISIBLE);
         List<Move> moves = pokemonPlayer.getMoves();
@@ -236,7 +310,7 @@ public class GameActivity extends AppCompatActivity {
         }));
     }
 
-    private void pickMoveForCPU(){
+    private void pickMoveForCpuAndAttack(){
         List<Move> availableMoves = new ArrayList<>();
         for (Move move : pokemonCPU.getMoves()){
             if (move.getFPp() > 0){
@@ -280,10 +354,17 @@ public class GameActivity extends AppCompatActivity {
 
     private void setTextHP(Pokemon pokemonServer, TextView pokemonName, TextView pokemonHP) {
         pokemonName.setText(pokemonServer.getFName());
+        long fullHp = 100;
+        for (Pokemon pokemon : allPokemon){
+            if (pokemon.getFId().equals(pokemonServer.getFId())){
+                fullHp = pokemon.getFHp();
+                break;
+            }
+        }
         int hpBarColor = R.color.pokemon_theme_color;
-        if (pokemonServer.getFHp()>50){
+        if (pokemonServer.getFHp()>0.5*fullHp){
             hpBarColor = R.color.green_hp_bar;
-        }else if (pokemonServer.getFHp()>20){
+        }else if (pokemonServer.getFHp()>0.2*fullHp){
             hpBarColor = R.color.moves_theme_color;
         }
         pokemonHP.setTextColor(getResources().getColor(hpBarColor));
