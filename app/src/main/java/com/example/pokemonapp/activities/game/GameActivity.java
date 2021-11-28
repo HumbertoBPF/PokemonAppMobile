@@ -57,11 +57,11 @@ public class GameActivity extends AppCompatActivity {
     private List<Pokemon> allPokemon;
     private List<InGamePokemon> teamPlayer;
     private InGamePokemon pokemonPlayer;
+    private Move movePlayer;
     private List<InGamePokemon> teamCPU;
     private InGamePokemon pokemonCPU;
-    private List<Integer> indexesSequenceCPU;
-    private Move movePlayer;
     private Move moveCPU;
+    private List<Integer> indexesSequenceCPU;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -461,19 +461,32 @@ public class GameActivity extends AppCompatActivity {
                 String messageEffectiveness = getMessageEffectiveness(typeFactor);
                 double attackStat = move.getFCategory().equals("Special")?attackingPokemonServer.getFSpAttack(): attackingPokemonServer.getFAttack();
                 double defenseStat = move.getFCategory().equals("Special")?defendingPokemonServer.getFSpDefense():defendingPokemonServer.getFDefense();
-                double random = Math.random()*0.15 + 0.85;
+                double randomFactor = Math.random()*0.15 + 0.85;
 
-                Log.i(TAG,"RANDOM:"+random+" "+"STAB:"+stab+" "+"TYPE_FACTOR:"+typeFactor);
-                double damage = ((42*move.getFPower()*(attackStat/defenseStat))/50 + 2)*random*stab*typeFactor;
-                double defendingPokemonCurrentHP = defendingPokemonServer.getFHp();
-                if (defendingPokemon.getId().equals(pokemonCPU.getId())){
-                    pokemonCPU.getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
-                    setTextHP(pokemonCPU.getPokemonServer(),cpuPokemonName,cpuPokemonHP);
-                    pokemonPlayer.setMoves(updatePPs(pokemonPlayer,move));
+                if (attackMissed(move)){
+                    Log.i(TAG,"RANDOM FACTOR:"+ randomFactor +" "+"STAB:"+stab+" "+"TYPE_FACTOR:"+typeFactor);
+                    double damage = ((42*move.getFPower()*(attackStat/defenseStat))/50 + 2)* randomFactor *stab*typeFactor;
+                    double defendingPokemonCurrentHP = defendingPokemonServer.getFHp();
+                    if (defendingPokemon.getId().equals(pokemonCPU.getId())){
+                        pokemonCPU.getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
+                        setTextHP(pokemonCPU.getPokemonServer(),cpuPokemonName,cpuPokemonHP);
+                        pokemonPlayer.setMoves(updatePPs(pokemonPlayer,move));
+                        if (move.getFUserFaints()){
+                            pokemonPlayer.getPokemonServer().setFHp(0);
+                            setTextHP(pokemonPlayer.getPokemonServer(),playerPokemonName,playerPokemonHP);
+                        }
+                    }else{
+                        pokemonPlayer.getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
+                        setTextHP(pokemonPlayer.getPokemonServer(),playerPokemonName,playerPokemonHP);
+                        pokemonCPU.setMoves(updatePPs(pokemonCPU,move));
+                        if (move.getFUserFaints()){
+                            pokemonCPU.getPokemonServer().setFHp(0);
+                            setTextHP(pokemonCPU.getPokemonServer(),cpuPokemonName,cpuPokemonHP);
+
+                        }
+                    }
                 }else{
-                    pokemonPlayer.getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
-                    setTextHP(pokemonPlayer.getPokemonServer(),playerPokemonName,playerPokemonHP);
-                    pokemonCPU.setMoves(updatePPs(pokemonCPU,move));
+                    messageEffectiveness = "Attack missed";
                 }
                 gameDescription.setText(messageEffectiveness);
 
@@ -485,6 +498,14 @@ public class GameActivity extends AppCompatActivity {
                 },3000);
             }
         }).execute();
+    }
+
+    private boolean attackMissed(Move move) {
+        double accuracy = move.getFAccuracy();
+        double random = Math.random()*100;
+        Log.i(TAG,"RANDOM FOR ACCURACY:"+random);
+
+        return (random <= accuracy);
     }
 
     private String getMessageEffectiveness(double typeFactor) {
