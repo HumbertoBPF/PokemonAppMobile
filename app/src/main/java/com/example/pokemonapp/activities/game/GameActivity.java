@@ -307,11 +307,11 @@ public class GameActivity extends AppCompatActivity {
                 @Override
                 public void onPostExecute(List<Object> objects) {
                     Move move = (Move) objects.get(0);
-                    gameDescription.setText("Player's pokémon used "+move.getFName());
+                    gameDescription.setText("Player's "+pokemonPlayer.getPokemonServer().getFName()+" used "+move.getFName());
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            attack(pokemonPlayer.getPokemonServer(),pokemonCPU.getPokemonServer(),move, new OnChoiceListener() {
+                            attack(pokemonPlayer,pokemonCPU,move, new OnChoiceListener() {
                                 @Override
                                 public void onChoice() {
                                     onChoiceListener.onChoice();
@@ -332,7 +332,7 @@ public class GameActivity extends AppCompatActivity {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            attack(pokemonPlayer.getPokemonServer(), pokemonCPU.getPokemonServer(), move, new OnChoiceListener() {
+                            attack(pokemonPlayer, pokemonCPU, move, new OnChoiceListener() {
                                 @Override
                                 public void onChoice() {
                                     handler.postDelayed(new Runnable() {
@@ -380,11 +380,11 @@ public class GameActivity extends AppCompatActivity {
                 @Override
                 public void onPostExecute(List<Object> objects) {
                     Move move = (Move) objects.get(0);
-                    gameDescription.setText("Foe's pokémon used "+move.getFName());
+                    gameDescription.setText("Foe's "+pokemonCPU.getPokemonServer().getFName()+" used "+move.getFName());
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            attack(pokemonCPU.getPokemonServer(),pokemonPlayer.getPokemonServer(),move,onChoiceListener);
+                            attack(pokemonCPU,pokemonPlayer,move,onChoiceListener);
                         }
                     },3000);
                 }
@@ -392,11 +392,11 @@ public class GameActivity extends AppCompatActivity {
         }else{
             int randomIndex = getDistinctRandomIntegers(0,availableMoves.size()-1,1).get(0);
             Move move = availableMoves.get(randomIndex);
-            gameDescription.setText("Foe's pokémon used "+move.getFName());
+            gameDescription.setText("Foe's "+pokemonCPU.getPokemonServer().getFName()+" used "+move.getFName());
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    attack(pokemonCPU.getPokemonServer(),pokemonPlayer.getPokemonServer(),move,onChoiceListener);
+                    attack(pokemonCPU,pokemonPlayer,move,onChoiceListener);
                 }
             },3000);
         }
@@ -425,13 +425,17 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private void attack(Pokemon attackingPokemon, Pokemon defendingPokemon, Move move, OnChoiceListener onChoiceListener){
+    private void attack(InGamePokemon attackingPokemon, InGamePokemon defendingPokemon, Move move,
+                        OnChoiceListener onChoiceListener){
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
             @Override
             public List<Object> doInBackground() {
+                Pokemon attackingPokemonServer = attackingPokemon.getPokemonServer();
+                Pokemon defendingPokemonServer = defendingPokemon.getPokemonServer();
+
                 Long moveType = moveTypeDAO.getTypesOfMove(move.getFId()).get(0).getFId();
-                List<Long> attackingPokemonTypes = pokemonTypeDAO.getTypesOfPokemonIds(attackingPokemon.getFId());
-                List<Long> defendingPokemonTypes = pokemonTypeDAO.getTypesOfPokemonIds(defendingPokemon.getFId());
+                List<Long> attackingPokemonTypes = pokemonTypeDAO.getTypesOfPokemonIds(attackingPokemonServer.getFId());
+                List<Long> defendingPokemonTypes = pokemonTypeDAO.getTypesOfPokemonIds(defendingPokemonServer.getFId());
 
                 Log.i(TAG,"Move type : "+moveType);
                 Log.i(TAG,"Attacking pokémon types : "+attackingPokemonTypes.toString());
@@ -458,6 +462,9 @@ public class GameActivity extends AppCompatActivity {
 
             @Override
             public void onPostExecute(List<Object> objects) {
+                Pokemon attackingPokemonServer = attackingPokemon.getPokemonServer();
+                Pokemon defendingPokemonServer = defendingPokemon.getPokemonServer();
+
                 Long moveType = (Long) objects.get(0);
                 List<Long> attackingPokemonTypes = (List<Long>) objects.get(1);
                 List<Long> defendingPokemonTypes = (List<Long>) objects.get(2);
@@ -468,14 +475,14 @@ public class GameActivity extends AppCompatActivity {
                 double stab = attackingPokemonTypes.contains(moveType) ? 1.5 : 1.0;
                 double typeFactor = computeTypeFactor(defendingPokemonTypes, effectiveTypes, notEffectiveTypes, noEffectType);
                 String messageEffectiveness = getMessageEffectiveness(typeFactor);
-                double attackStat = move.getFCategory().equals("Special")?attackingPokemon.getFSpAttack():attackingPokemon.getFAttack();
-                double defenseStat = move.getFCategory().equals("Special")?defendingPokemon.getFSpDefense():defendingPokemon.getFDefense();
+                double attackStat = move.getFCategory().equals("Special")?attackingPokemonServer.getFSpAttack(): attackingPokemonServer.getFAttack();
+                double defenseStat = move.getFCategory().equals("Special")?defendingPokemonServer.getFSpDefense():defendingPokemonServer.getFDefense();
                 double random = Math.random()*0.15 + 0.85;
 
                 Log.i(TAG,"RANDOM:"+random+" "+"STAB:"+stab+" "+"TYPE_FACTOR:"+typeFactor);
                 double damage = ((42*move.getFPower()*(attackStat/defenseStat))/50 + 2)*random*stab*typeFactor;
-                double defendingPokemonCurrentHP = defendingPokemon.getFHp();
-                if (defendingPokemon.getFId().equals(pokemonCPU.getPokemonServer().getFId())){
+                double defendingPokemonCurrentHP = defendingPokemonServer.getFHp();
+                if (defendingPokemon.getId().equals(pokemonCPU.getId())){
                     pokemonCPU.getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
                     setTextHP(pokemonCPU.getPokemonServer(),cpuPokemonName,cpuPokemonHP);
                     pokemonPlayer.setMoves(updatePPs(pokemonPlayer,move));

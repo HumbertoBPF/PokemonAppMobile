@@ -7,11 +7,21 @@ import java.util.List;
 
 public class InGamePokemon {
 
+    private Integer id;
     private Pokemon pokemonServer;
     private List<Move> moves;
 
-    public InGamePokemon(Pokemon pokemonServer) {
+    public InGamePokemon(Integer id, Pokemon pokemonServer) {
+        this.id = id;
         this.pokemonServer = pokemonServer;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Pokemon getPokemonServer() {

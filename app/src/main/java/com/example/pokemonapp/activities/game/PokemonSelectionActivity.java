@@ -22,6 +22,7 @@ import java.util.List;
 
 public class PokemonSelectionActivity extends SelectionActivity {
 
+    private Integer id = 0;
     private PokemonDAO pokemonDAO;
     private List<Pokemon> pokemonList;
 
@@ -71,7 +72,8 @@ public class PokemonSelectionActivity extends SelectionActivity {
         List<Integer> indexes = getDistinctRandomIntegers(0,pokemonList.size()-1,6);
         List<InGamePokemon> team = new ArrayList<>();
         for (Integer index : indexes){
-            team.add(new InGamePokemon((Pokemon) pokemonList.get(index)));
+            team.add(new InGamePokemon(id, (Pokemon) pokemonList.get(index)));
+            id++;
         }
         saveTeam(getApplicationContext(), key, team);
     }
