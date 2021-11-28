@@ -60,6 +60,8 @@ public class GameActivity extends AppCompatActivity {
     private List<InGamePokemon> teamCPU;
     private InGamePokemon pokemonCPU;
     private List<Integer> indexesSequenceCPU;
+    private Move movePlayer;
+    private Move moveCPU;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,63 +126,82 @@ public class GameActivity extends AppCompatActivity {
         Log.i(TAG,"Pokemon player HP : "+pokemonPlayer.getPokemonServer().getFHp());
         Log.i(TAG,"CPU player HP : "+pokemonCPU.getPokemonServer().getFHp());
         if ((pokemonPlayer.getPokemonServer().getFHp()>0)&&(pokemonCPU.getPokemonServer().getFHp()>0)){
-            handler.postDelayed(new Runnable() {
+            pickMoveForPlayer(new OnChoiceListener() {
                 @Override
-                public void run() {
-                    Log.i(TAG,"Pokemon player speed : "+pokemonPlayer.getPokemonServer().getFSpeed());
-                    Log.i(TAG,"Pokemon CPU speed : "+pokemonCPU.getPokemonServer().getFSpeed());
-                    if (pokemonPlayer.getPokemonServer().getFSpeed()<pokemonCPU.getPokemonServer().getFSpeed()){
-                        pickMoveForCpuAndAttack(new OnChoiceListener() {
-                            @Override
-                            public void onChoice() {
+                public void onChoice() {
+                    pickMoveForCpu(new OnChoiceListener() {
+                        @Override
+                        public void onChoice() {
+                            Log.i(TAG,"Pokemon player speed : "+pokemonPlayer.getPokemonServer().getFSpeed());
+                            Log.i(TAG,"Pokemon CPU speed : "+pokemonCPU.getPokemonServer().getFSpeed());
+                            if (pokemonPlayer.getPokemonServer().getFSpeed()<pokemonCPU.getPokemonServer().getFSpeed()){
+                                gameDescription.setText("Foe's "+pokemonCPU.getPokemonServer().getFName()+" used "+moveCPU.getFName());
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if (pokemonPlayer.getPokemonServer().getFHp() > 0){
-                                            pickMoveForPlayerAndAttack(new OnChoiceListener() {
-                                                @Override
-                                                public void onChoice() {
-                                                    battle();
-                                                }
-                                            });
-                                        }else{
-                                            gameDescription.setText("Player's "+pokemonPlayer.getPokemonServer().getFName()+" fainted.");
-                                            handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame,3000);
-                                        }
-                                    }
-                                },3000);
-                            }
-                        });
-                    }else{
-                        pickMoveForPlayerAndAttack(new OnChoiceListener() {
-                            @Override
-                            public void onChoice() {
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (pokemonCPU.getPokemonServer().getFHp() > 0){
-                                            pickMoveForCpuAndAttack(new OnChoiceListener() {
-                                                @Override
-                                                public void onChoice() {
+                                        attack(pokemonCPU,pokemonPlayer,moveCPU, new OnChoiceListener() {
+                                            @Override
+                                            public void onChoice() {
+                                                if (pokemonPlayer.getPokemonServer().getFHp() > 0){
+                                                    gameDescription.setText("Player's "+pokemonPlayer.getPokemonServer().getFName()+" used "+movePlayer.getFName());
                                                     handler.postDelayed(new Runnable() {
                                                         @Override
                                                         public void run() {
-                                                            battle();
+                                                            attack(pokemonPlayer,pokemonCPU,movePlayer,new OnChoiceListener() {
+                                                                @Override
+                                                                public void onChoice() {
+                                                                    battle();
+                                                                }
+                                                            });
                                                         }
                                                     },3000);
+                                                }else{
+                                                    gameDescription.setText("Player's "+pokemonPlayer.getPokemonServer().getFName()+" fainted.");
+                                                    handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame,3000);
                                                 }
-                                            });
-                                        }else{
-                                            gameDescription.setText("Foe's "+pokemonCPU.getPokemonServer().getFName()+" fainted.");
-                                            handler.postDelayed(GameActivity.this::pickAnotherCpuPokemonOrEndgame,3000);
-                                        }
+                                            }
+                                        });
+                                    }
+                                },3000);
+                            }else{
+                                gameDescription.setText("Player's "+pokemonPlayer.getPokemonServer().getFName()+" used "+movePlayer.getFName());
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        attack(pokemonPlayer,pokemonCPU,movePlayer, new OnChoiceListener() {
+                                            @Override
+                                            public void onChoice() {
+                                                if (pokemonCPU.getPokemonServer().getFHp() > 0){
+                                                    gameDescription.setText("Foe's "+pokemonCPU.getPokemonServer().getFName()+" used "+moveCPU.getFName());
+                                                    handler.postDelayed(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            attack(pokemonCPU,pokemonPlayer,moveCPU,new OnChoiceListener() {
+                                                                @Override
+                                                                public void onChoice() {
+                                                                    handler.postDelayed(new Runnable() {
+                                                                        @Override
+                                                                        public void run() {
+                                                                            battle();
+                                                                        }
+                                                                    },3000);
+                                                                }
+                                                            });
+                                                        }
+                                                    },3000);
+                                                }else{
+                                                    gameDescription.setText("Foe's "+pokemonCPU.getPokemonServer().getFName()+" fainted.");
+                                                    handler.postDelayed(GameActivity.this::pickAnotherCpuPokemonOrEndgame,3000);
+                                                }
+                                            }
+                                        });
                                     }
                                 },3000);
                             }
-                        });
-                    }
+                        }
+                    });
                 }
-            },5000);
+            });
         }else if (pokemonPlayer.getPokemonServer().getFHp()<=0){
             gameDescription.setText("Player's "+pokemonPlayer.getPokemonServer().getFName()+" fainted.");
             handler.postDelayed(this::pickAnotherPlayerPokemonOrEndGame,3000);
@@ -209,17 +230,12 @@ public class GameActivity extends AppCompatActivity {
     private void pickAnotherPlayerPokemonOrEndGame() {
         if (getNbOfRemainingPokemonPlayer() > 0){
             Log.i(TAG,"Player changes its pokemon");
-            handler.postDelayed(new Runnable() {
+            pickPokemonForPlayer(new OnChoiceListener() {
                 @Override
-                public void run() {
-                    pickPokemonForPlayer(new OnChoiceListener() {
-                        @Override
-                        public void onChoice() {
-                            battle();
-                        }
-                    });
+                public void onChoice() {
+                    battle();
                 }
-            },6000);
+            });
         }else{
             Log.i(TAG,"Player was defeated");
             gameDescription.setText("Player was defeated.");
@@ -292,7 +308,7 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private void pickMoveForPlayerAndAttack(OnChoiceListener onChoiceListener){
+    private void pickMoveForPlayer(OnChoiceListener onChoiceListener){
         List<Move> moves = getMovesPlayerPokemon();
         if (moves.size() == 0){
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
@@ -306,19 +322,8 @@ public class GameActivity extends AppCompatActivity {
 
                 @Override
                 public void onPostExecute(List<Object> objects) {
-                    Move move = (Move) objects.get(0);
-                    gameDescription.setText("Player's "+pokemonPlayer.getPokemonServer().getFName()+" used "+move.getFName());
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            attack(pokemonPlayer,pokemonCPU,move, new OnChoiceListener() {
-                                @Override
-                                public void onChoice() {
-                                    onChoiceListener.onChoice();
-                                }
-                            });
-                        }
-                    },3000);
+                    movePlayer = (Move) objects.get(0);
+                    onChoiceListener.onChoice();
                 }
             }).execute();
         }else{
@@ -327,24 +332,9 @@ public class GameActivity extends AppCompatActivity {
             playerRecyclerView.setAdapter(new MovesAdapter(this, moves, new MovesAdapter.OnClickListener() {
                 @Override
                 public void onClick(Move move) {
+                    movePlayer = move;
                     playerRecyclerView.setVisibility(View.GONE);
-                    gameDescription.setText("Player's "+pokemonPlayer.getPokemonServer().getFName()+" used "+move.getFName());
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            attack(pokemonPlayer, pokemonCPU, move, new OnChoiceListener() {
-                                @Override
-                                public void onChoice() {
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            onChoiceListener.onChoice();
-                                        }
-                                    },3000);
-                                }
-                            });
-                        }
-                    },3000);
+                    onChoiceListener.onChoice();
                 }
             }));
         }
@@ -360,7 +350,7 @@ public class GameActivity extends AppCompatActivity {
         return moves;
     }
 
-    private void pickMoveForCpuAndAttack(OnChoiceListener onChoiceListener){
+    private void pickMoveForCpu(OnChoiceListener onChoiceListener){
         List<Move> availableMoves = new ArrayList<>();
         for (Move move : pokemonCPU.getMoves()){
             if (move.getFPp() > 0){
@@ -379,26 +369,14 @@ public class GameActivity extends AppCompatActivity {
 
                 @Override
                 public void onPostExecute(List<Object> objects) {
-                    Move move = (Move) objects.get(0);
-                    gameDescription.setText("Foe's "+pokemonCPU.getPokemonServer().getFName()+" used "+move.getFName());
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            attack(pokemonCPU,pokemonPlayer,move,onChoiceListener);
-                        }
-                    },3000);
+                    moveCPU = (Move) objects.get(0);
+                    onChoiceListener.onChoice();
                 }
             }).execute();
         }else{
             int randomIndex = getDistinctRandomIntegers(0,availableMoves.size()-1,1).get(0);
-            Move move = availableMoves.get(randomIndex);
-            gameDescription.setText("Foe's "+pokemonCPU.getPokemonServer().getFName()+" used "+move.getFName());
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    attack(pokemonCPU,pokemonPlayer,move,onChoiceListener);
-                }
-            },3000);
+            moveCPU = availableMoves.get(randomIndex);
+            onChoiceListener.onChoice();
         }
     }
 
@@ -493,7 +471,12 @@ public class GameActivity extends AppCompatActivity {
                 }
                 gameDescription.setText(messageEffectiveness);
 
-                onChoiceListener.onChoice();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        onChoiceListener.onChoice();
+                    }
+                },3000);
             }
         }).execute();
     }
