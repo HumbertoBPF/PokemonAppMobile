@@ -28,6 +28,7 @@ import com.example.pokemonapp.dao.TypeNotEffectiveDAO;
 import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.Pokemon;
 import com.example.pokemonapp.models.InGamePokemon;
+import com.example.pokemonapp.models.Trainer;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
@@ -39,10 +40,6 @@ public class GameActivity extends AppCompatActivity {
 
     private TextView gameDescription;
     private RecyclerView playerRecyclerView;
-    private TextView playerPokemonName;
-    private TextView playerPokemonHP;
-    private TextView cpuPokemonName;
-    private TextView cpuPokemonHP;
 
     private Handler handler = new Handler();
 
@@ -55,13 +52,10 @@ public class GameActivity extends AppCompatActivity {
     private TypeNoEffectDAO typeNoEffectDAO;
 
     private List<Pokemon> allPokemon;
-    private List<InGamePokemon> teamPlayer;
-    private InGamePokemon pokemonPlayer;
-    private Move movePlayer;
-    private List<InGamePokemon> teamCPU;
-    private InGamePokemon pokemonCPU;
-    private Move moveCPU;
     private List<Integer> indexesSequenceCPU;
+
+    private final Trainer player = new Trainer();
+    private final Trainer cpu = new Trainer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +66,9 @@ public class GameActivity extends AppCompatActivity {
         getLayoutElements();
         getDAOs();
 
-        teamPlayer = loadTeam(this,getResources().getString(R.string.filename_json_player_team));
-        teamCPU = loadTeam(this,getResources().getString(R.string.filename_json_cpu_team));
-        indexesSequenceCPU = getDistinctRandomIntegers(0,teamCPU.size()-1,teamCPU.size());
+        player.setTeam(loadTeam(this,getResources().getString(R.string.filename_json_player_team)));
+        cpu.setTeam(loadTeam(this,getResources().getString(R.string.filename_json_cpu_team)));
+        indexesSequenceCPU = getDistinctRandomIntegers(0,player.getTeam().size()-1,cpu.getTeam().size());
 
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
             @Override
@@ -106,10 +100,10 @@ public class GameActivity extends AppCompatActivity {
     private void getLayoutElements() {
         gameDescription = findViewById(R.id.game_description);
         playerRecyclerView = findViewById(R.id.player_recycler_view);
-        playerPokemonName = findViewById(R.id.player_pokemon_name);
-        playerPokemonHP = findViewById(R.id.player_pokemon_hp);
-        cpuPokemonName = findViewById(R.id.cpu_pokemon_name);
-        cpuPokemonHP = findViewById(R.id.cpu_pokemon_hp);
+        player.setCurrentPokemonName(findViewById(R.id.player_pokemon_name));
+        player.setCurrentPokemonHP(findViewById(R.id.player_pokemon_hp));
+        cpu.setCurrentPokemonName(findViewById(R.id.cpu_pokemon_name));
+        cpu.setCurrentPokemonHP(findViewById(R.id.cpu_pokemon_hp));
     }
 
     private void getDAOs() {
@@ -123,43 +117,44 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void battle() {
-        Log.i(TAG,"Pokemon player HP : "+pokemonPlayer.getPokemonServer().getFHp());
-        Log.i(TAG,"CPU player HP : "+pokemonCPU.getPokemonServer().getFHp());
-        if ((pokemonPlayer.getPokemonServer().getFHp()>0)&&(pokemonCPU.getPokemonServer().getFHp()>0)){
+        Log.i(TAG,"Pokemon player HP : "+player.getCurrentPokemon().getPokemonServer().getFHp());
+        Log.i(TAG,"CPU player HP : "+cpu.getCurrentPokemon().getPokemonServer().getFHp());
+        if ((player.getCurrentPokemon().getPokemonServer().getFHp()>0)&&(cpu.getCurrentPokemon().getPokemonServer().getFHp()>0)){
             pickMoveForPlayer(new OnChoiceListener() {
                 @Override
                 public void onChoice() {
                     pickMoveForCpu(new OnChoiceListener() {
                         @Override
                         public void onChoice() {
-                            Log.i(TAG,"Pokemon player speed : "+pokemonPlayer.getPokemonServer().getFSpeed());
-                            Log.i(TAG,"Pokemon CPU speed : "+pokemonCPU.getPokemonServer().getFSpeed());
-                            if (pokemonPlayer.getPokemonServer().getFSpeed()<pokemonCPU.getPokemonServer().getFSpeed()){
-                                gameDescription.setText(getString(R.string.foe_possessive)+pokemonCPU.getPokemonServer().getFName()+
-                                        getString(R.string.used)+moveCPU.getFName());
+                            Log.i(TAG,"Pokemon player speed : "+player.getCurrentPokemon().getPokemonServer().getFSpeed());
+                            Log.i(TAG,"Pokemon CPU speed : "+cpu.getCurrentPokemon().getPokemonServer().getFSpeed());
+                            if (player.getCurrentPokemon().getPokemonServer().getFSpeed()<cpu.getCurrentPokemon().getPokemonServer().getFSpeed()){
+                                gameDescription.setText(getString(R.string.foe_possessive)+cpu.getCurrentPokemon().getPokemonServer().getFName()+
+                                        getString(R.string.used)+cpu.getCurrentMove().getFName());
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        attack(pokemonCPU,pokemonPlayer,moveCPU, new OnChoiceListener() {
+                                        attack(cpu.getCurrentPokemon(),player.getCurrentPokemon(),cpu.getCurrentMove(), new OnChoiceListener() {
                                             @Override
                                             public void onChoice() {
-                                                if (pokemonPlayer.getPokemonServer().getFHp() > 0){
-                                                    gameDescription.setText(getString(R.string.player_possessive)+pokemonPlayer.getPokemonServer().getFName()+
-                                                            getString(R.string.used)+movePlayer.getFName());
+                                                if (player.getCurrentPokemon().getPokemonServer().getFHp() > 0){
+                                                    gameDescription.setText(getString(R.string.player_possessive)+player.getCurrentPokemon().getPokemonServer().getFName()+
+                                                            getString(R.string.used)+player.getCurrentMove().getFName());
                                                     handler.postDelayed(new Runnable() {
                                                         @Override
                                                         public void run() {
-                                                            attack(pokemonPlayer,pokemonCPU,movePlayer,new OnChoiceListener() {
-                                                                @Override
-                                                                public void onChoice() {
-                                                                    battle();
-                                                                }
-                                                            });
+                                                            attack(player.getCurrentPokemon(),cpu.getCurrentPokemon(),player.getCurrentMove(),
+                                                                    new OnChoiceListener() {
+                                                                        @Override
+                                                                        public void onChoice() {
+                                                                            battle();
+                                                                        }
+                                                                    });
                                                         }
                                                     },3000);
                                                 }else{
                                                     gameDescription.setText(getString(R.string.player_possessive)+
-                                                            pokemonPlayer.getPokemonServer().getFName()+ getString(R.string.fainted));
+                                                            player.getCurrentPokemon().getPokemonServer().getFName()+ getString(R.string.fainted));
                                                     handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame,3000);
                                                 }
                                             }
@@ -167,21 +162,21 @@ public class GameActivity extends AppCompatActivity {
                                     }
                                 },3000);
                             }else{
-                                gameDescription.setText(getString(R.string.player_possessive)+pokemonPlayer.getPokemonServer().getFName()+
-                                        getString(R.string.used)+movePlayer.getFName());
+                                gameDescription.setText(getString(R.string.player_possessive)+player.getCurrentPokemon().getPokemonServer().getFName()+
+                                        getString(R.string.used)+player.getCurrentMove().getFName());
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        attack(pokemonPlayer,pokemonCPU,movePlayer, new OnChoiceListener() {
+                                        attack(player.getCurrentPokemon(),cpu.getCurrentPokemon(),player.getCurrentMove(), new OnChoiceListener() {
                                             @Override
                                             public void onChoice() {
-                                                if (pokemonCPU.getPokemonServer().getFHp() > 0){
-                                                    gameDescription.setText(getString(R.string.foe_possessive)+pokemonCPU.getPokemonServer().getFName()+
-                                                            getString(R.string.used)+moveCPU.getFName());
+                                                if (cpu.getCurrentPokemon().getPokemonServer().getFHp() > 0){
+                                                    gameDescription.setText(getString(R.string.foe_possessive)+cpu.getCurrentPokemon().getPokemonServer().getFName()+
+                                                            getString(R.string.used)+cpu.getCurrentMove().getFName());
                                                     handler.postDelayed(new Runnable() {
                                                         @Override
                                                         public void run() {
-                                                            attack(pokemonCPU,pokemonPlayer,moveCPU,new OnChoiceListener() {
+                                                            attack(cpu.getCurrentPokemon(),player.getCurrentPokemon(),cpu.getCurrentMove(),new OnChoiceListener() {
                                                                 @Override
                                                                 public void onChoice() {
                                                                     handler.postDelayed(new Runnable() {
@@ -195,8 +190,8 @@ public class GameActivity extends AppCompatActivity {
                                                         }
                                                     },3000);
                                                 }else{
-                                                    gameDescription.setText(getString(R.string.foe_possessive)+pokemonCPU.getPokemonServer().getFName()+
-                                                            getString(R.string.fainted));
+                                                    gameDescription.setText(getString(R.string.foe_possessive)+
+                                                            cpu.getCurrentPokemon().getPokemonServer().getFName()+ getString(R.string.fainted));
                                                     handler.postDelayed(GameActivity.this::pickAnotherCpuPokemonOrEndgame,3000);
                                                 }
                                             }
@@ -208,11 +203,13 @@ public class GameActivity extends AppCompatActivity {
                     });
                 }
             });
-        }else if (pokemonPlayer.getPokemonServer().getFHp()<=0){
-            gameDescription.setText(getString(R.string.player_possessive)+pokemonPlayer.getPokemonServer().getFName()+getString(R.string.fainted));
+        }else if (player.getCurrentPokemon().getPokemonServer().getFHp()<=0){
+            gameDescription.setText(getString(R.string.player_possessive)+
+                    player.getCurrentPokemon().getPokemonServer().getFName()+getString(R.string.fainted));
             handler.postDelayed(this::pickAnotherPlayerPokemonOrEndGame,3000);
-        }else if (pokemonCPU.getPokemonServer().getFHp()<=0){
-            gameDescription.setText(getString(R.string.foe_possessive)+pokemonCPU.getPokemonServer().getFName()+getString(R.string.fainted));
+        }else if (cpu.getCurrentPokemon().getPokemonServer().getFHp()<=0){
+            gameDescription.setText(getString(R.string.foe_possessive)+
+                    cpu.getCurrentPokemon().getPokemonServer().getFName()+getString(R.string.fainted));
             handler.postDelayed(this::pickAnotherCpuPokemonOrEndgame,3000);
         }
     }
@@ -250,7 +247,7 @@ public class GameActivity extends AppCompatActivity {
 
     private int getNbOfRemainingPokemonPlayer(){
         int nbOfRemainingPokemon = 0;
-        for (InGamePokemon inGamePokemon : teamPlayer){
+        for (InGamePokemon inGamePokemon : player.getTeam()){
             if (inGamePokemon.getPokemonServer().getFHp() > 0){
                 nbOfRemainingPokemon++;
             }
@@ -266,18 +263,18 @@ public class GameActivity extends AppCompatActivity {
                 new PokemonAdapter.OnClickListener() {
                     @Override
                     public void onClick(Pokemon pokemon) {
-                        for (InGamePokemon inGamePokemon : teamPlayer){
+                        for (InGamePokemon inGamePokemon : player.getTeam()){
                             if (inGamePokemon.getPokemonServer().getFId().equals(pokemon.getFId())){
-                                pokemonPlayer = inGamePokemon;
+                                player.setCurrentPokemon(inGamePokemon);
                                 playerRecyclerView.setVisibility(View.GONE);
                             }
                         }
-                        Pokemon pokemonServerPlayer = pokemonPlayer.getPokemonServer();
+                        Pokemon pokemonServerPlayer = player.getCurrentPokemon().getPokemonServer();
                         gameDescription.setText(getString(R.string.player_chooses)+pokemonServerPlayer.getFName());
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                setTextHP(pokemonServerPlayer, playerPokemonName, playerPokemonHP);
+                                setTextHP(pokemonServerPlayer, player.getCurrentPokemonName(), player.getCurrentPokemonHP());
                                 onChoiceListener.onChoice();
                             }
                         },3000);
@@ -289,7 +286,7 @@ public class GameActivity extends AppCompatActivity {
     @NonNull
     private List<Pokemon> getPokemonPlayer() {
         List<Pokemon> pokemonList = new ArrayList<>();
-        for (InGamePokemon inGamePokemon : teamPlayer){
+        for (InGamePokemon inGamePokemon : player.getTeam()){
             Pokemon pokemon = inGamePokemon.getPokemonServer();
             if (pokemon.getFHp() > 0){
                 pokemonList.add(pokemon);
@@ -300,13 +297,13 @@ public class GameActivity extends AppCompatActivity {
 
     private void pickPokemonForCPU(){
         if (!indexesSequenceCPU.isEmpty()){
-            pokemonCPU = teamCPU.get(indexesSequenceCPU.get(0));
+            cpu.setCurrentPokemon(cpu.getTeam().get(indexesSequenceCPU.get(0)));
             indexesSequenceCPU.remove(0);
-            gameDescription.setText(getString(R.string.cpu_chooses)+pokemonCPU.getPokemonServer().getFName());
+            gameDescription.setText(getString(R.string.cpu_chooses)+cpu.getCurrentPokemon().getPokemonServer().getFName());
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    setTextHP(pokemonCPU.getPokemonServer(), cpuPokemonName, cpuPokemonHP);
+                    setTextHP(cpu.getCurrentPokemon().getPokemonServer(), cpu.getCurrentPokemonName(), cpu.getCurrentPokemonHP());
                 }
             },3000);
         }else{
@@ -328,7 +325,7 @@ public class GameActivity extends AppCompatActivity {
 
                 @Override
                 public void onPostExecute(List<Object> objects) {
-                    movePlayer = (Move) objects.get(0);
+                    player.setCurrentMove((Move) objects.get(0));
                     onChoiceListener.onChoice();
                 }
             }).execute();
@@ -338,7 +335,7 @@ public class GameActivity extends AppCompatActivity {
             playerRecyclerView.setAdapter(new MovesAdapter(this, moves, new MovesAdapter.OnClickListener() {
                 @Override
                 public void onClick(Move move) {
-                    movePlayer = move;
+                    player.setCurrentMove(move);
                     playerRecyclerView.setVisibility(View.GONE);
                     onChoiceListener.onChoice();
                 }
@@ -348,7 +345,7 @@ public class GameActivity extends AppCompatActivity {
 
     private List<Move> getMovesPlayerPokemon() {
         List<Move> moves = new ArrayList<>();
-        for (Move move : pokemonPlayer.getMoves()){
+        for (Move move : player.getCurrentPokemon().getMoves()){
             if (move.getFPp() > 0){
                 moves.add(move);
             }
@@ -358,7 +355,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void pickMoveForCpu(OnChoiceListener onChoiceListener){
         List<Move> availableMoves = new ArrayList<>();
-        for (Move move : pokemonCPU.getMoves()){
+        for (Move move : cpu.getCurrentPokemon().getMoves()){
             if (move.getFPp() > 0){
                 availableMoves.add(move);
             }
@@ -375,13 +372,13 @@ public class GameActivity extends AppCompatActivity {
 
                 @Override
                 public void onPostExecute(List<Object> objects) {
-                    moveCPU = (Move) objects.get(0);
+                    cpu.setCurrentMove((Move) objects.get(0));
                     onChoiceListener.onChoice();
                 }
             }).execute();
         }else{
             int randomIndex = getDistinctRandomIntegers(0,availableMoves.size()-1,1).get(0);
-            moveCPU = availableMoves.get(randomIndex);
+            cpu.setCurrentMove(availableMoves.get(randomIndex));
             onChoiceListener.onChoice();
         }
     }
@@ -467,21 +464,21 @@ public class GameActivity extends AppCompatActivity {
                     Log.i(TAG,"RANDOM FACTOR:"+ randomFactor +" "+"STAB:"+stab+" "+"TYPE_FACTOR:"+typeFactor);
                     double damage = ((42*move.getFPower()*(attackStat/defenseStat))/50 + 2)* randomFactor *stab*typeFactor;
                     double defendingPokemonCurrentHP = defendingPokemonServer.getFHp();
-                    if (defendingPokemon.getId().equals(pokemonCPU.getId())){
-                        pokemonCPU.getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
-                        setTextHP(pokemonCPU.getPokemonServer(),cpuPokemonName,cpuPokemonHP);
-                        pokemonPlayer.setMoves(updatePPs(pokemonPlayer,move));
+                    if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
+                        cpu.getCurrentPokemon().getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
+                        setTextHP(cpu.getCurrentPokemon().getPokemonServer(),cpu.getCurrentPokemonName(),cpu.getCurrentPokemonHP());
+                        player.getCurrentPokemon().setMoves(updatePPs(player.getCurrentPokemon(),move));
                         if (move.getFUserFaints()){
-                            pokemonPlayer.getPokemonServer().setFHp(0);
-                            setTextHP(pokemonPlayer.getPokemonServer(),playerPokemonName,playerPokemonHP);
+                            player.getCurrentPokemon().getPokemonServer().setFHp(0);
+                            setTextHP(player.getCurrentPokemon().getPokemonServer(),player.getCurrentPokemonName(),player.getCurrentPokemonHP());
                         }
                     }else{
-                        pokemonPlayer.getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
-                        setTextHP(pokemonPlayer.getPokemonServer(),playerPokemonName,playerPokemonHP);
-                        pokemonCPU.setMoves(updatePPs(pokemonCPU,move));
+                        player.getCurrentPokemon().getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
+                        setTextHP(player.getCurrentPokemon().getPokemonServer(),player.getCurrentPokemonName(),player.getCurrentPokemonHP());
+                        cpu.getCurrentPokemon().setMoves(updatePPs(cpu.getCurrentPokemon(),move));
                         if (move.getFUserFaints()){
-                            pokemonCPU.getPokemonServer().setFHp(0);
-                            setTextHP(pokemonCPU.getPokemonServer(),cpuPokemonName,cpuPokemonHP);
+                            cpu.getCurrentPokemon().getPokemonServer().setFHp(0);
+                            setTextHP(cpu.getCurrentPokemon().getPokemonServer(),cpu.getCurrentPokemonName(),cpu.getCurrentPokemonHP());
 
                         }
                     }
