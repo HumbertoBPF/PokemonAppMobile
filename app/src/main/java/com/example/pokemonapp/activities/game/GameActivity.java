@@ -30,6 +30,7 @@ import com.example.pokemonapp.entities.Pokemon;
 import com.example.pokemonapp.models.InGamePokemon;
 import com.example.pokemonapp.models.Trainer;
 import com.example.pokemonapp.room.PokemonAppDatabase;
+import com.example.pokemonapp.util.Tools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -406,8 +407,7 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private void attack(InGamePokemon attackingPokemon, InGamePokemon defendingPokemon, Move move,
-                        OnChoiceListener onChoiceListener){
+    private void attack(InGamePokemon attackingPokemon, InGamePokemon defendingPokemon, Move move, OnChoiceListener onChoiceListener){
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
             @Override
             public List<Object> doInBackground() {
@@ -458,43 +458,75 @@ public class GameActivity extends AppCompatActivity {
                 String messageEffectiveness = getMessageEffectiveness(typeFactor);
                 double attackStat = move.getFCategory().equals("Special")?attackingPokemonServer.getFSpAttack(): attackingPokemonServer.getFAttack();
                 double defenseStat = move.getFCategory().equals("Special")?defendingPokemonServer.getFSpDefense():defendingPokemonServer.getFDefense();
-                double randomFactor = Math.random()*0.15 + 0.85;
 
-                if (attackMissed(move)){
-                    Log.i(TAG,"RANDOM FACTOR:"+ randomFactor +" "+"STAB:"+stab+" "+"TYPE_FACTOR:"+typeFactor);
-                    double damage = ((42*move.getFPower()*(attackStat/defenseStat))/50 + 2)* randomFactor *stab*typeFactor;
-                    double defendingPokemonCurrentHP = defendingPokemonServer.getFHp();
-                    if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
-                        cpu.getCurrentPokemon().getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
-                        setTextHP(cpu.getCurrentPokemon().getPokemonServer(),cpu.getCurrentPokemonName(),cpu.getCurrentPokemonHP());
-                        player.getCurrentPokemon().setMoves(updatePPs(player.getCurrentPokemon(),move));
-                        if (move.getFUserFaints()){
-                            player.getCurrentPokemon().getPokemonServer().setFHp(0);
-                            setTextHP(player.getCurrentPokemon().getPokemonServer(),player.getCurrentPokemonName(),player.getCurrentPokemonHP());
-                        }
-                    }else{
-                        player.getCurrentPokemon().getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
-                        setTextHP(player.getCurrentPokemon().getPokemonServer(),player.getCurrentPokemonName(),player.getCurrentPokemonHP());
-                        cpu.getCurrentPokemon().setMoves(updatePPs(cpu.getCurrentPokemon(),move));
-                        if (move.getFUserFaints()){
-                            cpu.getCurrentPokemon().getPokemonServer().setFHp(0);
-                            setTextHP(cpu.getCurrentPokemon().getPokemonServer(),cpu.getCurrentPokemonName(),cpu.getCurrentPokemonHP());
+                int minHits = move.getFMinTimesPerTour();
+                int maxHits = move.getFMaxTimesPerTour();
 
-                        }
-                    }
+                int nbOfHits = Tools.getDistinctRandomIntegers(minHits,maxHits,1).get(0);
+
+                if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
+                    player.getCurrentPokemon().setMoves(updatePPs(player.getCurrentPokemon(), move));
                 }else{
-                    messageEffectiveness = "Attack missed";
+                    cpu.getCurrentPokemon().setMoves(updatePPs(cpu.getCurrentPokemon(), move));
                 }
-                gameDescription.setText(messageEffectiveness);
 
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        onChoiceListener.onChoice();
-                    }
-                },3000);
+                hit(defendingPokemonServer, defendingPokemon, move, stab, typeFactor, messageEffectiveness,
+                        attackStat, defenseStat, 1, nbOfHits, onChoiceListener);
             }
         }).execute();
+    }
+
+    private void hit(Pokemon defendingPokemonServer, InGamePokemon defendingPokemon, Move move, double stab, double typeFactor,
+                     String messageEffectiveness, double attackStat, double defenseStat, int currentHit, int nbOfHits,
+                     OnChoiceListener onChoiceListener) {
+
+        double randomFactor = Math.random()*0.15 + 0.85;
+
+        if (attackMissed(move)){
+            Log.i(TAG,"RANDOM FACTOR:"+ randomFactor +" "+"STAB:"+ stab +" "+"TYPE_FACTOR:"+ typeFactor);
+            double damage = ((42* move.getFPower()*(attackStat / defenseStat))/50 + 2)* randomFactor * stab * typeFactor;
+            double defendingPokemonCurrentHP = defendingPokemonServer.getFHp();
+            if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
+                cpu.getCurrentPokemon().getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
+                setTextHP(cpu.getCurrentPokemon().getPokemonServer(),cpu.getCurrentPokemonName(),cpu.getCurrentPokemonHP());
+                if (move.getFUserFaints()){
+                    player.getCurrentPokemon().getPokemonServer().setFHp(0);
+                    setTextHP(player.getCurrentPokemon().getPokemonServer(),player.getCurrentPokemonName(),player.getCurrentPokemonHP());
+                }
+            }else{
+                player.getCurrentPokemon().getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
+                setTextHP(player.getCurrentPokemon().getPokemonServer(),player.getCurrentPokemonName(),player.getCurrentPokemonHP());
+                if (move.getFUserFaints()){
+                    cpu.getCurrentPokemon().getPokemonServer().setFHp(0);
+                    setTextHP(cpu.getCurrentPokemon().getPokemonServer(),cpu.getCurrentPokemonName(),cpu.getCurrentPokemonHP());
+                }
+            }
+            gameDescription.setText(messageEffectiveness);
+        }else{
+            gameDescription.setText("Attack missed");
+        }
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (nbOfHits > 1){
+                    gameDescription.setText("Hit "+currentHit+" time(s)");
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (currentHit < nbOfHits){
+                                hit(defendingPokemonServer, defendingPokemon, move, stab, typeFactor, messageEffectiveness,
+                                        attackStat, defenseStat, currentHit+1, nbOfHits, onChoiceListener);
+                            }else if (currentHit == nbOfHits){
+                                onChoiceListener.onChoice();
+                            }
+                        }
+                    },3000);
+                }else{
+                    onChoiceListener.onChoice();
+                }
+            }
+        },3000);
     }
 
     private boolean attackMissed(Move move) {
@@ -506,13 +538,13 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private String getMessageEffectiveness(double typeFactor) {
-        String messageEffectiveness = null;
+        String messageEffectiveness = "";
         if (typeFactor > 1){
-            messageEffectiveness = "It's super effective!";
+            messageEffectiveness = getString(R.string.super_effective_msg);
         }else if (typeFactor < 1 && typeFactor >0){
-            messageEffectiveness = "It's not effective...";
+            messageEffectiveness = getString(R.string.not_effective_msg);
         }else if (typeFactor == 0){
-            messageEffectiveness = "It has no effect...";
+            messageEffectiveness = getString(R.string.no_effect_msg);
         }
         return messageEffectiveness;
     }
