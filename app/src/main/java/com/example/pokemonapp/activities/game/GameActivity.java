@@ -470,63 +470,67 @@ public class GameActivity extends AppCompatActivity {
                     cpu.getCurrentPokemon().setMoves(updatePPs(cpu.getCurrentPokemon(), move));
                 }
 
-                hit(defendingPokemonServer, defendingPokemon, move, stab, typeFactor, messageEffectiveness,
+                hit(defendingPokemon, move, stab, typeFactor, messageEffectiveness,
                         attackStat, defenseStat, 1, nbOfHits, onChoiceListener);
             }
         }).execute();
     }
 
-    private void hit(Pokemon defendingPokemonServer, InGamePokemon defendingPokemon, Move move, double stab, double typeFactor,
+    private void hit(InGamePokemon defendingPokemon, Move move, double stab, double typeFactor,
                      String messageEffectiveness, double attackStat, double defenseStat, int currentHit, int nbOfHits,
                      OnChoiceListener onChoiceListener) {
 
-        double randomFactor = Math.random()*0.15 + 0.85;
-
-        if (attackMissed(move)){
-            Log.i(TAG,"RANDOM FACTOR:"+ randomFactor +" "+"STAB:"+ stab +" "+"TYPE_FACTOR:"+ typeFactor);
-            double damage = ((42* move.getFPower()*(attackStat / defenseStat))/50 + 2)* randomFactor * stab * typeFactor;
-            double defendingPokemonCurrentHP = defendingPokemonServer.getFHp();
-            if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
-                cpu.getCurrentPokemon().getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
-                setTextHP(cpu.getCurrentPokemon().getPokemonServer(),cpu.getCurrentPokemonName(),cpu.getCurrentPokemonHP());
-                if (move.getFUserFaints()){
-                    player.getCurrentPokemon().getPokemonServer().setFHp(0);
-                    setTextHP(player.getCurrentPokemon().getPokemonServer(),player.getCurrentPokemonName(),player.getCurrentPokemonHP());
-                }
-            }else{
-                player.getCurrentPokemon().getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
-                setTextHP(player.getCurrentPokemon().getPokemonServer(),player.getCurrentPokemonName(),player.getCurrentPokemonHP());
-                if (move.getFUserFaints()){
-                    cpu.getCurrentPokemon().getPokemonServer().setFHp(0);
-                    setTextHP(cpu.getCurrentPokemon().getPokemonServer(),cpu.getCurrentPokemonName(),cpu.getCurrentPokemonHP());
-                }
-            }
-            gameDescription.setText(messageEffectiveness);
+        if (defendingPokemon.getPokemonServer().getFHp() <= 0){
+            onChoiceListener.onChoice();
         }else{
-            gameDescription.setText("Attack missed");
-        }
+            double randomFactor = Math.random()*0.15 + 0.85;
 
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (nbOfHits > 1){
-                    gameDescription.setText("Hit "+currentHit+" time(s)");
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (currentHit < nbOfHits){
-                                hit(defendingPokemonServer, defendingPokemon, move, stab, typeFactor, messageEffectiveness,
-                                        attackStat, defenseStat, currentHit+1, nbOfHits, onChoiceListener);
-                            }else if (currentHit == nbOfHits){
-                                onChoiceListener.onChoice();
-                            }
-                        }
-                    },3000);
+            if (attackMissed(move)){
+                Log.i(TAG,"RANDOM FACTOR:"+ randomFactor +" "+"STAB:"+ stab +" "+"TYPE_FACTOR:"+ typeFactor);
+                double damage = ((42* move.getFPower()*(attackStat / defenseStat))/50 + 2)* randomFactor * stab * typeFactor;
+                double defendingPokemonCurrentHP = defendingPokemon.getPokemonServer().getFHp();
+                if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
+                    cpu.getCurrentPokemon().getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
+                    setTextHP(cpu.getCurrentPokemon().getPokemonServer(),cpu.getCurrentPokemonName(),cpu.getCurrentPokemonHP());
+                    if (move.getFUserFaints()){
+                        player.getCurrentPokemon().getPokemonServer().setFHp(0);
+                        setTextHP(player.getCurrentPokemon().getPokemonServer(),player.getCurrentPokemonName(),player.getCurrentPokemonHP());
+                    }
                 }else{
-                    onChoiceListener.onChoice();
+                    player.getCurrentPokemon().getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
+                    setTextHP(player.getCurrentPokemon().getPokemonServer(),player.getCurrentPokemonName(),player.getCurrentPokemonHP());
+                    if (move.getFUserFaints()){
+                        cpu.getCurrentPokemon().getPokemonServer().setFHp(0);
+                        setTextHP(cpu.getCurrentPokemon().getPokemonServer(),cpu.getCurrentPokemonName(),cpu.getCurrentPokemonHP());
+                    }
                 }
+                gameDescription.setText(messageEffectiveness);
+            }else{
+                gameDescription.setText(R.string.attack_missed_msg);
             }
-        },3000);
+
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (nbOfHits > 1){
+                        gameDescription.setText(getString(R.string.hit)+currentHit+getString(R.string.times));
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (currentHit < nbOfHits){
+                                    hit(defendingPokemon, move, stab, typeFactor, messageEffectiveness,
+                                            attackStat, defenseStat, currentHit+1, nbOfHits, onChoiceListener);
+                                }else if (currentHit == nbOfHits){
+                                    onChoiceListener.onChoice();
+                                }
+                            }
+                        },3000);
+                    }else{
+                        onChoiceListener.onChoice();
+                    }
+                }
+            },3000);
+        }
     }
 
     private boolean attackMissed(Move move) {

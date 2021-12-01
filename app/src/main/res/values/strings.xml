@@ -73,4 +73,7 @@
     <string name="super_effective_msg">It\'s super effective!</string>
     <string name="not_effective_msg">It\'s not effective...</string>
     <string name="no_effect_msg">It has no effect...</string>
+    <string name="attack_missed_msg">Attack missed</string>
+    <string name="hit">Hit\u0020</string>
+    <string name="times">\u0020time(s)</string>
 </resources>
