@@ -13,6 +13,7 @@ public class Trainer {
     private Move currentMove;
     private TextView currentPokemonName;
     private TextView currentPokemonHP;
+    private boolean loading = false;
 
     public Trainer() {
     }
@@ -56,4 +57,21 @@ public class Trainer {
     public void setCurrentPokemonHP(TextView currentPokemonHP) {
         this.currentPokemonHP = currentPokemonHP;
     }
+
+    public boolean isLoading() {
+        return loading;
+    }
+
+    public void setLoading(boolean loading) {
+        this.loading = loading;
+    }
+
+    public void reset(){
+        this.loading = false;
+    }
+
+    public boolean isPokemonAlive(){
+        return getCurrentPokemon().getPokemonServer().getFHp()>0;
+    }
+
 }

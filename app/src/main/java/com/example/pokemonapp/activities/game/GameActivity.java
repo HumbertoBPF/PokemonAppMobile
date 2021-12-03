@@ -120,7 +120,7 @@ public class GameActivity extends AppCompatActivity {
     private void battle() {
         Log.i(TAG,"Pokemon player HP : "+player.getCurrentPokemon().getPokemonServer().getFHp());
         Log.i(TAG,"CPU player HP : "+cpu.getCurrentPokemon().getPokemonServer().getFHp());
-        if ((player.getCurrentPokemon().getPokemonServer().getFHp()>0)&&(cpu.getCurrentPokemon().getPokemonServer().getFHp()>0)){
+        if (player.isPokemonAlive() && cpu.isPokemonAlive()){
             pickMoveForPlayer(new OnChoiceListener() {
                 @Override
                 public void onChoice() {
@@ -130,85 +130,65 @@ public class GameActivity extends AppCompatActivity {
                             Log.i(TAG,"Pokemon player speed : "+player.getCurrentPokemon().getPokemonServer().getFSpeed());
                             Log.i(TAG,"Pokemon CPU speed : "+cpu.getCurrentPokemon().getPokemonServer().getFSpeed());
                             if (player.getCurrentPokemon().getPokemonServer().getFSpeed()<cpu.getCurrentPokemon().getPokemonServer().getFSpeed()){
-                                gameDescription.setText(getString(R.string.foe_possessive)+cpu.getCurrentPokemon().getPokemonServer().getFName()+
-                                        getString(R.string.used)+cpu.getCurrentMove().getFName());
-                                handler.postDelayed(new Runnable() {
+                                attack(cpu.getCurrentPokemon(),player.getCurrentPokemon(),cpu.getCurrentMove(), new OnChoiceListener() {
                                     @Override
-                                    public void run() {
-                                        attack(cpu.getCurrentPokemon(),player.getCurrentPokemon(),cpu.getCurrentMove(), new OnChoiceListener() {
-                                            @Override
-                                            public void onChoice() {
-                                                if (player.getCurrentPokemon().getPokemonServer().getFHp() > 0){
-                                                    gameDescription.setText(getString(R.string.player_possessive)+player.getCurrentPokemon().getPokemonServer().getFName()+
-                                                            getString(R.string.used)+player.getCurrentMove().getFName());
-                                                    handler.postDelayed(new Runnable() {
+                                    public void onChoice() {
+                                        if (player.isPokemonAlive() && cpu.isPokemonAlive()){
+                                            attack(player.getCurrentPokemon(),cpu.getCurrentPokemon(),player.getCurrentMove(),
+                                                    new OnChoiceListener() {
                                                         @Override
-                                                        public void run() {
-                                                            attack(player.getCurrentPokemon(),cpu.getCurrentPokemon(),player.getCurrentMove(),
-                                                                    new OnChoiceListener() {
-                                                                        @Override
-                                                                        public void onChoice() {
-                                                                            battle();
-                                                                        }
-                                                                    });
+                                                        public void onChoice() {
+                                                            battle();
                                                         }
-                                                    },3000);
-                                                }else{
-                                                    gameDescription.setText(getString(R.string.player_possessive)+
-                                                            player.getCurrentPokemon().getPokemonServer().getFName()+ getString(R.string.fainted));
-                                                    handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame,3000);
-                                                }
-                                            }
-                                        });
+                                                    });
+                                        }else if (!player.isPokemonAlive()){
+                                            gameDescription.setText(getString(R.string.player_possessive)+
+                                                    player.getCurrentPokemon().getPokemonServer().getFName()+ getString(R.string.fainted));
+                                            handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame,3000);
+                                        }else if (!cpu.isPokemonAlive()){
+                                            gameDescription.setText(getString(R.string.foe_possessive)+
+                                                    cpu.getCurrentPokemon().getPokemonServer().getFName()+ getString(R.string.fainted));
+                                            handler.postDelayed(GameActivity.this::pickAnotherCpuPokemonOrEndgame,3000);
+                                        }
                                     }
-                                },3000);
+                                });
                             }else{
-                                gameDescription.setText(getString(R.string.player_possessive)+player.getCurrentPokemon().getPokemonServer().getFName()+
-                                        getString(R.string.used)+player.getCurrentMove().getFName());
-                                handler.postDelayed(new Runnable() {
+                                attack(player.getCurrentPokemon(),cpu.getCurrentPokemon(),player.getCurrentMove(), new OnChoiceListener() {
                                     @Override
-                                    public void run() {
-                                        attack(player.getCurrentPokemon(),cpu.getCurrentPokemon(),player.getCurrentMove(), new OnChoiceListener() {
-                                            @Override
-                                            public void onChoice() {
-                                                if (cpu.getCurrentPokemon().getPokemonServer().getFHp() > 0){
-                                                    gameDescription.setText(getString(R.string.foe_possessive)+cpu.getCurrentPokemon().getPokemonServer().getFName()+
-                                                            getString(R.string.used)+cpu.getCurrentMove().getFName());
+                                    public void onChoice() {
+                                        if (player.isPokemonAlive() && cpu.isPokemonAlive()){
+                                            attack(cpu.getCurrentPokemon(),player.getCurrentPokemon(),cpu.getCurrentMove(),new OnChoiceListener() {
+                                                @Override
+                                                public void onChoice() {
                                                     handler.postDelayed(new Runnable() {
                                                         @Override
                                                         public void run() {
-                                                            attack(cpu.getCurrentPokemon(),player.getCurrentPokemon(),cpu.getCurrentMove(),new OnChoiceListener() {
-                                                                @Override
-                                                                public void onChoice() {
-                                                                    handler.postDelayed(new Runnable() {
-                                                                        @Override
-                                                                        public void run() {
-                                                                            battle();
-                                                                        }
-                                                                    },3000);
-                                                                }
-                                                            });
+                                                            battle();
                                                         }
                                                     },3000);
-                                                }else{
-                                                    gameDescription.setText(getString(R.string.foe_possessive)+
-                                                            cpu.getCurrentPokemon().getPokemonServer().getFName()+ getString(R.string.fainted));
-                                                    handler.postDelayed(GameActivity.this::pickAnotherCpuPokemonOrEndgame,3000);
                                                 }
-                                            }
-                                        });
+                                            });
+                                        }else if (!player.isPokemonAlive()){
+                                            gameDescription.setText(getString(R.string.player_possessive)+
+                                                    player.getCurrentPokemon().getPokemonServer().getFName()+ getString(R.string.fainted));
+                                            handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame,3000);
+                                        }else if (!cpu.isPokemonAlive()){
+                                            gameDescription.setText(getString(R.string.foe_possessive)+
+                                                    cpu.getCurrentPokemon().getPokemonServer().getFName()+ getString(R.string.fainted));
+                                            handler.postDelayed(GameActivity.this::pickAnotherCpuPokemonOrEndgame,3000);
+                                        }
                                     }
-                                },3000);
+                                });
                             }
                         }
                     });
                 }
             });
-        }else if (player.getCurrentPokemon().getPokemonServer().getFHp()<=0){
+        }else if (!player.isPokemonAlive()){
             gameDescription.setText(getString(R.string.player_possessive)+
                     player.getCurrentPokemon().getPokemonServer().getFName()+getString(R.string.fainted));
             handler.postDelayed(this::pickAnotherPlayerPokemonOrEndGame,3000);
-        }else if (cpu.getCurrentPokemon().getPokemonServer().getFHp()<=0){
+        }else if (!cpu.isPokemonAlive()){
             gameDescription.setText(getString(R.string.foe_possessive)+
                     cpu.getCurrentPokemon().getPokemonServer().getFName()+getString(R.string.fainted));
             handler.postDelayed(this::pickAnotherCpuPokemonOrEndgame,3000);
@@ -216,6 +196,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void pickAnotherCpuPokemonOrEndgame() {
+        cpu.reset();
         if (!indexesSequenceCPU.isEmpty()){
             Log.i(TAG,"CPU changes its pokemon");
             pickPokemonForCPU();
@@ -232,6 +213,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void pickAnotherPlayerPokemonOrEndGame() {
+        player.reset();
         if (getNbOfRemainingPokemonPlayer() > 0){
             Log.i(TAG,"Player changes its pokemon");
             pickPokemonForPlayer(new OnChoiceListener() {
@@ -297,50 +279,56 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void pickPokemonForCPU(){
-        if (!indexesSequenceCPU.isEmpty()){
-            cpu.setCurrentPokemon(cpu.getTeam().get(indexesSequenceCPU.get(0)));
-            indexesSequenceCPU.remove(0);
-            gameDescription.setText(getString(R.string.cpu_chooses)+cpu.getCurrentPokemon().getPokemonServer().getFName());
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    setTextHP(cpu.getCurrentPokemon().getPokemonServer(), cpu.getCurrentPokemonName(), cpu.getCurrentPokemonHP());
-                }
-            },3000);
-        }else{
-            Toast.makeText(this,"The game is finished",Toast.LENGTH_LONG).show();
+        if (!cpu.isLoading()){
+            if (!indexesSequenceCPU.isEmpty()){
+                cpu.setCurrentPokemon(cpu.getTeam().get(indexesSequenceCPU.get(0)));
+                indexesSequenceCPU.remove(0);
+                gameDescription.setText(getString(R.string.cpu_chooses)+cpu.getCurrentPokemon().getPokemonServer().getFName());
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        setTextHP(cpu.getCurrentPokemon().getPokemonServer(), cpu.getCurrentPokemonName(), cpu.getCurrentPokemonHP());
+                    }
+                },3000);
+            }else{
+                Toast.makeText(this,"The game is finished",Toast.LENGTH_LONG).show();
+            }
         }
     }
 
     private void pickMoveForPlayer(OnChoiceListener onChoiceListener){
-        List<Move> moves = getMovesPlayerPokemon();
-        if (moves.size() == 0){
-            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
-                @Override
-                public List<Object> doInBackground() {
-                    Move move = moveDAO.getMoveByName("Struggle");
-                    List<Object> objects = new ArrayList<>();
-                    objects.add(move);
-                    return objects;
-                }
+        if (!player.isLoading()){
+            List<Move> moves = getMovesPlayerPokemon();
+            if (moves.size() == 0){
+                new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                    @Override
+                    public List<Object> doInBackground() {
+                        Move move = moveDAO.getMoveByName("Struggle");
+                        List<Object> objects = new ArrayList<>();
+                        objects.add(move);
+                        return objects;
+                    }
 
-                @Override
-                public void onPostExecute(List<Object> objects) {
-                    player.setCurrentMove((Move) objects.get(0));
-                    onChoiceListener.onChoice();
-                }
-            }).execute();
+                    @Override
+                    public void onPostExecute(List<Object> objects) {
+                        player.setCurrentMove((Move) objects.get(0));
+                        onChoiceListener.onChoice();
+                    }
+                }).execute();
+            }else{
+                gameDescription.setText(R.string.choose_move_msg);
+                playerRecyclerView.setVisibility(View.VISIBLE);
+                playerRecyclerView.setAdapter(new MovesAdapter(this, moves, new MovesAdapter.OnClickListener() {
+                    @Override
+                    public void onClick(Move move) {
+                        player.setCurrentMove(move);
+                        playerRecyclerView.setVisibility(View.GONE);
+                        onChoiceListener.onChoice();
+                    }
+                }));
+            }
         }else{
-            gameDescription.setText(R.string.choose_move_msg);
-            playerRecyclerView.setVisibility(View.VISIBLE);
-            playerRecyclerView.setAdapter(new MovesAdapter(this, moves, new MovesAdapter.OnClickListener() {
-                @Override
-                public void onClick(Move move) {
-                    player.setCurrentMove(move);
-                    playerRecyclerView.setVisibility(View.GONE);
-                    onChoiceListener.onChoice();
-                }
-            }));
+            onChoiceListener.onChoice();
         }
     }
 
@@ -462,16 +450,79 @@ public class GameActivity extends AppCompatActivity {
                 int minHits = move.getFMinTimesPerTour();
                 int maxHits = move.getFMaxTimesPerTour();
 
-                int nbOfHits = Tools.getDistinctRandomIntegers(minHits,maxHits,1).get(0);
+                int nbOfHits = getDistinctRandomIntegers(minHits,maxHits,1).get(0);
 
-                if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
-                    player.getCurrentPokemon().setMoves(updatePPs(player.getCurrentPokemon(), move));
-                }else{
-                    cpu.getCurrentPokemon().setMoves(updatePPs(cpu.getCurrentPokemon(), move));
+                if (move.getFRoundsToLoad() == 1){
+                    if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
+                        if (!player.isLoading()){
+                            player.setLoading(true);
+                            gameDescription.setText(getString(R.string.player_possessive)+attackingPokemonServer.getFName()+getString(R.string.loads_attack));
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    onChoiceListener.onChoice();
+                                }
+                            },3000);
+                            return;
+                        }
+                    }else{
+                        if (!cpu.isLoading()){
+                            cpu.setLoading(true);
+                            gameDescription.setText(getString(R.string.foe_possessive)+attackingPokemonServer.getFName()+getString(R.string.loads_attack));
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    onChoiceListener.onChoice();
+                                }
+                            },3000);
+                            return;
+                        }
+                    }
                 }
 
-                hit(defendingPokemon, move, stab, typeFactor, messageEffectiveness,
-                        attackStat, defenseStat, 1, nbOfHits, onChoiceListener);
+                if (move.getFRoundsToLoad() == -1){
+                    if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
+                        if (player.isLoading()){
+                            player.setLoading(false);
+                            gameDescription.setText(getString(R.string.player_possessive)+attackingPokemonServer.getFName()+getString(R.string.is_reloading));
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    onChoiceListener.onChoice();
+                                }
+                            },3000);
+                            return;
+                        }
+                    }else{
+                        if (cpu.isLoading()){
+                            cpu.setLoading(false);
+                            gameDescription.setText(getString(R.string.foe_possessive)+attackingPokemonServer.getFName()+getString(R.string.is_reloading));
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    onChoiceListener.onChoice();
+                                }
+                            },3000);
+                            return;
+                        }
+                    }
+                }
+
+                if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())) {
+                    gameDescription.setText(getString(R.string.player_possessive) + player.getCurrentPokemon().getPokemonServer().getFName() +
+                            getString(R.string.used) + player.getCurrentMove().getFName());
+                }else{
+                    gameDescription.setText(getString(R.string.foe_possessive) + cpu.getCurrentPokemon().getPokemonServer().getFName() +
+                            getString(R.string.used) + cpu.getCurrentMove().getFName());
+                }
+
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        hit(defendingPokemon, move, stab, typeFactor, messageEffectiveness,
+                                attackStat, defenseStat, 1, nbOfHits, onChoiceListener);
+                    }
+                }, 3000);
             }
         }).execute();
     }
@@ -485,28 +536,54 @@ public class GameActivity extends AppCompatActivity {
         }else{
             double randomFactor = Math.random()*0.15 + 0.85;
 
-            if (attackMissed(move)){
-                Log.i(TAG,"RANDOM FACTOR:"+ randomFactor +" "+"STAB:"+ stab +" "+"TYPE_FACTOR:"+ typeFactor);
-                double damage = ((42* move.getFPower()*(attackStat / defenseStat))/50 + 2)* randomFactor * stab * typeFactor;
-                double defendingPokemonCurrentHP = defendingPokemon.getPokemonServer().getFHp();
-                if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
+            if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
+                if (currentHit == 1){
+                    player.getCurrentPokemon().setMoves(updatePPs(player.getCurrentPokemon(), move));
+                }
+                if (!attackMissed(move)) {
+                    Log.i(TAG, "RANDOM FACTOR:" + randomFactor + " " + "STAB:" + stab + " " + "TYPE_FACTOR:" + typeFactor);
+                    double damage = ((42 * move.getFPower() * (attackStat / defenseStat)) / 50 + 2) * randomFactor * stab * typeFactor;
+                    double defendingPokemonCurrentHP = defendingPokemon.getPokemonServer().getFHp();
+                    if (player.isLoading()){
+                        player.setLoading(false);
+                    }
                     cpu.getCurrentPokemon().getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
                     setTextHP(cpu.getCurrentPokemon().getPokemonServer(),cpu.getCurrentPokemonName(),cpu.getCurrentPokemonHP());
                     if (move.getFUserFaints()){
                         player.getCurrentPokemon().getPokemonServer().setFHp(0);
                         setTextHP(player.getCurrentPokemon().getPokemonServer(),player.getCurrentPokemonName(),player.getCurrentPokemonHP());
                     }
+                    if (move.getFRoundsToLoad() == -1){
+                        player.setLoading(true);
+                    }
+                    gameDescription.setText(messageEffectiveness);
                 }else{
+                    gameDescription.setText(R.string.attack_missed_msg);
+                }
+            }else{
+                if (currentHit == 1){
+                    cpu.getCurrentPokemon().setMoves(updatePPs(cpu.getCurrentPokemon(), move));
+                }
+                if (!attackMissed(move)){
+                    Log.i(TAG, "RANDOM FACTOR:" + randomFactor + " " + "STAB:" + stab + " " + "TYPE_FACTOR:" + typeFactor);
+                    double damage = ((42 * move.getFPower() * (attackStat / defenseStat)) / 50 + 2) * randomFactor * stab * typeFactor;
+                    double defendingPokemonCurrentHP = defendingPokemon.getPokemonServer().getFHp();
+                    if (cpu.isLoading()){
+                        cpu.setLoading(false);
+                    }
                     player.getCurrentPokemon().getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
                     setTextHP(player.getCurrentPokemon().getPokemonServer(),player.getCurrentPokemonName(),player.getCurrentPokemonHP());
                     if (move.getFUserFaints()){
                         cpu.getCurrentPokemon().getPokemonServer().setFHp(0);
                         setTextHP(cpu.getCurrentPokemon().getPokemonServer(),cpu.getCurrentPokemonName(),cpu.getCurrentPokemonHP());
                     }
+                    if (move.getFRoundsToLoad() == -1){
+                        cpu.setLoading(true);
+                    }
+                    gameDescription.setText(messageEffectiveness);
+                }else{
+                    gameDescription.setText(R.string.attack_missed_msg);
                 }
-                gameDescription.setText(messageEffectiveness);
-            }else{
-                gameDescription.setText(R.string.attack_missed_msg);
             }
 
             handler.postDelayed(new Runnable() {
@@ -538,7 +615,7 @@ public class GameActivity extends AppCompatActivity {
         double random = Math.random()*100;
         Log.i(TAG,"RANDOM FOR ACCURACY:"+random);
 
-        return (random <= accuracy);
+        return (random > accuracy);
     }
 
     private String getMessageEffectiveness(double typeFactor) {

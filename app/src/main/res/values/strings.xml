@@ -76,4 +76,6 @@
     <string name="attack_missed_msg">Attack missed</string>
     <string name="hit">Hit\u0020</string>
     <string name="times">\u0020time(s)</string>
+    <string name="loads_attack">\u0020loads attack</string>
+    <string name="is_reloading">\u0020is reloading</string>
 </resources>
