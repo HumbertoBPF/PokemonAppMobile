@@ -14,6 +14,7 @@ public class Trainer {
     private TextView currentPokemonName;
     private TextView currentPokemonHP;
     private boolean loading = false;
+    private boolean flinched = false;
 
     public Trainer() {
     }
@@ -66,8 +67,17 @@ public class Trainer {
         this.loading = loading;
     }
 
+    public boolean isFlinched() {
+        return flinched;
+    }
+
+    public void setFlinched(boolean flinched) {
+        this.flinched = flinched;
+    }
+
     public void reset(){
         this.loading = false;
+        this.flinched = false;
     }
 
     public boolean isPokemonAlive(){
