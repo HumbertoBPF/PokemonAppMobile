@@ -258,7 +258,7 @@ public class GameActivity extends AppCompatActivity {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            setTextHP(pokemonServerPlayer, player.getCurrentPokemonName(), player.getCurrentPokemonHP());
+                            player.setTextHP(getApplicationContext(),allPokemon);
                             onChoiceListener.onChoice();
                         }
                     },3000);
@@ -287,7 +287,7 @@ public class GameActivity extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    setTextHP(cpu.getCurrentPokemon().getPokemonServer(), cpu.getCurrentPokemonName(), cpu.getCurrentPokemonHP());
+                    cpu.setTextHP(getApplicationContext(), allPokemon);
                 }
             },3000);
         }else{
@@ -370,29 +370,8 @@ public class GameActivity extends AppCompatActivity {
                 cpu.setCurrentMove(availableMoves.get(randomIndex));
                 onChoiceListener.onChoice();
             }
-        }
-    }
-
-    private void setTextHP(Pokemon pokemonServer, TextView pokemonName, TextView pokemonHP) {
-        pokemonName.setText(pokemonServer.getFName());
-        long fullHp = 100;
-        for (Pokemon pokemon : allPokemon){
-            if (pokemon.getFId().equals(pokemonServer.getFId())){
-                fullHp = pokemon.getFHp();
-                break;
-            }
-        }
-        int hpBarColor = R.color.pokemon_theme_color;
-        if (pokemonServer.getFHp()>0.5*fullHp){
-            hpBarColor = R.color.green_hp_bar;
-        }else if (pokemonServer.getFHp()>0.2*fullHp){
-            hpBarColor = R.color.moves_theme_color;
-        }
-        pokemonHP.setTextColor(getResources().getColor(hpBarColor));
-        Integer hp = pokemonServer.getFHp();
-        pokemonHP.setText(getString(R.string.hp_label)+hp.toString());
-        if (hp < 0){
-            pokemonHP.setText(getString(R.string.hp_label)+"0");
+        }else{
+            onChoiceListener.onChoice();
         }
     }
 
@@ -433,7 +412,6 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onPostExecute(List<Object> objects) {
                 Pokemon attackingPokemonServer = attackingPokemon.getPokemonServer();
-                Pokemon defendingPokemonServer = defendingPokemon.getPokemonServer();
 
                 Long moveType = (Long) objects.get(0);
                 List<Long> attackingPokemonTypes = (List<Long>) objects.get(1);
@@ -445,8 +423,6 @@ public class GameActivity extends AppCompatActivity {
                 double stab = attackingPokemonTypes.contains(moveType) ? 1.5 : 1.0;
                 double typeFactor = computeTypeFactor(defendingPokemonTypes, effectiveTypes, notEffectiveTypes, noEffectType);
                 String messageEffectiveness = getMessageEffectiveness(typeFactor);
-                double attackStat = move.getFCategory().equals("Special")?attackingPokemonServer.getFSpAttack(): attackingPokemonServer.getFAttack();
-                double defenseStat = move.getFCategory().equals("Special")?defendingPokemonServer.getFSpDefense():defendingPokemonServer.getFDefense();
 
                 int minHits = move.getFMinTimesPerTour();
                 int maxHits = move.getFMaxTimesPerTour();
@@ -544,8 +520,7 @@ public class GameActivity extends AppCompatActivity {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        hit(defendingPokemon, move, stab, typeFactor, messageEffectiveness,
-                                attackStat, defenseStat, 1, nbOfHits, onChoiceListener);
+                        hit(defendingPokemon, move, stab, typeFactor, messageEffectiveness,1, nbOfHits, onChoiceListener);
                     }
                 }, 3000);
             }
@@ -553,69 +528,32 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void hit(InGamePokemon defendingPokemon, Move move, double stab, double typeFactor,
-                     String messageEffectiveness, double attackStat, double defenseStat, int currentHit, int nbOfHits,
-                     OnChoiceListener onChoiceListener) {
+                     String messageEffectiveness, int currentHit, int nbOfHits, OnChoiceListener onChoiceListener) {
 
         if (defendingPokemon.getPokemonServer().getFHp() <= 0){
             onChoiceListener.onChoice();
         }else{
-            double randomFactor = Math.random()*0.15 + 0.85;
-
+            double damage;
             if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
-                if (currentHit == 1){
-                    player.getCurrentPokemon().setMoves(updatePPs(player.getCurrentPokemon(), move));
-                }
-                if (!attackMissed(move)) {
-                    Log.i(TAG, "RANDOM FACTOR:" + randomFactor + " " + "STAB:" + stab + " " + "TYPE_FACTOR:" + typeFactor);
-                    double damage = ((42 * move.getFPower() * (attackStat / defenseStat)) / 50 + 2) * randomFactor * stab * typeFactor;
-                    double defendingPokemonCurrentHP = defendingPokemon.getPokemonServer().getFHp();
-                    if (player.isLoading()){
-                        player.setLoading(false);
-                    }
-                    cpu.getCurrentPokemon().getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
-                    setTextHP(cpu.getCurrentPokemon().getPokemonServer(),cpu.getCurrentPokemonName(),cpu.getCurrentPokemonHP());
-                    if (move.getFUserFaints()){
-                        player.getCurrentPokemon().getPokemonServer().setFHp(0);
-                        setTextHP(player.getCurrentPokemon().getPokemonServer(),player.getCurrentPokemonName(),player.getCurrentPokemonHP());
-                    }
-                    if (moveFlinchesOpponent(move)){
-                        cpu.setFlinched(true);
-                    }
-                    if (move.getFRoundsToLoad() == -1){
-                        player.setLoading(true);
-                    }
-                    gameDescription.setText(messageEffectiveness);
-                }else{
+                damage = player.hitOpponent(defendingPokemon,currentHit,move,stab,typeFactor);
+                if (damage == -1){
                     gameDescription.setText(R.string.attack_missed_msg);
+                }else{
+                    gameDescription.setText(messageEffectiveness);
+                    cpu.receiveDamage(damage,move);
                 }
             }else{
-                if (currentHit == 1){
-                    cpu.getCurrentPokemon().setMoves(updatePPs(cpu.getCurrentPokemon(), move));
-                }
-                if (!attackMissed(move)){
-                    Log.i(TAG, "RANDOM FACTOR:" + randomFactor + " " + "STAB:" + stab + " " + "TYPE_FACTOR:" + typeFactor);
-                    double damage = ((42 * move.getFPower() * (attackStat / defenseStat)) / 50 + 2) * randomFactor * stab * typeFactor;
-                    double defendingPokemonCurrentHP = defendingPokemon.getPokemonServer().getFHp();
-                    if (cpu.isLoading()){
-                        cpu.setLoading(false);
-                    }
-                    player.getCurrentPokemon().getPokemonServer().setFHp((int) (defendingPokemonCurrentHP - damage));
-                    setTextHP(player.getCurrentPokemon().getPokemonServer(),player.getCurrentPokemonName(),player.getCurrentPokemonHP());
-                    if (move.getFUserFaints()){
-                        cpu.getCurrentPokemon().getPokemonServer().setFHp(0);
-                        setTextHP(cpu.getCurrentPokemon().getPokemonServer(),cpu.getCurrentPokemonName(),cpu.getCurrentPokemonHP());
-                    }
-                    if (moveFlinchesOpponent(move)){
-                        player.setFlinched(true);
-                    }
-                    if (move.getFRoundsToLoad() == -1){
-                        cpu.setLoading(true);
-                    }
-                    gameDescription.setText(messageEffectiveness);
-                }else{
+                damage = cpu.hitOpponent(defendingPokemon,currentHit,move,stab,typeFactor);
+                if (damage == -1){
                     gameDescription.setText(R.string.attack_missed_msg);
+                }else{
+                    gameDescription.setText(messageEffectiveness);
+                    player.receiveDamage(damage,move);
                 }
             }
+
+            player.setTextHP(this, allPokemon);
+            cpu.setTextHP(this, allPokemon);
 
             handler.postDelayed(new Runnable() {
                 @Override
@@ -626,8 +564,7 @@ public class GameActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 if (currentHit < nbOfHits){
-                                    hit(defendingPokemon, move, stab, typeFactor, messageEffectiveness,
-                                            attackStat, defenseStat, currentHit+1, nbOfHits, onChoiceListener);
+                                    hit(defendingPokemon, move, stab, typeFactor, messageEffectiveness,currentHit+1, nbOfHits, onChoiceListener);
                                 }else if (currentHit == nbOfHits){
                                     onChoiceListener.onChoice();
                                 }
@@ -639,22 +576,6 @@ public class GameActivity extends AppCompatActivity {
                 }
             },3000);
         }
-    }
-
-    private boolean attackMissed(Move move) {
-        double accuracy = move.getFAccuracy();
-        double random = Math.random()*100;
-        Log.i(TAG,"RANDOM FOR ACCURACY:"+random);
-
-        return (random > accuracy);
-    }
-
-    private boolean moveFlinchesOpponent(Move move) {
-        double flinchingProbability = move.getFFlinchingProbability();
-        double random = Math.random()*100;
-        Log.i(TAG,"RANDOM FOR FLINCHING:"+random);
-
-        return (random < flinchingProbability);
     }
 
     private String getMessageEffectiveness(double typeFactor) {
@@ -683,18 +604,6 @@ public class GameActivity extends AppCompatActivity {
             }
         }
         return typeFactor;
-    }
-
-    @NonNull
-    private List<Move> updatePPs(InGamePokemon inGamePokemon, Move move) {
-        List<Move> moves = inGamePokemon.getMoves();
-        for (Move m : moves){
-            if (m.getFId().equals(move.getFId())){
-                int pp = m.getFPp()-1;
-                m.setFPp(pp);
-            }
-        }
-        return moves;
     }
 
     interface OnChoiceListener {
