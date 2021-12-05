@@ -6,8 +6,11 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.PorterDuff;
 import android.util.Log;
+import android.view.View;
 import android.view.animation.LinearInterpolator;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -17,6 +20,7 @@ import com.example.pokemonapp.R;
 import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.Pokemon;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Trainer {
@@ -27,9 +31,11 @@ public class Trainer {
     private Move currentMove;
     private TextView currentPokemonName;
     private ProgressBar currentPokemonProgressBarHP;
+    private List<ImageView> pokeballs = new ArrayList<>();
     private boolean loading = false;
     private boolean flinched = false;
     private int nbOfTurnsTrapped = 0;
+    private int remainingPokemon = 6;
 
     public Trainer() {
     }
@@ -72,6 +78,18 @@ public class Trainer {
 
     public void setCurrentPokemonProgressBarHP(ProgressBar currentPokemonProgressBarHP) {
         this.currentPokemonProgressBarHP = currentPokemonProgressBarHP;
+    }
+
+    public List<ImageView> getPokeballs() {
+        return pokeballs;
+    }
+
+    public void setPokeballs(List<ImageView> pokeballs) {
+        this.pokeballs = pokeballs;
+    }
+
+    public void addPokeball(ImageView pokeball) {
+        this.pokeballs.add(pokeball);
     }
 
     public boolean isLoading() {
@@ -223,6 +241,12 @@ public class Trainer {
             }
         });
         animation.start();
+    }
+
+    public void countDefeatedPokemon(){
+        this.pokeballs.get(remainingPokemon-1).setImageResource(R.drawable.pokeball_defeated);
+        this.remainingPokemon--;
+        Log.i(TAG,"REMAINING POKEMON : "+this.remainingPokemon);
     }
 
 }

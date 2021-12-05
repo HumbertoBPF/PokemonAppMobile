@@ -29,6 +29,66 @@
         app:layout_constraintEnd_toEndOf="@id/trace"
         app:layout_constraintTop_toBottomOf="@id/player_pokemon_name"/>
 
+    <ImageView
+        android:id="@+id/player_pokeball_1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/pokeball"
+        android:adjustViewBounds="true"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_hp_player"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/player_pokeball_2"/>
+
+    <ImageView
+        android:id="@+id/player_pokeball_2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/pokeball"
+        android:adjustViewBounds="true"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_hp_player"
+        app:layout_constraintStart_toEndOf="@id/player_pokeball_1"
+        app:layout_constraintEnd_toStartOf="@id/player_pokeball_3"/>
+
+    <ImageView
+        android:id="@+id/player_pokeball_3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/pokeball"
+        android:adjustViewBounds="true"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_hp_player"
+        app:layout_constraintStart_toEndOf="@id/player_pokeball_2"
+        app:layout_constraintEnd_toStartOf="@id/player_pokeball_4"/>
+
+    <ImageView
+        android:id="@+id/player_pokeball_4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/pokeball"
+        android:adjustViewBounds="true"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_hp_player"
+        app:layout_constraintStart_toEndOf="@id/player_pokeball_3"
+        app:layout_constraintEnd_toStartOf="@id/player_pokeball_5"/>
+
+    <ImageView
+        android:id="@+id/player_pokeball_5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/pokeball"
+        android:adjustViewBounds="true"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_hp_player"
+        app:layout_constraintStart_toEndOf="@id/player_pokeball_4"
+        app:layout_constraintEnd_toStartOf="@id/player_pokeball_6"/>
+
+    <ImageView
+        android:id="@+id/player_pokeball_6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/pokeball"
+        android:adjustViewBounds="true"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_hp_player"
+        app:layout_constraintStart_toEndOf="@id/player_pokeball_5"
+        app:layout_constraintEnd_toStartOf="@id/quarter_horizontal"/>
+
     <TextView
         android:id="@+id/cpu_pokemon_name"
         android:layout_width="0dp"
@@ -52,12 +112,86 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/player_pokemon_name"/>
 
+    <ImageView
+        android:id="@+id/cpu_pokeball_1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/pokeball"
+        android:adjustViewBounds="true"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_hp_player"
+        app:layout_constraintStart_toEndOf="@id/three_quarter_horizontal"
+        app:layout_constraintEnd_toStartOf="@id/cpu_pokeball_2"/>
+
+    <ImageView
+        android:id="@+id/cpu_pokeball_2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/pokeball"
+        android:adjustViewBounds="true"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_hp_player"
+        app:layout_constraintStart_toEndOf="@id/cpu_pokeball_1"
+        app:layout_constraintEnd_toStartOf="@id/cpu_pokeball_3"/>
+
+    <ImageView
+        android:id="@+id/cpu_pokeball_3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/pokeball"
+        android:adjustViewBounds="true"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_hp_player"
+        app:layout_constraintStart_toEndOf="@id/cpu_pokeball_2"
+        app:layout_constraintEnd_toStartOf="@id/cpu_pokeball_4"/>
+
+    <ImageView
+        android:id="@+id/cpu_pokeball_4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/pokeball"
+        android:adjustViewBounds="true"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_hp_player"
+        app:layout_constraintStart_toEndOf="@id/cpu_pokeball_3"
+        app:layout_constraintEnd_toStartOf="@id/cpu_pokeball_5"/>
+
+    <ImageView
+        android:id="@+id/cpu_pokeball_5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/pokeball"
+        android:adjustViewBounds="true"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_hp_player"
+        app:layout_constraintStart_toEndOf="@id/cpu_pokeball_4"
+        app:layout_constraintEnd_toStartOf="@id/cpu_pokeball_6"/>
+
+    <ImageView
+        android:id="@+id/cpu_pokeball_6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/pokeball"
+        android:adjustViewBounds="true"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_hp_player"
+        app:layout_constraintStart_toEndOf="@id/cpu_pokeball_5"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/quarter_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25"/>
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/half_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/three_quarter_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75"/>
 
     <View
         android:id="@+id/trace"

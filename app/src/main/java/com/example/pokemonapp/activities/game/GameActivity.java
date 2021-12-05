@@ -102,8 +102,20 @@ public class GameActivity extends AppCompatActivity {
         playerRecyclerView = findViewById(R.id.player_recycler_view);
         player.setCurrentPokemonName(findViewById(R.id.player_pokemon_name));
         player.setCurrentPokemonProgressBarHP(findViewById(R.id.progress_bar_hp_player));
+        player.addPokeball(findViewById(R.id.player_pokeball_1));
+        player.addPokeball(findViewById(R.id.player_pokeball_2));
+        player.addPokeball(findViewById(R.id.player_pokeball_3));
+        player.addPokeball(findViewById(R.id.player_pokeball_4));
+        player.addPokeball(findViewById(R.id.player_pokeball_5));
+        player.addPokeball(findViewById(R.id.player_pokeball_6));
         cpu.setCurrentPokemonName(findViewById(R.id.cpu_pokemon_name));
         cpu.setCurrentPokemonProgressBarHP(findViewById(R.id.progress_bar_hp_cpu));
+        cpu.addPokeball(findViewById(R.id.cpu_pokeball_1));
+        cpu.addPokeball(findViewById(R.id.cpu_pokeball_2));
+        cpu.addPokeball(findViewById(R.id.cpu_pokeball_3));
+        cpu.addPokeball(findViewById(R.id.cpu_pokeball_4));
+        cpu.addPokeball(findViewById(R.id.cpu_pokeball_5));
+        cpu.addPokeball(findViewById(R.id.cpu_pokeball_6));
     }
 
     private void getDAOs() {
@@ -143,13 +155,9 @@ public class GameActivity extends AppCompatActivity {
                                                         }
                                                     });
                                         }else if (!player.isPokemonAlive()){
-                                            gameDescription.setText(getString(R.string.player_possessive)+
-                                                    player.getCurrentPokemon().getPokemonServer().getFName()+ getString(R.string.fainted));
-                                            handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame,3000);
+                                            onPlayerPokemonDefeat();
                                         }else if (!cpu.isPokemonAlive()){
-                                            gameDescription.setText(getString(R.string.foe_possessive)+
-                                                    cpu.getCurrentPokemon().getPokemonServer().getFName()+ getString(R.string.fainted));
-                                            handler.postDelayed(GameActivity.this::pickAnotherCpuPokemonOrEndgame,3000);
+                                            onCpuPokemonDefeat();
                                         }
                                     }
                                 });
@@ -170,13 +178,9 @@ public class GameActivity extends AppCompatActivity {
                                                 }
                                             });
                                         }else if (!player.isPokemonAlive()){
-                                            gameDescription.setText(getString(R.string.player_possessive)+
-                                                    player.getCurrentPokemon().getPokemonServer().getFName()+ getString(R.string.fainted));
-                                            handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame,3000);
+                                            onPlayerPokemonDefeat();
                                         }else if (!cpu.isPokemonAlive()){
-                                            gameDescription.setText(getString(R.string.foe_possessive)+
-                                                    cpu.getCurrentPokemon().getPokemonServer().getFName()+ getString(R.string.fainted));
-                                            handler.postDelayed(GameActivity.this::pickAnotherCpuPokemonOrEndgame,3000);
+                                            onCpuPokemonDefeat();
                                         }
                                     }
                                 });
@@ -186,14 +190,24 @@ public class GameActivity extends AppCompatActivity {
                 }
             });
         }else if (!player.isPokemonAlive()){
-            gameDescription.setText(getString(R.string.player_possessive)+
-                    player.getCurrentPokemon().getPokemonServer().getFName()+getString(R.string.fainted));
-            handler.postDelayed(this::pickAnotherPlayerPokemonOrEndGame,3000);
+            onPlayerPokemonDefeat();
         }else if (!cpu.isPokemonAlive()){
-            gameDescription.setText(getString(R.string.foe_possessive)+
-                    cpu.getCurrentPokemon().getPokemonServer().getFName()+getString(R.string.fainted));
-            handler.postDelayed(this::pickAnotherCpuPokemonOrEndgame,3000);
+            onCpuPokemonDefeat();
         }
+    }
+
+    public void onCpuPokemonDefeat() {
+        cpu.countDefeatedPokemon();
+        gameDescription.setText(getString(R.string.foe_possessive) +
+                cpu.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.fainted));
+        handler.postDelayed(this::pickAnotherCpuPokemonOrEndgame, 3000);
+    }
+
+    private void onPlayerPokemonDefeat() {
+        player.countDefeatedPokemon();
+        gameDescription.setText(getString(R.string.player_possessive) +
+                player.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.fainted));
+        handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame, 3000);
     }
 
     private void pickAnotherCpuPokemonOrEndgame() {
