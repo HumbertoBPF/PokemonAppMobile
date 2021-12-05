@@ -61,7 +61,7 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setTitle("Game activity");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
+        setContentView(R.layout.activity_game_layout);
 
         getLayoutElements();
         getDAOs();
@@ -101,9 +101,9 @@ public class GameActivity extends AppCompatActivity {
         gameDescription = findViewById(R.id.game_description);
         playerRecyclerView = findViewById(R.id.player_recycler_view);
         player.setCurrentPokemonName(findViewById(R.id.player_pokemon_name));
-        player.setCurrentPokemonHP(findViewById(R.id.player_pokemon_hp));
+        player.setCurrentPokemonProgressBarHP(findViewById(R.id.progress_bar_hp_player));
         cpu.setCurrentPokemonName(findViewById(R.id.cpu_pokemon_name));
-        cpu.setCurrentPokemonHP(findViewById(R.id.cpu_pokemon_hp));
+        cpu.setCurrentPokemonProgressBarHP(findViewById(R.id.progress_bar_hp_cpu));
     }
 
     private void getDAOs() {
@@ -261,7 +261,12 @@ public class GameActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             player.setTextHP(getApplicationContext(),allPokemon);
-                            onChoiceListener.onChoice();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    onChoiceListener.onChoice();
+                                }
+                            },3000);
                         }
                     },3000);
                 }
@@ -589,13 +594,13 @@ public class GameActivity extends AppCompatActivity {
         if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())) {
             if (cpu.receiveWrappingDamage(allPokemon)) {
                 gameDescription.setText(getString(R.string.foe_possessive) + cpu.getCurrentPokemon().getPokemonServer().getFName() +
-                        " receive trapping damage");
+                        getString(R.string.trapping_damage));
                 delay = 3000;
             }
         } else {
             if (player.receiveWrappingDamage(allPokemon)) {
                 gameDescription.setText(getString(R.string.player_possessive) + player.getCurrentPokemon().getPokemonServer().getFName() +
-                        " receive trapping damage");
+                        getString(R.string.trapping_damage));
                 delay = 3000;
             }
         }
@@ -604,7 +609,12 @@ public class GameActivity extends AppCompatActivity {
             public void run() {
                 player.setTextHP(getApplicationContext(), allPokemon);
                 cpu.setTextHP(getApplicationContext(), allPokemon);
-                onChoiceListener.onChoice();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        onChoiceListener.onChoice();
+                    }
+                },3000);
             }
         }, delay);
     }

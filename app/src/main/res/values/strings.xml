@@ -61,14 +61,14 @@
     <string name="filename_json_cpu_team">CPU</string>
     <string name="choose_pokemon_msg">Choose a pokémon</string>
     <string name="choose_move_msg">Choose a move</string>
-    <string name="foe_defeat_msg">Foe was defeated.</string>
-    <string name="player_defeat_msg">Player was defeated.</string>
+    <string name="foe_defeat_msg">Foe was defeated</string>
+    <string name="player_defeat_msg">Player was defeated</string>
     <string name="cpu_chooses">CPU chooses\u0020</string>
     <string name="player_chooses">You choose\u0020</string>
     <string name="foe_possessive">Foe\'s\u0020</string>
     <string name="player_possessive">Player\'s\u0020</string>
     <string name="used">\u0020used\u0020</string>
-    <string name="fainted">\u0020fainted.</string>
+    <string name="fainted">\u0020fainted</string>
     <string name="hp_label">HP\u0020:\u0020</string>
     <string name="super_effective_msg">It\'s super effective!</string>
     <string name="not_effective_msg">It\'s not effective...</string>
@@ -78,4 +78,5 @@
     <string name="times">\u0020time(s)</string>
     <string name="loads_attack">\u0020loads attack</string>
     <string name="is_reloading">\u0020is reloading</string>
+    <string name="trapping_damage">\u0020receive trapping damage</string>
 </resources>

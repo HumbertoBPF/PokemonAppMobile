@@ -2,8 +2,13 @@ package com.example.pokemonapp.models;
 
 import static com.example.pokemonapp.util.Tools.getDistinctRandomIntegers;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.Log;
+import android.view.animation.LinearInterpolator;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,7 +26,7 @@ public class Trainer {
     private InGamePokemon currentPokemon;
     private Move currentMove;
     private TextView currentPokemonName;
-    private TextView currentPokemonHP;
+    private ProgressBar currentPokemonProgressBarHP;
     private boolean loading = false;
     private boolean flinched = false;
     private int nbOfTurnsTrapped = 0;
@@ -61,12 +66,12 @@ public class Trainer {
         this.currentPokemonName = currentPokemonName;
     }
 
-    public TextView getCurrentPokemonHP() {
-        return currentPokemonHP;
+    public ProgressBar getCurrentPokemonProgressBarHP() {
+        return currentPokemonProgressBarHP;
     }
 
-    public void setCurrentPokemonHP(TextView currentPokemonHP) {
-        this.currentPokemonHP = currentPokemonHP;
+    public void setCurrentPokemonProgressBarHP(ProgressBar currentPokemonProgressBarHP) {
+        this.currentPokemonProgressBarHP = currentPokemonProgressBarHP;
     }
 
     public boolean isLoading() {
@@ -195,18 +200,29 @@ public class Trainer {
                 break;
             }
         }
-        int hpBarColor = R.color.pokemon_theme_color;
-        if (currentPokemon.getPokemonServer().getFHp()>0.5*fullHp){
-            hpBarColor = R.color.green_hp_bar;
-        }else if (currentPokemon.getPokemonServer().getFHp()>0.2*fullHp){
-            hpBarColor = R.color.moves_theme_color;
-        }
-        currentPokemonHP.setTextColor(context.getResources().getColor(hpBarColor));
+        this.currentPokemonProgressBarHP.setMax((int) fullHp);
         Integer hp = currentPokemon.getPokemonServer().getFHp();
-        currentPokemonHP.setText(context.getString(R.string.hp_label)+hp.toString());
         if (hp < 0){
-            currentPokemonHP.setText(context.getString(R.string.hp_label)+"0");
+            hp = 0;
         }
+        ObjectAnimator animation = ObjectAnimator.ofInt(this.currentPokemonProgressBarHP, "progress", hp);
+        animation.setDuration(3000);
+        animation.setInterpolator(new LinearInterpolator());
+        long finalFullHp = fullHp;
+        animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int hpBarColor = R.color.pokemon_theme_color;
+                int currentProgress = currentPokemonProgressBarHP.getProgress();
+                if (currentProgress>0.5* finalFullHp){
+                    hpBarColor = R.color.green_hp_bar;
+                }else if (currentProgress>0.2* finalFullHp){
+                    hpBarColor = R.color.moves_theme_color;
+                }
+                currentPokemonProgressBarHP.setProgressTintList(ColorStateList.valueOf(context.getResources().getColor(hpBarColor)));
+            }
+        });
+        animation.start();
     }
 
 }

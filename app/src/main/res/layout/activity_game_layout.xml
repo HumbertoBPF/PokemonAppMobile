@@ -18,17 +18,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="@id/trace"/>
 
-    <TextView
-        android:id="@+id/player_pokemon_hp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        tools:text="HP : 50"
-        android:layout_margin="5dp"
-        app:layout_constraintTop_toBottomOf="@id/player_pokemon_name"
-        app:layout_constraintStart_toStartOf="@id/player_pokemon_name"/>
+    <ProgressBar
+        android:id="@+id/progress_bar_hp_player"
+        android:layout_width="0dp"
+        android:layout_height="15dp"
+        android:progressTint="@color/green_hp_bar"
+        android:background="@color/white"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/trace"
+        app:layout_constraintTop_toBottomOf="@id/player_pokemon_name"/>
 
     <TextView
         android:id="@+id/cpu_pokemon_name"
@@ -42,17 +41,16 @@
         app:layout_constraintStart_toStartOf="@id/trace"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <TextView
-        android:id="@+id/cpu_pokemon_hp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        tools:text="HP : 50"
-        android:layout_margin="5dp"
-        app:layout_constraintTop_toBottomOf="@id/cpu_pokemon_name"
-        app:layout_constraintEnd_toEndOf="@id/cpu_pokemon_name"/>
+    <ProgressBar
+        android:id="@+id/progress_bar_hp_cpu"
+        android:layout_width="0dp"
+        android:layout_height="15dp"
+        android:progressTint="@color/green_hp_bar"
+        android:background="@color/white"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        app:layout_constraintStart_toStartOf="@id/trace"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/player_pokemon_name"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/half_horizontal"
