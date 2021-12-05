@@ -1,5 +1,7 @@
 package com.example.pokemonapp.models;
 
+import static com.example.pokemonapp.util.Tools.getDistinctRandomIntegers;
+
 import android.content.Context;
 import android.util.Log;
 import android.widget.TextView;
@@ -22,6 +24,7 @@ public class Trainer {
     private TextView currentPokemonHP;
     private boolean loading = false;
     private boolean flinched = false;
+    private int nbOfTurnsTrapped = 0;
 
     public Trainer() {
     }
@@ -82,9 +85,18 @@ public class Trainer {
         this.flinched = flinched;
     }
 
+    public int getNbOfTurnsTrapped() {
+        return nbOfTurnsTrapped;
+    }
+
+    public void setNbOfTurnsTrapped(int nbOfTurnsTrapped) {
+        this.nbOfTurnsTrapped = nbOfTurnsTrapped;
+    }
+
     public void reset(){
         this.loading = false;
         this.flinched = false;
+        this.nbOfTurnsTrapped = 0;
     }
 
     public boolean isPokemonAlive(){
@@ -119,10 +131,31 @@ public class Trainer {
     }
 
     public void receiveDamage(double damage, Move move){
+        Log.i(TAG,"ATTACK DAMAGE : "+damage);
         this.getCurrentPokemon().getPokemonServer().setFHp((int) (this.getCurrentPokemon().getPokemonServer().getFHp() - damage));
         if (moveFlinchesOpponent(move)){
             this.setFlinched(true);
         }
+        if (move.getFTrapping()){
+            this.nbOfTurnsTrapped = getDistinctRandomIntegers(4,5,1).get(0);
+        }
+    }
+
+    public boolean receiveWrappingDamage(List<Pokemon> allPokemon){
+        if (getNbOfTurnsTrapped() > 0){
+            for (Pokemon pokemon : allPokemon){
+                if (pokemon.getFId().equals(currentPokemon.getPokemonServer().getFId())){
+                    int fullHp = pokemon.getFHp();
+                    this.getCurrentPokemon().getPokemonServer().setFHp((int) (this.getCurrentPokemon().getPokemonServer().getFHp() - fullHp/8));
+                    Log.i(TAG,"DAMAGE WRAPPED : "+(fullHp/8));
+                    break;
+                }
+            }
+            this.nbOfTurnsTrapped--;
+            return true;
+        }
+
+        return false;
     }
 
     @NonNull

@@ -198,6 +198,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void pickAnotherCpuPokemonOrEndgame() {
         cpu.reset();
+        player.setNbOfTurnsTrapped(0);
         if (!indexesSequenceCPU.isEmpty()){
             Log.i(TAG,"CPU changes its pokemon");
             pickPokemonForCPU();
@@ -215,6 +216,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void pickAnotherPlayerPokemonOrEndGame() {
         player.reset();
+        cpu.setNbOfTurnsTrapped(0);
         if (getNbOfRemainingPokemonPlayer() > 0){
             Log.i(TAG,"Player changes its pokemon");
             pickPokemonForPlayer(new OnChoiceListener() {
@@ -437,7 +439,7 @@ public class GameActivity extends AppCompatActivity {
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    onChoiceListener.onChoice();
+                                    finishAttackTurn(defendingPokemon,onChoiceListener);
                                 }
                             },3000);
                             return;
@@ -449,7 +451,7 @@ public class GameActivity extends AppCompatActivity {
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    onChoiceListener.onChoice();
+                                    finishAttackTurn(defendingPokemon,onChoiceListener);
                                 }
                             },3000);
                             return;
@@ -465,7 +467,7 @@ public class GameActivity extends AppCompatActivity {
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    onChoiceListener.onChoice();
+                                    finishAttackTurn(defendingPokemon,onChoiceListener);
                                 }
                             },3000);
                             return;
@@ -477,7 +479,7 @@ public class GameActivity extends AppCompatActivity {
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    onChoiceListener.onChoice();
+                                    finishAttackTurn(defendingPokemon,onChoiceListener);
                                 }
                             },3000);
                             return;
@@ -491,7 +493,7 @@ public class GameActivity extends AppCompatActivity {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                onChoiceListener.onChoice();
+                                finishAttackTurn(defendingPokemon,onChoiceListener);
                             }
                         },3000);
                         return;
@@ -502,7 +504,7 @@ public class GameActivity extends AppCompatActivity {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                onChoiceListener.onChoice();
+                                finishAttackTurn(defendingPokemon,onChoiceListener);
                             }
                         },3000);
                         return;
@@ -555,27 +557,56 @@ public class GameActivity extends AppCompatActivity {
             player.setTextHP(this, allPokemon);
             cpu.setTextHP(this, allPokemon);
 
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (nbOfHits > 1){
-                        gameDescription.setText(getString(R.string.hit)+currentHit+getString(R.string.times));
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (currentHit < nbOfHits){
-                                    hit(defendingPokemon, move, stab, typeFactor, messageEffectiveness,currentHit+1, nbOfHits, onChoiceListener);
-                                }else if (currentHit == nbOfHits){
-                                    onChoiceListener.onChoice();
-                                }
-                            }
-                        },3000);
-                    }else{
-                        onChoiceListener.onChoice();
-                    }
-                }
-            },3000);
+            hitAgainOrStop(defendingPokemon, move, stab, typeFactor, messageEffectiveness, currentHit, nbOfHits, onChoiceListener);
         }
+    }
+
+    private void hitAgainOrStop(InGamePokemon defendingPokemon, Move move, double stab, double typeFactor, String messageEffectiveness, int currentHit, int nbOfHits, OnChoiceListener onChoiceListener) {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (nbOfHits > 1){
+                    gameDescription.setText(getString(R.string.hit)+ currentHit +getString(R.string.times));
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (currentHit < nbOfHits){
+                                hit(defendingPokemon, move, stab, typeFactor, messageEffectiveness, currentHit +1, nbOfHits, onChoiceListener);
+                            }else if (currentHit == nbOfHits){
+                                finishAttackTurn(defendingPokemon, onChoiceListener);
+                            }
+                        }
+                    },3000);
+                }else{
+                    finishAttackTurn(defendingPokemon, onChoiceListener);
+                }
+            }
+        },3000);
+    }
+
+    private void finishAttackTurn(InGamePokemon defendingPokemon, OnChoiceListener onChoiceListener) {
+        int delay = 0;
+        if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())) {
+            if (cpu.receiveWrappingDamage(allPokemon)) {
+                gameDescription.setText(getString(R.string.foe_possessive) + cpu.getCurrentPokemon().getPokemonServer().getFName() +
+                        " receive trapping damage");
+                delay = 3000;
+            }
+        } else {
+            if (player.receiveWrappingDamage(allPokemon)) {
+                gameDescription.setText(getString(R.string.player_possessive) + player.getCurrentPokemon().getPokemonServer().getFName() +
+                        " receive trapping damage");
+                delay = 3000;
+            }
+        }
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                player.setTextHP(getApplicationContext(), allPokemon);
+                cpu.setTextHP(getApplicationContext(), allPokemon);
+                onChoiceListener.onChoice();
+            }
+        }, delay);
     }
 
     private String getMessageEffectiveness(double typeFactor) {
