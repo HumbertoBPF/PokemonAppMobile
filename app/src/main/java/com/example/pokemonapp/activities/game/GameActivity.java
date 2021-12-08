@@ -33,6 +33,7 @@ import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -108,6 +109,7 @@ public class GameActivity extends AppCompatActivity {
         player.addPokeball(findViewById(R.id.player_pokeball_4));
         player.addPokeball(findViewById(R.id.player_pokeball_5));
         player.addPokeball(findViewById(R.id.player_pokeball_6));
+        player.setPokemonImageView(findViewById(R.id.player_pokemon_image));
         cpu.setCurrentPokemonName(findViewById(R.id.cpu_pokemon_name));
         cpu.setCurrentPokemonProgressBarHP(findViewById(R.id.progress_bar_hp_cpu));
         cpu.addPokeball(findViewById(R.id.cpu_pokeball_1));
@@ -116,6 +118,7 @@ public class GameActivity extends AppCompatActivity {
         cpu.addPokeball(findViewById(R.id.cpu_pokeball_4));
         cpu.addPokeball(findViewById(R.id.cpu_pokeball_5));
         cpu.addPokeball(findViewById(R.id.cpu_pokeball_6));
+        cpu.setPokemonImageView(findViewById(R.id.cpu_pokemon_image));
     }
 
     private void getDAOs() {
@@ -200,6 +203,7 @@ public class GameActivity extends AppCompatActivity {
         cpu.countDefeatedPokemon();
         gameDescription.setText(getString(R.string.foe_possessive) +
                 cpu.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.fainted));
+        cpu.setPokemonImageResource(0);
         handler.postDelayed(this::pickAnotherCpuPokemonOrEndgame, 3000);
     }
 
@@ -207,6 +211,7 @@ public class GameActivity extends AppCompatActivity {
         player.countDefeatedPokemon();
         gameDescription.setText(getString(R.string.player_possessive) +
                 player.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.fainted));
+        player.setPokemonImageResource(0);
         handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame, 3000);
     }
 
@@ -275,6 +280,14 @@ public class GameActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             player.setTextHP(getApplicationContext(),allPokemon);
+                            String pokemonImageName = "pokemon_"+
+                                    pokemon.getFName().toLowerCase(Locale.ROOT)
+                                            .replace("'","")
+                                            .replace(" ","_")
+                                            .replace(".","")+
+                                    "_back";
+                            int imageId = getResources().getIdentifier(pokemonImageName,"drawable",getPackageName());
+                            player.setPokemonImageResource(imageId);
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -308,6 +321,13 @@ public class GameActivity extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    String pokemonImageName = "pokemon_"+
+                            cpu.getCurrentPokemon().getPokemonServer().getFName().toLowerCase(Locale.ROOT)
+                                    .replace("'","")
+                                    .replace(" ","_")
+                                    .replace(".","");
+                    int imageId = getResources().getIdentifier(pokemonImageName,"drawable",getPackageName());
+                    cpu.setPokemonImageResource(imageId);
                     cpu.setTextHP(getApplicationContext(), allPokemon);
                 }
             },3000);

@@ -6,9 +6,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.PorterDuff;
 import android.util.Log;
-import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -32,6 +30,7 @@ public class Trainer {
     private TextView currentPokemonName;
     private ProgressBar currentPokemonProgressBarHP;
     private List<ImageView> pokeballs = new ArrayList<>();
+    private ImageView pokemonImageView;
     private boolean loading = false;
     private boolean flinched = false;
     private int nbOfTurnsTrapped = 0;
@@ -86,6 +85,18 @@ public class Trainer {
 
     public void setPokeballs(List<ImageView> pokeballs) {
         this.pokeballs = pokeballs;
+    }
+
+    public ImageView getPokemonImageView() {
+        return pokemonImageView;
+    }
+
+    public void setPokemonImageView(ImageView pokemonImageView) {
+        this.pokemonImageView = pokemonImageView;
+    }
+
+    public void setPokemonImageResource(int id) {
+        this.pokemonImageView.setImageResource(id);
     }
 
     public void addPokeball(ImageView pokeball) {
