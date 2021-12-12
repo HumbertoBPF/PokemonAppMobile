@@ -79,4 +79,6 @@
     <string name="loads_attack">\u0020loads attack</string>
     <string name="is_reloading">\u0020is reloading</string>
     <string name="trapping_damage">\u0020receive trapping damage</string>
+    <string name="player_team_label">Player\'s team :</string>
+    <string name="cpu_team_label">CPU team :</string>
 </resources>

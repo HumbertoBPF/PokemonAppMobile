@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
@@ -16,6 +18,9 @@ public abstract class SelectionActivity extends AppCompatActivity {
     protected String gameMode;
     protected RecyclerView playerRecyclerView;
     protected RecyclerView cpuRecyclerView;
+    protected NestedScrollView rootScrollView;
+    protected TextView playerTeamLabel;
+    protected TextView cpuTeamLabel;
     protected Button nextActivityButton;
     protected String nextActivityButtonText;
     protected String titleAppbar;
@@ -35,9 +40,12 @@ public abstract class SelectionActivity extends AppCompatActivity {
     }
 
     protected void getLayoutElements() {
+        rootScrollView = findViewById(R.id.root_scroll_view);
         nextActivityButton = findViewById(R.id.next_activity_button);
         playerRecyclerView = findViewById(R.id.player_recycler_view);
         cpuRecyclerView = findViewById(R.id.cpu_recycler_view);
+        playerTeamLabel = findViewById(R.id.player_team_label);
+        cpuTeamLabel = findViewById(R.id.cpu_team_label);
     }
 
     protected void configureNextActivityButton() {

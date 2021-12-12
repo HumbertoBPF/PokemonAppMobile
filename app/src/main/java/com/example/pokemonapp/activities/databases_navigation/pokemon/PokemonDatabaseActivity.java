@@ -2,6 +2,7 @@ package com.example.pokemonapp.activities.databases_navigation.pokemon;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.databases_navigation.DatabaseNavigationActivity;
@@ -42,7 +43,7 @@ public class PokemonDatabaseActivity extends DatabaseNavigationActivity {
             public void onPostExecute(List<Object> objects) {
                 recyclerView.setAdapter(new PokemonAdapter(getApplicationContext(), pokemons, new PokemonAdapter.OnClickListener() {
                     @Override
-                    public void onClick(Pokemon pokemon) {
+                    public void onClick(View view, Pokemon pokemon) {
                         Intent intent = new Intent(getApplicationContext(),detailsActivity);
                         intent.putExtra("pokemon",pokemon);
                         startActivity(intent);

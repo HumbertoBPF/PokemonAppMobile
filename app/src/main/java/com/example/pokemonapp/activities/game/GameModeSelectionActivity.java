@@ -24,8 +24,7 @@ public class GameModeSelectionActivity extends ButtonsActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                        nextActivity(getResources().getString(R.string.label_favorite_team_mode));
-                        Toast.makeText(getApplicationContext(),"Not available for the moment",Toast.LENGTH_LONG).show();
+                        nextActivity(getResources().getString(R.string.label_favorite_team_mode));
                     }
                 });
         RoundedButton strategyMode = new RoundedButton(getResources().getString(R.string.strategy_mode_button_text),

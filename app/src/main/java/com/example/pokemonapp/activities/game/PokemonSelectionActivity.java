@@ -5,7 +5,10 @@ import static com.example.pokemonapp.util.Tools.loadTeam;
 import static com.example.pokemonapp.util.Tools.saveTeam;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
@@ -24,7 +27,8 @@ public class PokemonSelectionActivity extends SelectionActivity {
 
     private Integer id = 0;
     private PokemonDAO pokemonDAO;
-    private List<Pokemon> pokemonList;
+    private List<Pokemon> allPokemonList;
+    private List<Pokemon> playerPokemonList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,22 +39,87 @@ public class PokemonSelectionActivity extends SelectionActivity {
 
         super.onCreate(savedInstanceState);
 
-        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
-            @Override
-            public List<Object> doInBackground() {
-                pokemonList = pokemonDAO.getPokemonFromLocal();
-                return null;
-            }
+        if (gameMode.equals(getResources().getString(R.string.label_random_mode))){
+            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                @Override
+                public List<Object> doInBackground() {
+                    allPokemonList = pokemonDAO.getPokemonFromLocal();
+                    return null;
+                }
 
+                @Override
+                public void onPostExecute(List<Object> objects) {
+                    saveRandomTeam(getResources().getString(R.string.filename_json_player_team));
+                    saveRandomTeam(getResources().getString(R.string.filename_json_cpu_team));
+                    configureRecyclerView(playerRecyclerView, getResources().getString(R.string.filename_json_player_team));
+                    configureRecyclerView(cpuRecyclerView, getResources().getString(R.string.filename_json_cpu_team));
+                    configureNextActivityButton();
+                }
+            }).execute();
+        }else if (gameMode.equals(getResources().getString(R.string.label_favorite_team_mode))){
+
+            playerTeamLabel.setText("Choose 6 pokémon for your team : ");
+            cpuTeamLabel.setVisibility(View.GONE);
+
+            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                @Override
+                public List<Object> doInBackground() {
+                    allPokemonList = pokemonDAO.getPokemonFromLocal();
+                    return null;
+                }
+
+                @Override
+                public void onPostExecute(List<Object> objects) {
+                    saveRandomTeam(getResources().getString(R.string.filename_json_cpu_team));
+                    playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(),
+                            allPokemonList,
+                            new PokemonAdapter.OnClickListener() {
+                                @Override
+                                public void onClick(View view, Pokemon pokemon) {
+                                    if (playerPokemonList.contains(pokemon)){
+                                        ((CardView) view).setCardBackgroundColor(getResources().getColor(R.color.white));
+                                        playerPokemonList.remove(pokemon);
+                                    }else{
+                                        if (playerPokemonList.size() >= 6){
+                                            Toast.makeText(getApplicationContext(), "You cannot choose more than 6 pokémon", Toast.LENGTH_LONG).show();
+                                        }else{
+                                            ((CardView) view).setCardBackgroundColor(getResources().getColor(R.color.selection_gray));
+                                            playerPokemonList.add(pokemon);
+                                        }
+                                    }
+                                }
+                            }));
+                    configureConfirmChoiceButton();
+                }
+            }).execute();
+        }
+    }
+
+    private void configureConfirmChoiceButton(){
+        nextActivityButton.setText("Done");
+        nextActivityButton.setVisibility(View.VISIBLE);
+        nextActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onPostExecute(List<Object> objects) {
-                getRandomPokemon(getResources().getString(R.string.filename_json_player_team));
-                getRandomPokemon(getResources().getString(R.string.filename_json_cpu_team));
-                configureRecyclerView(playerRecyclerView, getResources().getString(R.string.filename_json_player_team));
-                configureRecyclerView(cpuRecyclerView, getResources().getString(R.string.filename_json_cpu_team));
-                configureNextActivityButton();
+            public void onClick(View view) {
+                if (playerPokemonList.size() == 6){
+                    List<InGamePokemon> team = new ArrayList<>();
+                    for (Pokemon pokemon : playerPokemonList){
+                        team.add(new InGamePokemon(id, pokemon));
+                        id++;
+                    }
+                    saveTeam(getApplicationContext(), getResources().getString(R.string.filename_json_player_team), team);
+
+                    playerTeamLabel.setText(getResources().getString(R.string.player_team_label));
+                    cpuTeamLabel.setVisibility(View.VISIBLE);
+                    configureRecyclerView(playerRecyclerView, getResources().getString(R.string.filename_json_player_team));
+                    configureRecyclerView(cpuRecyclerView, getResources().getString(R.string.filename_json_cpu_team));
+                    rootScrollView.smoothScrollTo(0,0);
+                    configureNextActivityButton();
+                }else{
+                    Toast.makeText(getApplicationContext(),"You have to choose 6 pokémon for your team",Toast.LENGTH_LONG).show();
+                }
             }
-        }).execute();
+        });
     }
 
     private void configureRecyclerView(RecyclerView recyclerView, String filenameJson) {
@@ -62,17 +131,17 @@ public class PokemonSelectionActivity extends SelectionActivity {
                 pokemonList,
                 new PokemonAdapter.OnClickListener() {
                     @Override
-                    public void onClick(Pokemon pokemon) {
+                    public void onClick(View view, Pokemon pokemon) {
 
                     }
         }));
     }
 
-    private void getRandomPokemon(String key){
-        List<Integer> indexes = getDistinctRandomIntegers(0,pokemonList.size()-1,6);
+    private void saveRandomTeam(String key){
+        List<Integer> indexes = getDistinctRandomIntegers(0, allPokemonList.size()-1,6);
         List<InGamePokemon> team = new ArrayList<>();
         for (Integer index : indexes){
-            team.add(new InGamePokemon(id, (Pokemon) pokemonList.get(index)));
+            team.add(new InGamePokemon(id, allPokemonList.get(index)));
             id++;
         }
         saveTeam(getApplicationContext(), key, team);

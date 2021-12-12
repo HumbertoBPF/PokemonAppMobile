@@ -267,7 +267,7 @@ public class GameActivity extends AppCompatActivity {
         playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(), getPokemonPlayer(),
             new PokemonAdapter.OnClickListener() {
                 @Override
-                public void onClick(Pokemon pokemon) {
+                public void onClick(View view, Pokemon pokemon) {
                     for (InGamePokemon inGamePokemon : player.getTeam()){
                         if (inGamePokemon.getPokemonServer().getFId().equals(pokemon.getFId())){
                             player.setCurrentPokemon(inGamePokemon);

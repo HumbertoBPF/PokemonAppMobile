@@ -107,7 +107,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
             this.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    onClickListener.onClick(pokemon);
+                    onClickListener.onClick(view, pokemon);
                 }
             });
         }
@@ -115,7 +115,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
     }
 
     public interface OnClickListener{
-        void onClick(Pokemon pokemon);
+        void onClick(View view, Pokemon pokemon);
     }
 
 }
