@@ -30,7 +30,7 @@ public class Tools {
             Type type = (Type) objects.get(i);
             stringTypes += type.getFName();
             if (i<objects.size()-1){
-                stringTypes += ",";
+                stringTypes += ", ";
             }
         }
         return stringTypes;
@@ -42,7 +42,7 @@ public class Tools {
             Type type = types.get(i);
             stringTypes += type.getFName();
             if (i<types.size()-1){
-                stringTypes += ",";
+                stringTypes += ", ";
             }
         }
         return stringTypes;
@@ -51,7 +51,7 @@ public class Tools {
     public static String listOfMovesAsString(List<Move> moves) {
         String stringMoves = "";
         for (Move move : moves) {
-            stringMoves += move.getFName() + ",";
+            stringMoves += move.getFName() + ", ";
         }
         return stringMoves;
     }

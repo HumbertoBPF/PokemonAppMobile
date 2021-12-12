@@ -3,6 +3,7 @@ package com.example.pokemonapp.activities.databases_navigation.pokemon;
 import static com.example.pokemonapp.util.Tools.listOfTypesAsString;
 
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pokemonapp.R;
@@ -14,6 +15,7 @@ import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class PokemonDetailsActivity extends DatabaseDetailsActivity {
 
@@ -33,6 +35,7 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
     private TextView pokemonSpeed;
     private TextView pokemonHp;
     private TextView pokemonForce;
+    private ImageView pokemonImage;
 
     private PokemonTypeDAO pokemonTypeDAO;
 
@@ -66,6 +69,7 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
         pokemonSpeed = findViewById(R.id.pokemon_speed);
         pokemonHp = findViewById(R.id.pokemon_hp);
         pokemonForce = findViewById(R.id.pokemon_force);
+        pokemonImage = findViewById(R.id.pokemon_image);
     }
 
     protected void bind() {
@@ -96,6 +100,13 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
         pokemonHp.setText("HP\n"+pokemon.getFHp());
         pokemonForce.setText("Force(sum of the stats) : "+(pokemon.getFAttack()+pokemon.getFDefense()+
                 pokemon.getFSpAttack()+pokemon.getFSpDefense()+pokemon.getFSpeed()+pokemon.getFHp()));
+        String pokemonImageName = "pokemon_"+
+                pokemon.getFName().toLowerCase(Locale.ROOT)
+                        .replace("'","")
+                        .replace(" ","_")
+                        .replace(".","");
+        int imageId = getResources().getIdentifier(pokemonImageName,"drawable",getPackageName());
+        pokemonImage.setImageResource(imageId);
     }
 
 }
