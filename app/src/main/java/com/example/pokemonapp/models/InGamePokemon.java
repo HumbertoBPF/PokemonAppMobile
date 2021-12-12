@@ -3,13 +3,14 @@ package com.example.pokemonapp.models;
 import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.Pokemon;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class InGamePokemon {
 
     private Integer id;
     private Pokemon pokemonServer;
-    private List<Move> moves;
+    private List<Move> moves = new ArrayList<>();
 
     public InGamePokemon(Integer id, Pokemon pokemonServer) {
         this.id = id;
@@ -34,6 +35,14 @@ public class InGamePokemon {
 
     public List<Move> getMoves() {
         return moves;
+    }
+
+    public void addMove(Move move){
+        moves.add(move);
+    }
+
+    public void removeMove(Move move){
+        moves.remove(move);
     }
 
     public void setMoves(List<Move> moves) {

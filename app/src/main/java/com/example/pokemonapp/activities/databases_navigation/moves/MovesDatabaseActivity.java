@@ -2,6 +2,7 @@ package com.example.pokemonapp.activities.databases_navigation.moves;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.databases_navigation.DatabaseNavigationActivity;
@@ -43,7 +44,7 @@ public class MovesDatabaseActivity extends DatabaseNavigationActivity {
             public void onPostExecute(List<Object> objects) {
                 recyclerView.setAdapter(new MovesAdapter(getApplicationContext(), moves, new MovesAdapter.OnClickListener() {
                     @Override
-                    public void onClick(Move move) {
+                    public void onClick(View view, Move move) {
                         Intent intent = new Intent(getApplicationContext(),detailsActivity);
                         intent.putExtra("move",move);
                         startActivity(intent);

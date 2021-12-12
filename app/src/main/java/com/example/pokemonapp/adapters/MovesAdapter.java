@@ -95,7 +95,7 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
             this.moveView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    onClickListener.onClick(move);
+                    onClickListener.onClick(view, move);
                 }
             });
         }
@@ -103,7 +103,7 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
     }
 
     public interface OnClickListener{
-        void onClick(Move move);
+        void onClick(View view, Move move);
     }
 
 }

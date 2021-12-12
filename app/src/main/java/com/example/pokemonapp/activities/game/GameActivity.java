@@ -360,7 +360,7 @@ public class GameActivity extends AppCompatActivity {
                 playerRecyclerView.setVisibility(View.VISIBLE);
                 playerRecyclerView.setAdapter(new MovesAdapter(this, moves, new MovesAdapter.OnClickListener() {
                     @Override
-                    public void onClick(Move move) {
+                    public void onClick(View view, Move move) {
                         player.setCurrentMove(move);
                         playerRecyclerView.setVisibility(View.GONE);
                         onChoiceListener.onChoice();
