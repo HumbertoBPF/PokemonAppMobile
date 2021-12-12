@@ -1,11 +1,11 @@
 package com.example.pokemonapp.activities.game;
 
+import static com.example.pokemonapp.util.Tools.dismissDialogWhenViewIsDrawn;
 import static com.example.pokemonapp.util.Tools.getDistinctRandomIntegers;
 import static com.example.pokemonapp.util.Tools.loadTeam;
 import static com.example.pokemonapp.util.Tools.saveTeam;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -54,6 +54,7 @@ public class MovesSelectionActivity extends SelectionActivity {
     private void chooseMovesForCurrentPokemon() {
         playerTeamLabel.setText("Choose the moves of "+playerTeam.get(currentPokemonIndex).getPokemonServer().getFName()+
                 " :");
+        loadingDialog.show();
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
             @Override
             public List<Object> doInBackground() {
@@ -87,6 +88,7 @@ public class MovesSelectionActivity extends SelectionActivity {
                     }
                 }));
                 configureConfirmChoiceButton();
+                dismissDialogWhenViewIsDrawn(playerRecyclerView, loadingDialog);
             }
         }).execute();
     }
@@ -116,6 +118,7 @@ public class MovesSelectionActivity extends SelectionActivity {
 
     private void saveRandomMoves(RecyclerView recyclerView, String key){
         List<InGamePokemon> inGamePokemonList = loadTeam(this, key);
+        loadingDialog.show();
         for (InGamePokemon inGamePokemon : inGamePokemonList){
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override
@@ -145,6 +148,7 @@ public class MovesSelectionActivity extends SelectionActivity {
                                 inGamePokemonList));
                         if (key.equals(getResources().getString(R.string.filename_json_cpu_team))){
                             configureNextActivityButton();
+                            dismissDialogWhenViewIsDrawn(cpuRecyclerView,loadingDialog);
                         }
                     }
                 }

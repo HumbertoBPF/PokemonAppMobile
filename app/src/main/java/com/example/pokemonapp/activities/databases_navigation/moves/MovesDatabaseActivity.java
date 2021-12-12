@@ -1,5 +1,7 @@
 package com.example.pokemonapp.activities.databases_navigation.moves;
 
+import static com.example.pokemonapp.util.Tools.dismissDialogWhenViewIsDrawn;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -31,6 +33,7 @@ public class MovesDatabaseActivity extends DatabaseNavigationActivity {
 
     @Override
     protected void configureRecyclerView() {
+        loadingDialog.show();
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
             @Override
             public List<Object> doInBackground() {
@@ -50,6 +53,7 @@ public class MovesDatabaseActivity extends DatabaseNavigationActivity {
                         startActivity(intent);
                     }
                 }));
+                dismissDialogWhenViewIsDrawn(recyclerView, loadingDialog);
             }
         }).execute();
     }

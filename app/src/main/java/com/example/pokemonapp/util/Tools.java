@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -109,6 +111,16 @@ public class Tools {
         editor.putString(key, json);
 
         editor.apply();
+    }
+
+    public static void dismissDialogWhenViewIsDrawn(ViewGroup viewGroup, ProgressDialog dialog) {
+        viewGroup.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                dialog.dismiss();
+                viewGroup.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
     }
 
 }

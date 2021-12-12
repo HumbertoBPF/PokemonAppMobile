@@ -1,7 +1,9 @@
 package com.example.pokemonapp.activities.databases_navigation;
 
+import static com.example.pokemonapp.util.Tools.loadingDialog;
 import static com.example.pokemonapp.util.Tools.setAppbarColor;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +17,7 @@ public abstract class DatabaseNavigationActivity extends AppCompatActivity {
     protected int colorAppbar;
     protected String titleAppbar;
     protected Class detailsActivity;
+    protected ProgressDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +25,7 @@ public abstract class DatabaseNavigationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_database_navigation);
 
         recyclerView = findViewById(R.id.pokemon_recycler_view);
+        loadingDialog = loadingDialog(this);
 
         configureAppbar();
         configureRecyclerView();

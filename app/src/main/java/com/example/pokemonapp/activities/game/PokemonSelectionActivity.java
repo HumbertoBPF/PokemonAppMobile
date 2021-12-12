@@ -1,5 +1,6 @@
 package com.example.pokemonapp.activities.game;
 
+import static com.example.pokemonapp.util.Tools.dismissDialogWhenViewIsDrawn;
 import static com.example.pokemonapp.util.Tools.getDistinctRandomIntegers;
 import static com.example.pokemonapp.util.Tools.loadTeam;
 import static com.example.pokemonapp.util.Tools.saveTeam;
@@ -40,6 +41,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
         super.onCreate(savedInstanceState);
 
         if (gameMode.equals(getResources().getString(R.string.label_random_mode))){
+            loadingDialog.show();
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override
                 public List<Object> doInBackground() {
@@ -54,6 +56,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
                     configureRecyclerView(playerRecyclerView, getResources().getString(R.string.filename_json_player_team));
                     configureRecyclerView(cpuRecyclerView, getResources().getString(R.string.filename_json_cpu_team));
                     configureNextActivityButton();
+                    dismissDialogWhenViewIsDrawn(cpuRecyclerView, loadingDialog);
                 }
             }).execute();
         }else if (gameMode.equals(getResources().getString(R.string.label_favorite_team_mode))){
@@ -61,6 +64,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
             playerTeamLabel.setText("Choose 6 pokémon for your team : ");
             cpuTeamLabel.setVisibility(View.GONE);
 
+            loadingDialog.show();
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override
                 public List<Object> doInBackground() {
@@ -90,6 +94,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
                                 }
                             }));
                     configureConfirmChoiceButton();
+                    dismissDialogWhenViewIsDrawn(playerRecyclerView, loadingDialog);
                 }
             }).execute();
         }

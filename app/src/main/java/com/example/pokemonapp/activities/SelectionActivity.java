@@ -1,9 +1,15 @@
 package com.example.pokemonapp.activities;
 
+import static com.example.pokemonapp.util.Tools.loadingDialog;
+
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -25,12 +31,14 @@ public abstract class SelectionActivity extends AppCompatActivity {
     protected String nextActivityButtonText;
     protected String titleAppbar;
     protected Class nextActivity;
+    protected ProgressDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTitle(titleAppbar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_selection);
+        loadingDialog = loadingDialog(this);
 
         getLayoutElements();
 
