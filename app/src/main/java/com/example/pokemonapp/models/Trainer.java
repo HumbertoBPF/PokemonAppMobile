@@ -176,7 +176,7 @@ public class Trainer {
     }
 
     public boolean receiveWrappingDamage(List<Pokemon> allPokemon){
-        if (getNbOfTurnsTrapped() > 0){
+        if (getNbOfTurnsTrapped() > 0 && currentPokemon.getPokemonServer().getFHp() > 0){
             for (Pokemon pokemon : allPokemon){
                 if (pokemon.getFId().equals(currentPokemon.getPokemonServer().getFId())){
                     int fullHp = pokemon.getFHp();
