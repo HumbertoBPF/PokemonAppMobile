@@ -22,4 +22,7 @@ public interface MoveDAO {
     @Query("SELECT * FROM Move WHERE fName = :name LIMIT 1")
     Move getMoveByName(String name);
 
+    @Query("SELECT COUNT(*) FROM Move;")
+    Long getNbOfElements();
+
 }

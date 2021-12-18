@@ -19,4 +19,7 @@ public interface TypeDAO {
     @Query("SELECT * FROM Type")
     List<Type> getAllTypesFromLocal();
 
+    @Query("SELECT COUNT(*) FROM Type;")
+    Long getNbOfElements();
+
 }

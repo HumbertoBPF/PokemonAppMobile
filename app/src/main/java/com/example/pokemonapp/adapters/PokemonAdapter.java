@@ -23,11 +23,11 @@ import java.util.List;
 public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonViewHolder> {
 
     private Context context;
-    private List<Pokemon> pokemons;
+    private List<Object> pokemons;
     private OnClickListener onClickListener;
     private PokemonTypeDAO pokemonTypeDAO;
 
-    public PokemonAdapter(Context context, List<Pokemon> pokemons, OnClickListener onClickListener){
+    public PokemonAdapter(Context context, List<Object> pokemons, OnClickListener onClickListener){
         this.context = context;
         this.pokemons = pokemons;
         this.onClickListener = onClickListener;
@@ -44,7 +44,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
     @Override
     public void onBindViewHolder(@NonNull PokemonAdapter.PokemonViewHolder holder, int position) {
-        holder.bind(pokemons.get(position));
+        holder.bind((Pokemon) pokemons.get(position));
     }
 
     @Override

@@ -26,7 +26,7 @@ public interface PokemonTypeDAO {
     @Query("SELECT type.fId FROM type INNER JOIN pokemon_type ON type.fId = pokemon_type.typeId WHERE pokemon_type.pokemonId = :pokemonId")
     List<Long> getTypesOfPokemonIds(long pokemonId);
 
-    @Query("SELECT COUNT(pokemon_type.pokemonId) FROM pokemon_type WHERE pokemon_type.typeId = :typeId")
-    Integer getPokemonWithThisType(long typeId);
+    @Query("SELECT COUNT(*) FROM pokemon_type WHERE pokemon_type.typeId = :typeId")
+    Integer getNbPokemonWithThisType(long typeId);
 
 }

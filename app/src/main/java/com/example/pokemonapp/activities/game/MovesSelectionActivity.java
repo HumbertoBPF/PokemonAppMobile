@@ -67,11 +67,7 @@ public class MovesSelectionActivity extends SelectionActivity {
 
             @Override
             public void onPostExecute(List<Object> objects) {
-                List<Move> moves = new ArrayList<>();
-                for (Object o : objects){
-                    moves.add((Move) o);
-                }
-                playerRecyclerView.setAdapter(new MovesAdapter(getApplicationContext(), moves, new MovesAdapter.OnClickListener() {
+                playerRecyclerView.setAdapter(new MovesAdapter(getApplicationContext(), objects, new MovesAdapter.OnClickListener() {
                     @Override
                     public void onClick(View view, Move move) {
                         if (playerTeam.get(currentPokemonIndex).getMoves().contains(move)){

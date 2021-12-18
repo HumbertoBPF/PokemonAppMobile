@@ -21,4 +21,7 @@ public interface PokemonMoveDAO {
             " WHERE pokemon_moves.pokemonId = :pokemonId")
     List<Move> getMovesOfPokemon(long pokemonId);
 
+    @Query("SELECT COUNT(*) FROM pokemon_moves;")
+    Long getNbOfElements();
+
 }

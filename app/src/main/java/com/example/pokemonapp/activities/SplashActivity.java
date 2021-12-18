@@ -1,12 +1,11 @@
 package com.example.pokemonapp.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.example.pokemonapp.MainActivity;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.pokemonapp.R;
 
 public class SplashActivity extends AppCompatActivity {

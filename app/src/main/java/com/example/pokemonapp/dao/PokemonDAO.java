@@ -19,4 +19,7 @@ public interface PokemonDAO {
     @Query("SELECT * FROM Pokemon")
     List<Pokemon> getPokemonFromLocal();
 
+    @Query("SELECT COUNT(*) FROM Pokemon;")
+    Long getNbOfElements();
+
 }

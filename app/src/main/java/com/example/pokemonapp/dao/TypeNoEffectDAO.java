@@ -25,4 +25,7 @@ public interface TypeNoEffectDAO {
             "WHERE type_no_effect.typeId = :typeId")
     List<Long> getNoEffectTypesIds(long typeId);
 
+    @Query("SELECT COUNT(*) FROM move_type;")
+    Long getNbOfElements();
+
 }

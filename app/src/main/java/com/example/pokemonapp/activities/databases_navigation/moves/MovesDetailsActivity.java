@@ -43,7 +43,7 @@ public class MovesDetailsActivity extends DatabaseDetailsActivity {
 
         moveTypeDAO = PokemonAppDatabase.getInstance(this).getMoveTypeDAO();
 
-        move = (Move) getIntent().getSerializableExtra("move");
+        move = (Move) getIntent().getSerializableExtra("databaseElement");
 
         getLayoutElements();
         bind();

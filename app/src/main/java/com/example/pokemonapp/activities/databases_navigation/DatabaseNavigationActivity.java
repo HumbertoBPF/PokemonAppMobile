@@ -1,23 +1,34 @@
 package com.example.pokemonapp.activities.databases_navigation;
 
+import static com.example.pokemonapp.util.Tools.dismissDialogWhenViewIsDrawn;
 import static com.example.pokemonapp.util.Tools.loadingDialog;
 import static com.example.pokemonapp.util.Tools.setAppbarColor;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Dao;
 
 import com.example.pokemonapp.R;
+import com.example.pokemonapp.async_task.BaseAsyncTask;
+
+import java.io.Serializable;
+import java.util.List;
 
 public abstract class DatabaseNavigationActivity extends AppCompatActivity {
 
     protected RecyclerView recyclerView;
+    protected TextView noDataTextView;
     protected int colorAppbar;
     protected String titleAppbar;
     protected Class detailsActivity;
     protected ProgressDialog loadingDialog;
+    protected Dao dao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +36,7 @@ public abstract class DatabaseNavigationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_database_navigation);
 
         recyclerView = findViewById(R.id.pokemon_recycler_view);
+        noDataTextView = findViewById(R.id.no_data_text_view);
         loadingDialog = loadingDialog(this);
 
         configureAppbar();
@@ -36,6 +48,33 @@ public abstract class DatabaseNavigationActivity extends AppCompatActivity {
         setTitle(titleAppbar);
     }
 
-    protected abstract void configureRecyclerView();
+    protected void configureRecyclerView() {
+        loadingDialog.show();
+        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+            @Override
+            public List<Object> doInBackground() {
+                return getResourcesFromLocal();
+            }
+
+            @Override
+            public void onPostExecute(List<Object> objects) {
+                if (objects.size() == 0){
+                    noDataTextView.setVisibility(View.VISIBLE);
+                }
+                recyclerView.setAdapter(getAdapter(objects));
+                dismissDialogWhenViewIsDrawn(recyclerView, loadingDialog);
+            }
+        }).execute();
+    }
+
+    protected abstract List<Object> getResourcesFromLocal();
+
+    protected abstract RecyclerView.Adapter getAdapter(List<Object> objects);
+
+    protected void showDetails(Object resource){
+        Intent intent = new Intent(getApplicationContext(),detailsActivity);
+        intent.putExtra("databaseElement", (Serializable) resource);
+        startActivity(intent);
+    }
 
 }

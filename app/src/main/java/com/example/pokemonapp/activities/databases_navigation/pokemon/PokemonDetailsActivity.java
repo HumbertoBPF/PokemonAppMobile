@@ -48,7 +48,7 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
 
         pokemonTypeDAO = PokemonAppDatabase.getInstance(this).getPokemonTypeDAO();
 
-        pokemon = (Pokemon) getIntent().getSerializableExtra("pokemon");
+        pokemon = (Pokemon) getIntent().getSerializableExtra("databaseElement");
 
         getLayoutElements();
         bind();

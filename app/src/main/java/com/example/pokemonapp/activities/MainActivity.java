@@ -1,4 +1,4 @@
-package com.example.pokemonapp;
+package com.example.pokemonapp.activities;
 
 import static com.example.pokemonapp.util.Tools.loadingDialog;
 
@@ -12,10 +12,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.example.pokemonapp.activities.ButtonsActivity;
+import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.databases_navigation.DatabasesActivity;
 import com.example.pokemonapp.activities.game.GameModeSelectionActivity;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
@@ -43,6 +44,7 @@ import com.example.pokemonapp.room.PokemonAppDatabase;
 import com.example.pokemonapp.services.PokemonDbService;
 import com.example.pokemonapp.util.Tools;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -80,7 +82,25 @@ public class MainActivity extends ButtonsActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        startActivity(new Intent(getApplicationContext(), GameModeSelectionActivity.class));
+                        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                            @Override
+                            public List<Object> doInBackground() {
+                                List<Object> objects = new ArrayList<>();
+                                objects.add((moveDAO.getNbOfElements() > 0 &&
+                                        typeDAO.getNbOfElements() > 0 && pokemonDAO.getNbOfElements() > 0));
+                                return objects;
+                            }
+
+                            @Override
+                            public void onPostExecute(List<Object> objects) {
+                                if ((Boolean) objects.get(0)){
+                                    startActivity(new Intent(getApplicationContext(), GameModeSelectionActivity.class));
+                                }else{
+                                    Toast.makeText(getApplicationContext(),"It seems that you have not synchronized data. Please " +
+                                            "click on the synchronization option to fetch data necessary for the game.",Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        }).execute();
                     }
                 });
         RoundedButton databaseButton = new RoundedButton(getResources().getString(R.string.databases_button_text),

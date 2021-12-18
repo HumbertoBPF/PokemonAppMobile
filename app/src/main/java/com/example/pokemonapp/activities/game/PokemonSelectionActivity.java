@@ -69,14 +69,16 @@ public class PokemonSelectionActivity extends SelectionActivity {
                 @Override
                 public List<Object> doInBackground() {
                     allPokemonList = pokemonDAO.getPokemonFromLocal();
-                    return null;
+                    List<Object> objects = new ArrayList<>();
+                    objects.addAll(allPokemonList);
+                    return objects;
                 }
 
                 @Override
                 public void onPostExecute(List<Object> objects) {
                     saveRandomTeam(getResources().getString(R.string.filename_json_cpu_team));
                     playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(),
-                            allPokemonList,
+                            objects,
                             new PokemonAdapter.OnClickListener() {
                                 @Override
                                 public void onClick(View view, Pokemon pokemon) {
@@ -128,7 +130,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
     }
 
     private void configureRecyclerView(RecyclerView recyclerView, String filenameJson) {
-        List<Pokemon> pokemonList = new ArrayList<>();
+        List<Object> pokemonList = new ArrayList<>();
         for (InGamePokemon inGamePokemon : loadTeam(getApplicationContext(), filenameJson)){
             pokemonList.add(inGamePokemon.getPokemonServer());
         }

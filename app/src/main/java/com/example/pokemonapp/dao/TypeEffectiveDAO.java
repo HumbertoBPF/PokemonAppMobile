@@ -23,4 +23,7 @@ public interface TypeEffectiveDAO {
     @Query("SELECT type.fId FROM type INNER JOIN type_effective ON type.fId = type_effective.effectiveId WHERE type_effective.typeId = :typeId")
     List<Long> getEffectiveTypesIds(long typeId);
 
+    @Query("SELECT COUNT(*) FROM type_effective;")
+    Long getNbOfElements();
+
 }

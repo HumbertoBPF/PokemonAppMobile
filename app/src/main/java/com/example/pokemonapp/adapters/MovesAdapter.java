@@ -23,11 +23,11 @@ import java.util.List;
 public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHolder> {
 
     private Context context;
-    private List<Move> moves;
+    private List<Object> moves;
     private OnClickListener onClickListener;
     private MoveTypeDAO moveTypeDAO;
 
-    public MovesAdapter(Context context, List<Move> moves, OnClickListener onClickListener){
+    public MovesAdapter(Context context, List<Object> moves, OnClickListener onClickListener){
         this.context = context;
         this.moves = moves;
         this.onClickListener = onClickListener;
@@ -44,7 +44,7 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
 
     @Override
     public void onBindViewHolder(@NonNull MovesAdapter.MovesViewHolder holder, int position) {
-        holder.bind(moves.get(position));
+        holder.bind((Move) moves.get(position));
     }
 
     @Override

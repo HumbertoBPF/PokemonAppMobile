@@ -25,4 +25,7 @@ public interface TypeNotEffectiveDAO {
             "WHERE type_not_effective.typeId = :typeId")
     List<Long> getNotEffectiveTypesIds(long typeId);
 
+    @Query("SELECT COUNT(*) FROM move_type;")
+    Long getNbOfElements();
+
 }

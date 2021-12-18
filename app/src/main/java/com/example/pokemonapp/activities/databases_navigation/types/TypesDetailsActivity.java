@@ -43,7 +43,7 @@ public class TypesDetailsActivity extends DatabaseDetailsActivity {
         layout = R.layout.activity_types_details;
         super.onCreate(savedInstanceState);
 
-        type = (Type) getIntent().getSerializableExtra("type");
+        type = (Type) getIntent().getSerializableExtra("databaseElement");
 
         pokemonTypeDAO = PokemonAppDatabase.getInstance(this).getPokemonTypeDAO();
         moveTypeDAO = PokemonAppDatabase.getInstance(this).getMoveTypeDAO();
@@ -72,8 +72,8 @@ public class TypesDetailsActivity extends DatabaseDetailsActivity {
             @Override
             public List<Object> doInBackground() {
                 List<Object> objects = new ArrayList<>();
-                objects.add(pokemonTypeDAO.getPokemonWithThisType(type.getFId()));
-                objects.add(moveTypeDAO.getMovesWithThisType(type.getFId()));
+                objects.add(pokemonTypeDAO.getNbPokemonWithThisType(type.getFId()));
+                objects.add(moveTypeDAO.getNbMovesWithThisType(type.getFId()));
                 objects.add(listOfTypesAsStringFromTypeList(typeEffectiveDAO.getEffectiveTypes(type.getFId())));
                 objects.add(listOfTypesAsStringFromTypeList(typeNotEffectiveDAO.getNotEffectiveTypes(type.getFId())));
                 objects.add(listOfTypesAsStringFromTypeList(typeNoEffectDAO.getNoEffectTypes(type.getFId())));

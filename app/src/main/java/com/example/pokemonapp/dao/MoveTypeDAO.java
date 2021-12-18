@@ -23,7 +23,10 @@ public interface MoveTypeDAO {
     @Query("SELECT * FROM type INNER JOIN move_type ON type.fId = move_type.typeId WHERE move_type.moveId = :moveId")
     List<Type> getTypesOfMove(long moveId);
 
-    @Query("SELECT COUNT(move_type.moveId) FROM move_type WHERE move_type.typeId = :typeId")
-    Integer getMovesWithThisType(long typeId);
+    @Query("SELECT COUNT(*) FROM move_type;")
+    Long getNbOfElements();
+
+    @Query("SELECT COUNT(*) FROM move_type WHERE move_type.typeId = :typeId")
+    Integer getNbMovesWithThisType(long typeId);
 
 }

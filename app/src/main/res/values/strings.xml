@@ -81,4 +81,5 @@
     <string name="trapping_damage">\u0020receive trapping damage</string>
     <string name="player_team_label">Player\'s team :</string>
     <string name="cpu_team_label">CPU team :</string>
+    <string name="no_data_message">No data available, \n consider to do a synchronization to get data from the server</string>
 </resources>

@@ -69,7 +69,7 @@
             android:name=".activities.databases_navigation.DatabasesActivity"
             android:exported="true" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:exported="true"/>
     </application>
 

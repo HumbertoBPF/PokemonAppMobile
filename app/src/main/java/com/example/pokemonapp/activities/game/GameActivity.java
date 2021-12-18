@@ -302,8 +302,8 @@ public class GameActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private List<Pokemon> getPokemonPlayer() {
-        List<Pokemon> pokemonList = new ArrayList<>();
+    private List<Object> getPokemonPlayer() {
+        List<Object> pokemonList = new ArrayList<>();
         for (InGamePokemon inGamePokemon : player.getTeam()){
             Pokemon pokemon = inGamePokemon.getPokemonServer();
             if (pokemon.getFHp() > 0){
@@ -338,7 +338,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void pickMoveForPlayer(OnChoiceListener onChoiceListener){
         if (!player.isLoading()){
-            List<Move> moves = getMovesPlayerPokemon();
+            List<Object> moves = getMovesPlayerPokemon();
             if (moves.size() == 0){
                 new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                     @Override
@@ -372,8 +372,8 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private List<Move> getMovesPlayerPokemon() {
-        List<Move> moves = new ArrayList<>();
+    private List<Object> getMovesPlayerPokemon() {
+        List<Object> moves = new ArrayList<>();
         for (Move move : player.getCurrentPokemon().getMoves()){
             if (move.getFPp() > 0){
                 moves.add(move);
