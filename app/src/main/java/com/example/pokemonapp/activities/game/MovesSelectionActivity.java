@@ -90,6 +90,7 @@ public class MovesSelectionActivity extends SelectionActivity {
     }
 
     private void configureConfirmChoiceButton(){
+        nextActivityButton.setBackgroundColor(getResources().getColor(R.color.red));
         nextActivityButton.setText("Done");
         nextActivityButton.setVisibility(View.VISIBLE);
         nextActivityButton.setOnClickListener(new View.OnClickListener() {
@@ -143,7 +144,7 @@ public class MovesSelectionActivity extends SelectionActivity {
                         recyclerView.setAdapter(new PokemonMovesAdapter(getApplicationContext(),
                                 inGamePokemonList));
                         if (key.equals(getResources().getString(R.string.filename_json_cpu_team))){
-                            configureNextActivityButton();
+                            configureNextActivityButton(true);
                             dismissDialogWhenViewIsDrawn(cpuRecyclerView,loadingDialog);
                         }
                     }

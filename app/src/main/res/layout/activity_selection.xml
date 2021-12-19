@@ -78,6 +78,7 @@
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:layout_marginTop="10dp"
+        android:backgroundTint="@color/button_disabled_color"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

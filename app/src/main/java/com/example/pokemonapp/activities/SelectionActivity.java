@@ -53,7 +53,10 @@ public abstract class SelectionActivity extends AppCompatActivity {
         cpuTeamLabel = findViewById(R.id.cpu_team_label);
     }
 
-    protected void configureNextActivityButton() {
+    protected void configureNextActivityButton(boolean enabled) {
+        if (enabled){
+            nextActivityButton.setBackgroundColor(getResources().getColor(R.color.red));
+        }
         nextActivityButton.setText(nextActivityButtonText);
         nextActivityButton.setVisibility(View.VISIBLE);
         nextActivityButton.setOnClickListener(new View.OnClickListener() {

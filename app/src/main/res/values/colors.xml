@@ -14,4 +14,5 @@
     <color name="types_theme_color">#3399ff</color>
     <color name="green_hp_bar">#339933</color>
     <color name="selection_gray">#D9D9D9</color>
+    <color name="button_disabled_color">#B2B2B2</color>
 </resources>

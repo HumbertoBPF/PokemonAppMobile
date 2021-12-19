@@ -55,7 +55,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
                     saveRandomTeam(getResources().getString(R.string.filename_json_cpu_team));
                     configureRecyclerView(playerRecyclerView, getResources().getString(R.string.filename_json_player_team));
                     configureRecyclerView(cpuRecyclerView, getResources().getString(R.string.filename_json_cpu_team));
-                    configureNextActivityButton();
+                    configureNextActivityButton(true);
                     dismissDialogWhenViewIsDrawn(cpuRecyclerView, loadingDialog);
                 }
             }).execute();
@@ -82,23 +82,36 @@ public class PokemonSelectionActivity extends SelectionActivity {
                             new PokemonAdapter.OnClickListener() {
                                 @Override
                                 public void onClick(View view, Pokemon pokemon) {
-                                    if (playerPokemonList.contains(pokemon)){
-                                        ((CardView) view).setCardBackgroundColor(getResources().getColor(R.color.white));
-                                        playerPokemonList.remove(pokemon);
-                                    }else{
-                                        if (playerPokemonList.size() >= 6){
-                                            Toast.makeText(getApplicationContext(), "You cannot choose more than 6 pokémon", Toast.LENGTH_LONG).show();
-                                        }else{
-                                            ((CardView) view).setCardBackgroundColor(getResources().getColor(R.color.selection_gray));
-                                            playerPokemonList.add(pokemon);
-                                        }
-                                    }
+                                    selectItemRecyclerView((CardView) view, pokemon);
+                                    updateConfirmButton();
                                 }
                             }));
                     configureConfirmChoiceButton();
                     dismissDialogWhenViewIsDrawn(playerRecyclerView, loadingDialog);
                 }
             }).execute();
+        }
+    }
+
+    protected void updateConfirmButton() {
+        if (playerPokemonList.size() == 6){
+            nextActivityButton.setBackgroundColor(getResources().getColor(R.color.red));
+        }else{
+            nextActivityButton.setBackgroundColor(getResources().getColor(R.color.button_disabled_color));
+        }
+    }
+
+    protected void selectItemRecyclerView(CardView view, Pokemon pokemon) {
+        if (playerPokemonList.contains(pokemon)){
+            view.setCardBackgroundColor(getResources().getColor(R.color.white));
+            playerPokemonList.remove(pokemon);
+        }else{
+            if (playerPokemonList.size() >= 6){
+                Toast.makeText(getApplicationContext(), "You cannot choose more than 6 pokémon", Toast.LENGTH_LONG).show();
+            }else{
+                view.setCardBackgroundColor(getResources().getColor(R.color.selection_gray));
+                playerPokemonList.add(pokemon);
+            }
         }
     }
 
@@ -121,7 +134,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
                     configureRecyclerView(playerRecyclerView, getResources().getString(R.string.filename_json_player_team));
                     configureRecyclerView(cpuRecyclerView, getResources().getString(R.string.filename_json_cpu_team));
                     rootScrollView.smoothScrollTo(0,0);
-                    configureNextActivityButton();
+                    configureNextActivityButton(false);
                 }else{
                     Toast.makeText(getApplicationContext(),"You have to choose 6 pokémon for your team",Toast.LENGTH_LONG).show();
                 }
