@@ -1,8 +1,13 @@
 package com.example.pokemonapp.activities.game;
 
 import static com.example.pokemonapp.util.Tools.getDistinctRandomIntegers;
+import static com.example.pokemonapp.util.Tools.goToNextActivityWithStringExtra;
 import static com.example.pokemonapp.util.Tools.loadTeam;
+import static com.example.pokemonapp.util.Tools.yesOrNoDialog;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -41,8 +46,12 @@ public class GameActivity extends AppCompatActivity {
 
     private TextView gameDescription;
     private RecyclerView playerRecyclerView;
+    private AlertDialog endGameDialog;
+    private AlertDialog quitGameDialog;
 
     private Handler handler = new Handler();
+
+    private String gameMode;
 
     private PokemonDAO pokemonDAO;
     private MoveDAO moveDAO;
@@ -67,8 +76,25 @@ public class GameActivity extends AppCompatActivity {
         getLayoutElements();
         getDAOs();
 
-        player.setTeam(loadTeam(this,getResources().getString(R.string.filename_json_player_team)));
-        cpu.setTeam(loadTeam(this,getResources().getString(R.string.filename_json_cpu_team)));
+        SharedPreferences sh = getSharedPreferences(getString(R.string.name_shared_preferences_file), MODE_PRIVATE);
+        gameMode = sh.getString(getString(R.string.key_game_mode),null);
+
+        quitGameDialog = yesOrNoDialog(this, "Quit game ?", "Do you want to quit the game ?", "Yes", "No",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        quitGameDialog.dismiss();
+                        finish();
+                    }
+                }, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        quitGameDialog.dismiss();
+                    }
+                });
+
+        player.setTeam(loadTeam(this,getString(R.string.filename_json_player_team)));
+        cpu.setTeam(loadTeam(this,getString(R.string.filename_json_cpu_team)));
         indexesSequenceCPU = getDistinctRandomIntegers(0,player.getTeam().size()-1,cpu.getTeam().size());
 
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
@@ -229,7 +255,7 @@ public class GameActivity extends AppCompatActivity {
             },6000);
         }else{
             Log.i(TAG,"CPU was defeated");
-           gameDescription.setText(R.string.foe_defeat_msg);
+            endGame(R.string.player_win_msg);
         }
     }
 
@@ -246,8 +272,30 @@ public class GameActivity extends AppCompatActivity {
             });
         }else{
             Log.i(TAG,"Player was defeated");
-            gameDescription.setText(R.string.player_defeat_msg);
+            endGame(R.string.cpu_win_msg);
         }
+    }
+
+    private void endGame(int idResultString) {
+        gameDescription.setText(idResultString);
+        endGameDialog = yesOrNoDialog(this, getString(idResultString),
+                "Would you like to play again this mode ?", "Yes", "No",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        endGameDialog.dismiss();
+                        goToNextActivityWithStringExtra(GameActivity.this,getString(R.string.key_game_mode),
+                                gameMode,PokemonSelectionActivity.class);
+                        finish();
+                    }
+                }, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        endGameDialog.dismiss();
+                        finish();
+                    }
+                });
+        endGameDialog.show();
     }
 
     private int getNbOfRemainingPokemonPlayer(){
@@ -679,6 +727,13 @@ public class GameActivity extends AppCompatActivity {
             }
         }
         return typeFactor;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!quitGameDialog.isShowing()){
+            quitGameDialog.show();
+        }
     }
 
     interface OnChoiceListener {

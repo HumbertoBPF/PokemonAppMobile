@@ -1,7 +1,7 @@
 package com.example.pokemonapp.activities.game;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
+import static com.example.pokemonapp.util.Tools.goToNextActivityWithStringExtra;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -24,7 +24,8 @@ public class GameModeSelectionActivity extends ButtonsActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        nextActivity(getResources().getString(R.string.label_favorite_team_mode));
+                        goToNextActivityWithStringExtra(GameModeSelectionActivity.this,getString(R.string.key_game_mode),
+                                getString(R.string.label_favorite_team_mode), PokemonSelectionActivity.class);
                     }
                 });
         RoundedButton strategyMode = new RoundedButton(getResources().getString(R.string.strategy_mode_button_text),
@@ -32,7 +33,8 @@ public class GameModeSelectionActivity extends ButtonsActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                        nextActivity(getResources().getString(R.string.label_strategy_mode));
+//                        goToNextActivityWithStringExtra(getApplicationContext(),getString(R.string.key_game_mode),
+//                                getString(R.string.label_strategy_mode), PokemonSelectionActivity.class);
                         Toast.makeText(getApplicationContext(),"Not available for the moment",Toast.LENGTH_LONG).show();
                     }
                 });
@@ -41,7 +43,8 @@ public class GameModeSelectionActivity extends ButtonsActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        nextActivity(getResources().getString(R.string.label_random_mode));
+                        goToNextActivityWithStringExtra(GameModeSelectionActivity.this,getString(R.string.key_game_mode),
+                                getString(R.string.label_random_mode), PokemonSelectionActivity.class);
                     }
                 });
         buttons.add(favoriteTeamMode);
@@ -49,14 +52,4 @@ public class GameModeSelectionActivity extends ButtonsActivity {
         buttons.add(randomMode);
     }
 
-    private void nextActivity(String gameMode){
-        SharedPreferences sharedPreferences = getSharedPreferences(
-                getResources().getString(R.string.name_shared_preferences_file), MODE_PRIVATE);
-
-        SharedPreferences.Editor myEdit = sharedPreferences.edit();
-        myEdit.putString(getResources().getString(R.string.key_game_mode), gameMode);
-        myEdit.apply();
-
-        startActivity(new Intent(this,PokemonSelectionActivity.class));
-    }
 }

@@ -2,10 +2,12 @@ package com.example.pokemonapp.util;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.view.ViewGroup;
@@ -121,6 +123,17 @@ public class Tools {
                 viewGroup.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
+    }
+
+    public static void goToNextActivityWithStringExtra(Activity activity, String key, String gameMode, Class nextActivity){
+        SharedPreferences sharedPreferences = activity.getApplicationContext().getSharedPreferences(
+                activity.getApplicationContext().getResources().getString(R.string.name_shared_preferences_file), MODE_PRIVATE);
+
+        SharedPreferences.Editor myEdit = sharedPreferences.edit();
+        myEdit.putString(key, gameMode);
+        myEdit.apply();
+
+        activity.startActivity(new Intent(activity.getApplicationContext(), nextActivity));
     }
 
 }

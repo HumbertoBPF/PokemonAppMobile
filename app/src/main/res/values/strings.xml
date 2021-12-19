@@ -61,8 +61,8 @@
     <string name="filename_json_cpu_team">CPU</string>
     <string name="choose_pokemon_msg">Choose a pokémon</string>
     <string name="choose_move_msg">Choose a move</string>
-    <string name="foe_defeat_msg">Foe was defeated</string>
-    <string name="player_defeat_msg">Player was defeated</string>
+    <string name="player_win_msg">Player won</string>
+    <string name="cpu_win_msg">Foe won</string>
     <string name="cpu_chooses">CPU chooses\u0020</string>
     <string name="player_chooses">You choose\u0020</string>
     <string name="foe_possessive">Foe\'s\u0020</string>
