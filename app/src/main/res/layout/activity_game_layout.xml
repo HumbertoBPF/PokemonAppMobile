@@ -247,7 +247,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        app:layout_constraintBottom_toTopOf="@id/player_recycler_view"
+        app:layout_constraintBottom_toTopOf="@id/player_choices_recycler_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:cardCornerRadius="10dp">
@@ -267,7 +267,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/player_recycler_view"
+        android:id="@+id/player_choices_recycler_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="5dp"

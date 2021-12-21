@@ -20,10 +20,11 @@ import com.example.pokemonapp.entities.Pokemon;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Trainer {
 
-    private String TAG = "GameActivity";
+    private final String TAG = "GameActivity";
     private List<InGamePokemon> team;
     private InGamePokemon currentPokemon;
     private Move currentMove;
@@ -31,8 +32,8 @@ public class Trainer {
     private ProgressBar currentPokemonProgressBarHP;
     private List<ImageView> pokeballs = new ArrayList<>();
     private ImageView pokemonImageView;
-    private boolean loading = false;
-    private boolean flinched = false;
+    private boolean isLoading = false;
+    private boolean isFlinched = false;
     private int nbOfTurnsTrapped = 0;
     private int remainingPokemon = 6;
 
@@ -63,40 +64,31 @@ public class Trainer {
         this.currentMove = currentMove;
     }
 
-    public TextView getCurrentPokemonName() {
-        return currentPokemonName;
-    }
-
     public void setCurrentPokemonName(TextView currentPokemonName) {
         this.currentPokemonName = currentPokemonName;
-    }
-
-    public ProgressBar getCurrentPokemonProgressBarHP() {
-        return currentPokemonProgressBarHP;
     }
 
     public void setCurrentPokemonProgressBarHP(ProgressBar currentPokemonProgressBarHP) {
         this.currentPokemonProgressBarHP = currentPokemonProgressBarHP;
     }
 
-    public List<ImageView> getPokeballs() {
-        return pokeballs;
-    }
-
-    public void setPokeballs(List<ImageView> pokeballs) {
-        this.pokeballs = pokeballs;
-    }
-
-    public ImageView getPokemonImageView() {
-        return pokemonImageView;
-    }
-
     public void setPokemonImageView(ImageView pokemonImageView) {
         this.pokemonImageView = pokemonImageView;
     }
 
-    public void setPokemonImageResource(int id) {
-        this.pokemonImageView.setImageResource(id);
+    public void setPokemonImageResource(Context context, Position position) {
+        String imageNameSuffix = position.getImageNameSuffix();
+        if (imageNameSuffix != null){
+            String pokemonImageName = "pokemon_"+
+                    getCurrentPokemon().getPokemonServer().getFName().toLowerCase(Locale.ROOT)
+                            .replace("'","")
+                            .replace(" ","_")
+                            .replace(".","") + imageNameSuffix;
+            int imageId = context.getResources().getIdentifier(pokemonImageName,"drawable",context.getPackageName());
+            this.pokemonImageView.setImageResource(imageId);
+        }else{
+            this.pokemonImageView.setImageResource(0);
+        }
     }
 
     public void addPokeball(ImageView pokeball) {
@@ -104,19 +96,19 @@ public class Trainer {
     }
 
     public boolean isLoading() {
-        return loading;
+        return isLoading;
     }
 
     public void setLoading(boolean loading) {
-        this.loading = loading;
+        this.isLoading = loading;
     }
 
     public boolean isFlinched() {
-        return flinched;
+        return isFlinched;
     }
 
     public void setFlinched(boolean flinched) {
-        this.flinched = flinched;
+        this.isFlinched = flinched;
     }
 
     public int getNbOfTurnsTrapped() {
@@ -127,9 +119,13 @@ public class Trainer {
         this.nbOfTurnsTrapped = nbOfTurnsTrapped;
     }
 
+    /**
+     * Reset some trainer attributes (isLoading, isFlinched and nbOfTurnsTrapped) when the current
+     * pokémon faints
+     */
     public void reset(){
-        this.loading = false;
-        this.flinched = false;
+        this.isLoading = false;
+        this.isFlinched = false;
         this.nbOfTurnsTrapped = 0;
     }
 
@@ -180,7 +176,7 @@ public class Trainer {
             for (Pokemon pokemon : allPokemon){
                 if (pokemon.getFId().equals(currentPokemon.getPokemonServer().getFId())){
                     int fullHp = pokemon.getFHp();
-                    this.getCurrentPokemon().getPokemonServer().setFHp((int) (this.getCurrentPokemon().getPokemonServer().getFHp() - fullHp/8));
+                    this.getCurrentPokemon().getPokemonServer().setFHp((this.getCurrentPokemon().getPokemonServer().getFHp() - fullHp/8));
                     Log.i(TAG,"DAMAGE WRAPPED : "+(fullHp/8));
                     break;
                 }
@@ -220,8 +216,11 @@ public class Trainer {
         return (random > accuracy);
     }
 
-    public void setTextHP(Context context, List<Pokemon> allPokemon) {
-        currentPokemonName.setText(currentPokemon.getPokemonServer().getFName());
+    public void updateCurrentPokemonName(){
+        this.currentPokemonName.setText(currentPokemon.getPokemonServer().getFName());
+    }
+
+    public void setHpBar(Context context, List<Pokemon> allPokemon) {
         long fullHp = 100;
         for (Pokemon pokemon : allPokemon){
             if (pokemon.getFId().equals(currentPokemon.getPokemonServer().getFId())){
@@ -254,10 +253,30 @@ public class Trainer {
         animation.start();
     }
 
-    public void countDefeatedPokemon(){
+    /**
+     * Updates the UI (pokéballs below the HP bar) and the number of remaining pokémon
+     */
+    public void updateRemainingPokemon(){
         this.pokeballs.get(remainingPokemon-1).setImageResource(R.drawable.pokeball_defeated);
         this.remainingPokemon--;
         Log.i(TAG,"REMAINING POKEMON : "+this.remainingPokemon);
+    }
+
+    public enum Position{
+
+        FRONT(""),
+        BACK("_back"),
+        DEFEATED(null);
+
+        private final String imageNameSuffix;
+
+        Position(String imageNameSuffix){
+            this.imageNameSuffix = imageNameSuffix;
+        }
+
+        public String getImageNameSuffix() {
+            return imageNameSuffix;
+        }
     }
 
 }

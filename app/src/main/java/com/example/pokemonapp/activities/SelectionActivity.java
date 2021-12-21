@@ -47,7 +47,7 @@ public abstract class SelectionActivity extends AppCompatActivity {
     protected void getLayoutElements() {
         rootScrollView = findViewById(R.id.root_scroll_view);
         nextActivityButton = findViewById(R.id.next_activity_button);
-        playerRecyclerView = findViewById(R.id.player_recycler_view);
+        playerRecyclerView = findViewById(R.id.player_choices_recycler_view);
         cpuRecyclerView = findViewById(R.id.cpu_recycler_view);
         playerTeamLabel = findViewById(R.id.player_team_label);
         cpuTeamLabel = findViewById(R.id.cpu_team_label);

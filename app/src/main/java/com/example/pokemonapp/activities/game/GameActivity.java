@@ -1,5 +1,8 @@
 package com.example.pokemonapp.activities.game;
 
+import static com.example.pokemonapp.models.Trainer.Position.BACK;
+import static com.example.pokemonapp.models.Trainer.Position.DEFEATED;
+import static com.example.pokemonapp.models.Trainer.Position.FRONT;
 import static com.example.pokemonapp.util.Tools.getDistinctRandomIntegers;
 import static com.example.pokemonapp.util.Tools.goToNextActivityWithStringExtra;
 import static com.example.pokemonapp.util.Tools.loadTeam;
@@ -38,18 +41,17 @@ import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class GameActivity extends AppCompatActivity {
 
     private final String TAG = "GameActivity";
 
     private TextView gameDescription;
-    private RecyclerView playerRecyclerView;
+    private RecyclerView playerChoicesRecyclerView; // recyclerView containing items to be chosen by the player (moves and pokémon)
     private AlertDialog endGameDialog;
     private AlertDialog quitGameDialog;
 
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
     private String gameMode;
 
@@ -62,7 +64,7 @@ public class GameActivity extends AppCompatActivity {
     private TypeNoEffectDAO typeNoEffectDAO;
 
     private List<Pokemon> allPokemon;
-    private List<Integer> indexesSequenceCPU;
+    private List<Integer> pokemonChosenByCPU;   // indexes of the pokémon to be chosen by CPU everytime it is necessary
 
     private final Trainer player = new Trainer();
     private final Trainer cpu = new Trainer();
@@ -95,7 +97,7 @@ public class GameActivity extends AppCompatActivity {
 
         player.setTeam(loadTeam(this,getString(R.string.filename_json_player_team)));
         cpu.setTeam(loadTeam(this,getString(R.string.filename_json_cpu_team)));
-        indexesSequenceCPU = getDistinctRandomIntegers(0,player.getTeam().size()-1,cpu.getTeam().size());
+        pokemonChosenByCPU = getDistinctRandomIntegers(0,player.getTeam().size()-1,cpu.getTeam().size());
 
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
             @Override
@@ -126,7 +128,8 @@ public class GameActivity extends AppCompatActivity {
 
     private void getLayoutElements() {
         gameDescription = findViewById(R.id.game_description);
-        playerRecyclerView = findViewById(R.id.player_recycler_view);
+        playerChoicesRecyclerView = findViewById(R.id.player_choices_recycler_view);
+
         player.setCurrentPokemonName(findViewById(R.id.player_pokemon_name));
         player.setCurrentPokemonProgressBarHP(findViewById(R.id.progress_bar_hp_player));
         player.addPokeball(findViewById(R.id.player_pokeball_1));
@@ -136,6 +139,7 @@ public class GameActivity extends AppCompatActivity {
         player.addPokeball(findViewById(R.id.player_pokeball_5));
         player.addPokeball(findViewById(R.id.player_pokeball_6));
         player.setPokemonImageView(findViewById(R.id.player_pokemon_image));
+
         cpu.setCurrentPokemonName(findViewById(R.id.cpu_pokemon_name));
         cpu.setCurrentPokemonProgressBarHP(findViewById(R.id.progress_bar_hp_cpu));
         cpu.addPokeball(findViewById(R.id.cpu_pokeball_1));
@@ -171,6 +175,7 @@ public class GameActivity extends AppCompatActivity {
                         public void onChoice() {
                             Log.i(TAG,"Pokemon player speed : "+player.getCurrentPokemon().getPokemonServer().getFSpeed());
                             Log.i(TAG,"Pokemon CPU speed : "+cpu.getCurrentPokemon().getPokemonServer().getFSpeed());
+                            // according to the speed attribute of the pokémon, we decide which pokémon attacks first
                             if (player.getCurrentPokemon().getPokemonServer().getFSpeed()<cpu.getCurrentPokemon().getPokemonServer().getFSpeed()){
                                 attack(cpu.getCurrentPokemon(),player.getCurrentPokemon(),cpu.getCurrentMove(), new OnChoiceListener() {
                                     @Override
@@ -225,27 +230,44 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Updates the UI when a CPU's pokémon is defeated and decides what to do next.
+     */
     public void onCpuPokemonDefeat() {
-        cpu.countDefeatedPokemon();
+        // updates UI
+        cpu.updateRemainingPokemon();
         gameDescription.setText(getString(R.string.foe_possessive) +
                 cpu.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.fainted));
-        cpu.setPokemonImageResource(0);
+        cpu.setPokemonImageResource(this,DEFEATED);
+        // decides the next step
         handler.postDelayed(this::pickAnotherCpuPokemonOrEndgame, 3000);
     }
 
+    /**
+     * Updates the UI when a player's pokémon is defeated and decides what to do next.
+     */
     private void onPlayerPokemonDefeat() {
-        player.countDefeatedPokemon();
+        player.updateRemainingPokemon();
         gameDescription.setText(getString(R.string.player_possessive) +
                 player.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.fainted));
-        player.setPokemonImageResource(0);
+        player.setPokemonImageResource(this,DEFEATED);
         handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame, 3000);
     }
 
+    /**
+     * Decides what to do after the defeat of a CPU's pokémon (finish the game or select another
+     * pokémon).
+     */
     private void pickAnotherCpuPokemonOrEndgame() {
-        cpu.reset();
-        player.setNbOfTurnsTrapped(0);
-        if (!indexesSequenceCPU.isEmpty()){
+        if (!pokemonChosenByCPU.isEmpty()){ // if the CPU still has pokémon to use, pick one and battle again
             Log.i(TAG,"CPU changes its pokemon");
+
+            // we reset some attributes of the pokémon that was defeated
+            cpu.reset();
+            // the nbOfTurnsTrapped of the pokémon that stays on the field is set to 0 since the pokémon
+            // which was trapping it was defeated
+            player.setNbOfTurnsTrapped(0);
+
             pickPokemonForCPU();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -253,24 +275,33 @@ public class GameActivity extends AppCompatActivity {
                     battle();
                 }
             },6000);
-        }else{
+        }else{  // otherwise, finish game
             Log.i(TAG,"CPU was defeated");
             endGame(R.string.player_win_msg);
         }
     }
 
+    /**
+     * Decides what to do after the defeat of a player's pokémon (finish the game or select another
+     * pokémon).
+     */
     private void pickAnotherPlayerPokemonOrEndGame() {
-        player.reset();
-        cpu.setNbOfTurnsTrapped(0);
-        if (getNbOfRemainingPokemonPlayer() > 0){
+        if (getNbOfRemainingPokemon(player) > 0){   // if the player still has pokémon to use, pick one and battle again
             Log.i(TAG,"Player changes its pokemon");
+
+            // we reset some attributes of the pokémon that was defeated
+            player.reset();
+            // the nbOfTurnsTrapped of the pokémon that stays on the field is set to 0 since the pokémon
+            // which was trapping it was defeated
+            cpu.setNbOfTurnsTrapped(0);
+
             pickPokemonForPlayer(new OnChoiceListener() {
                 @Override
                 public void onChoice() {
                     battle();
                 }
             });
-        }else{
+        }else{  // otherwise, finish game
             Log.i(TAG,"Player was defeated");
             endGame(R.string.cpu_win_msg);
         }
@@ -298,9 +329,13 @@ public class GameActivity extends AppCompatActivity {
         endGameDialog.show();
     }
 
-    private int getNbOfRemainingPokemonPlayer(){
+    /**
+     * @param trainer concerned trainer
+     * @return number of pokémon whose HP is greater than 0 (i.e. that have not fainted yet)
+     */
+    private int getNbOfRemainingPokemon(Trainer trainer){
         int nbOfRemainingPokemon = 0;
-        for (InGamePokemon inGamePokemon : player.getTeam()){
+        for (InGamePokemon inGamePokemon : trainer.getTeam()){
             if (inGamePokemon.getPokemonServer().getFHp() > 0){
                 nbOfRemainingPokemon++;
             }
@@ -309,33 +344,36 @@ public class GameActivity extends AppCompatActivity {
         return nbOfRemainingPokemon;
     }
 
+    /**
+     * Asks the player to choose a pokémon by showing and configuring the RecyclerView with the pokémon
+     * @param onChoiceListener code to be executed after the player's choice.
+     */
     private void pickPokemonForPlayer(OnChoiceListener onChoiceListener){
+        // ask the player to choose a pokémon and shows the options
         gameDescription.setText(R.string.choose_pokemon_msg);
-        playerRecyclerView.setVisibility(View.VISIBLE);
-        playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(), getPokemonPlayer(),
+        playerChoicesRecyclerView.setVisibility(View.VISIBLE);
+
+        playerChoicesRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(), getAlivePokemonPlayer(),
             new PokemonAdapter.OnClickListener() {
                 @Override
                 public void onClick(View view, Pokemon pokemon) {
+                    // selects the InGamePokémon corresponding to the selected pokémon (same id)
                     for (InGamePokemon inGamePokemon : player.getTeam()){
                         if (inGamePokemon.getPokemonServer().getFId().equals(pokemon.getFId())){
                             player.setCurrentPokemon(inGamePokemon);
-                            playerRecyclerView.setVisibility(View.GONE);
+                            playerChoicesRecyclerView.setVisibility(View.GONE);
                         }
                     }
+                    // announces player's choice
                     Pokemon pokemonServerPlayer = player.getCurrentPokemon().getPokemonServer();
                     gameDescription.setText(getString(R.string.player_chooses)+pokemonServerPlayer.getFName());
+                    // update pokémon data UI after a while
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            player.setTextHP(getApplicationContext(),allPokemon);
-                            String pokemonImageName = "pokemon_"+
-                                    pokemon.getFName().toLowerCase(Locale.ROOT)
-                                            .replace("'","")
-                                            .replace(" ","_")
-                                            .replace(".","")+
-                                    "_back";
-                            int imageId = getResources().getIdentifier(pokemonImageName,"drawable",getPackageName());
-                            player.setPokemonImageResource(imageId);
+                            player.setPokemonImageResource(getApplicationContext(),BACK);
+                            player.setHpBar(getApplicationContext(),allPokemon);
+                            player.updateCurrentPokemonName();
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -349,8 +387,11 @@ public class GameActivity extends AppCompatActivity {
         );
     }
 
+    /**
+     * Returns the list of player's pokémon that are still alive.
+     */
     @NonNull
-    private List<Object> getPokemonPlayer() {
+    private List<Object> getAlivePokemonPlayer() {
         List<Object> pokemonList = new ArrayList<>();
         for (InGamePokemon inGamePokemon : player.getTeam()){
             Pokemon pokemon = inGamePokemon.getPokemonServer();
@@ -361,22 +402,22 @@ public class GameActivity extends AppCompatActivity {
         return pokemonList;
     }
 
+    /**
+     * Picks the next available pokémon for the CPU and updates the pokémon data UI.
+     */
     private void pickPokemonForCPU(){
-        if (!indexesSequenceCPU.isEmpty()){
-            cpu.setCurrentPokemon(cpu.getTeam().get(indexesSequenceCPU.get(0)));
-            indexesSequenceCPU.remove(0);
+        if (!pokemonChosenByCPU.isEmpty()){
+            // chooses the next pokémon available and removes its index from the list 'pokemonChosenByCPU'
+            cpu.setCurrentPokemon(cpu.getTeam().get(pokemonChosenByCPU.get(0)));
+            pokemonChosenByCPU.remove(0);
             gameDescription.setText(getString(R.string.cpu_chooses)+cpu.getCurrentPokemon().getPokemonServer().getFName());
+            // updates pokémon data UI after a while
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    String pokemonImageName = "pokemon_"+
-                            cpu.getCurrentPokemon().getPokemonServer().getFName().toLowerCase(Locale.ROOT)
-                                    .replace("'","")
-                                    .replace(" ","_")
-                                    .replace(".","");
-                    int imageId = getResources().getIdentifier(pokemonImageName,"drawable",getPackageName());
-                    cpu.setPokemonImageResource(imageId);
-                    cpu.setTextHP(getApplicationContext(), allPokemon);
+                    cpu.setPokemonImageResource(getApplicationContext(),FRONT);
+                    cpu.setHpBar(getApplicationContext(), allPokemon);
+                    cpu.updateCurrentPokemonName();
                 }
             },3000);
         }else{
@@ -384,10 +425,16 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Manage the selection of a move for the player's pokémon by either asking the player to select a move
+     * when there are remaining moves (i.e. moves whose number of pp is greater than 0) to be selected
+     * or selecting struggle when there is no remaining move.
+     * @param onChoiceListener code to be executed after the player's choice
+     */
     private void pickMoveForPlayer(OnChoiceListener onChoiceListener){
         if (!player.isLoading()){
-            List<Object> moves = getMovesPlayerPokemon();
-            if (moves.size() == 0){
+            List<Move> moves = getRemainingMoves(player.getCurrentPokemon());
+            if (moves.isEmpty()){   // if there is no move remaining, use struggle
                 new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                     @Override
                     public List<Object> doInBackground() {
@@ -403,26 +450,32 @@ public class GameActivity extends AppCompatActivity {
                         onChoiceListener.onChoice();
                     }
                 }).execute();
-            }else{
+            }else{  // else, ask the player to choose a mode by presenting the moves in a RecyclerView
                 gameDescription.setText(R.string.choose_move_msg);
-                playerRecyclerView.setVisibility(View.VISIBLE);
-                playerRecyclerView.setAdapter(new MovesAdapter(this, moves, new MovesAdapter.OnClickListener() {
+                playerChoicesRecyclerView.setVisibility(View.VISIBLE);
+                List<Object> moveObjects = new ArrayList<>();
+                moveObjects.addAll(moves);
+                playerChoicesRecyclerView.setAdapter(new MovesAdapter(this, moveObjects, new MovesAdapter.OnClickListener() {
                     @Override
                     public void onClick(View view, Move move) {
                         player.setCurrentMove(move);
-                        playerRecyclerView.setVisibility(View.GONE);
+                        playerChoicesRecyclerView.setVisibility(View.GONE);
                         onChoiceListener.onChoice();
                     }
                 }));
             }
-        }else{
+        }else{  // if pokémon is loading an attack or reloading, skips this step
             onChoiceListener.onChoice();
         }
     }
 
-    private List<Object> getMovesPlayerPokemon() {
-        List<Object> moves = new ArrayList<>();
-        for (Move move : player.getCurrentPokemon().getMoves()){
+    /**
+     * @param inGamePokemon pokémon concerned.
+     * @return List of moves whose the number of pp is greater than 0 .
+     */
+    private List<Move> getRemainingMoves(InGamePokemon inGamePokemon) {
+        List<Move> moves = new ArrayList<>();
+        for (Move move : inGamePokemon.getMoves()){
             if (move.getFPp() > 0){
                 moves.add(move);
             }
@@ -430,15 +483,15 @@ public class GameActivity extends AppCompatActivity {
         return moves;
     }
 
+    /**
+     * Manage the choice of a move for the CPU. This choice is random when there are remaining moves
+     * (i.e. moves whose number of pps is greater than 0). Otherwise, the move Struggle is picked.
+     * @param onChoiceListener code to be executed after the choice of a move for the CPU
+     */
     private void pickMoveForCpu(OnChoiceListener onChoiceListener){
         if (!cpu.isLoading()) {
-            List<Move> availableMoves = new ArrayList<>();
-            for (Move move : cpu.getCurrentPokemon().getMoves()) {
-                if (move.getFPp() > 0) {
-                    availableMoves.add(move);
-                }
-            }
-            if (availableMoves.isEmpty()) {
+            List<Move> moves = getRemainingMoves(cpu.getCurrentPokemon());
+            if (moves.isEmpty()) {  // if there is no move remaining, use struggle
                 new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                     @Override
                     public List<Object> doInBackground() {
@@ -454,12 +507,12 @@ public class GameActivity extends AppCompatActivity {
                         onChoiceListener.onChoice();
                     }
                 }).execute();
-            } else {
-                int randomIndex = getDistinctRandomIntegers(0, availableMoves.size() - 1, 1).get(0);
-                cpu.setCurrentMove(availableMoves.get(randomIndex));
+            } else {    // else, pick randomly a move among the remaining ones
+                int randomIndex = getDistinctRandomIntegers(0, moves.size() - 1, 1).get(0);
+                cpu.setCurrentMove(moves.get(randomIndex));
                 onChoiceListener.onChoice();
             }
-        }else{
+        }else{  // if pokémon is loading an attack or reloading, skips this step
             onChoiceListener.onChoice();
         }
     }
@@ -641,8 +694,8 @@ public class GameActivity extends AppCompatActivity {
                 }
             }
 
-            player.setTextHP(this, allPokemon);
-            cpu.setTextHP(this, allPokemon);
+            player.setHpBar(this, allPokemon);
+            cpu.setHpBar(this, allPokemon);
 
             hitAgainOrStop(defendingPokemon, move, stab, typeFactor, messageEffectiveness, currentHit, nbOfHits, onChoiceListener);
         }
@@ -689,8 +742,8 @@ public class GameActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                player.setTextHP(getApplicationContext(), allPokemon);
-                cpu.setTextHP(getApplicationContext(), allPokemon);
+                player.setHpBar(getApplicationContext(), allPokemon);
+                cpu.setHpBar(getApplicationContext(), allPokemon);
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
