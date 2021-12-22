@@ -94,6 +94,7 @@ public class GameActivity extends AppCompatActivity {
                         quitGameDialog.dismiss();
                     }
                 });
+        quitGameDialog.setCancelable(false);
 
         player.setTeam(loadTeam(this,getString(R.string.filename_json_player_team)));
         cpu.setTeam(loadTeam(this,getString(R.string.filename_json_cpu_team)));
@@ -233,7 +234,7 @@ public class GameActivity extends AppCompatActivity {
     /**
      * Updates the UI when a CPU's pokémon is defeated and decides what to do next.
      */
-    public void onCpuPokemonDefeat() {
+    private void onCpuPokemonDefeat() {
         // updates UI
         cpu.updateRemainingPokemon();
         gameDescription.setText(getString(R.string.foe_possessive) +
@@ -247,10 +248,12 @@ public class GameActivity extends AppCompatActivity {
      * Updates the UI when a player's pokémon is defeated and decides what to do next.
      */
     private void onPlayerPokemonDefeat() {
+        // updates UI
         player.updateRemainingPokemon();
         gameDescription.setText(getString(R.string.player_possessive) +
                 player.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.fainted));
         player.setPokemonImageResource(this,DEFEATED);
+        // decides the next step
         handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame, 3000);
     }
 
@@ -307,6 +310,11 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Shows the result to the player in the TextView on the bottom of the screen and shows a play
+     * again dialog
+     * @param idResultString text to be shown with the result of the match
+     */
     private void endGame(int idResultString) {
         gameDescription.setText(idResultString);
         endGameDialog = yesOrNoDialog(this, getString(idResultString),
@@ -326,6 +334,7 @@ public class GameActivity extends AppCompatActivity {
                         finish();
                     }
                 });
+        endGameDialog.setCancelable(false);
         endGameDialog.show();
     }
 
@@ -388,7 +397,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     /**
-     * Returns the list of player's pokémon that are still alive.
+     * Returns the list of player's pokémon that are still alive (whose HP is greater than 0).
      */
     @NonNull
     private List<Object> getAlivePokemonPlayer() {
@@ -428,7 +437,7 @@ public class GameActivity extends AppCompatActivity {
     /**
      * Manage the selection of a move for the player's pokémon by either asking the player to select a move
      * when there are remaining moves (i.e. moves whose number of pp is greater than 0) to be selected
-     * or selecting struggle when there is no remaining move.
+     * or selecting 'Struggle' when there is no remaining move.
      * @param onChoiceListener code to be executed after the player's choice
      */
     private void pickMoveForPlayer(OnChoiceListener onChoiceListener){
@@ -521,6 +530,8 @@ public class GameActivity extends AppCompatActivity {
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
             @Override
             public List<Object> doInBackground() {
+
+                // get the attacking and defending pokémon as well as their types (the types from local DB)
                 Pokemon attackingPokemonServer = attackingPokemon.getPokemonServer();
                 Pokemon defendingPokemonServer = defendingPokemon.getPokemonServer();
 
@@ -532,6 +543,8 @@ public class GameActivity extends AppCompatActivity {
                 Log.i(TAG,"Attacking pokémon types : "+attackingPokemonTypes.toString());
                 Log.i(TAG,"Defending pokémon types : "+defendingPokemonTypes.toString());
 
+                // get the types against which the type of the attack is effective, not effective and not effective at all
+                // from local DB
                 List<Long> effectiveTypes = typeEffectiveDAO.getEffectiveTypesIds(moveType);
                 List<Long> notEffectiveTypes = typeNotEffectiveDAO.getNotEffectiveTypesIds(moveType);
                 List<Long> noEffectType = typeNoEffectDAO.getNoEffectTypesIds(moveType);
@@ -562,8 +575,12 @@ public class GameActivity extends AppCompatActivity {
                 List<Long> notEffectiveTypes = (List<Long>) objects.get(4);
                 List<Long> noEffectType = (List<Long>) objects.get(5);
 
+                // if the attacking pokémon has the same type of the move that is inflicted, the move
+                // get a damage bonus of 50%
                 double stab = attackingPokemonTypes.contains(moveType) ? 1.5 : 1.0;
+                // factor due to the effectiveness of the type of the move against the ones of the defending pokémon
                 double typeFactor = computeTypeFactor(defendingPokemonTypes, effectiveTypes, notEffectiveTypes, noEffectType);
+                // message to be shown as a feedback about the typeFactor
                 String messageEffectiveness = getMessageEffectiveness(typeFactor);
 
                 int minHits = move.getFMinTimesPerTour();
@@ -571,86 +588,14 @@ public class GameActivity extends AppCompatActivity {
 
                 int nbOfHits = getDistinctRandomIntegers(minHits,maxHits,1).get(0);
 
-                if (move.getFRoundsToLoad() == 1){
-                    if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
-                        if (!player.isLoading()){
-                            player.setLoading(true);
-                            gameDescription.setText(getString(R.string.player_possessive)+attackingPokemonServer.getFName()+getString(R.string.loads_attack));
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    finishAttackTurn(defendingPokemon,onChoiceListener);
-                                }
-                            },3000);
-                            return;
-                        }
-                    }else{
-                        if (!cpu.isLoading()){
-                            cpu.setLoading(true);
-                            gameDescription.setText(getString(R.string.foe_possessive)+attackingPokemonServer.getFName()+getString(R.string.loads_attack));
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    finishAttackTurn(defendingPokemon,onChoiceListener);
-                                }
-                            },3000);
-                            return;
-                        }
-                    }
+                // skip the turn, if the move needs to be loaded or if the attacking pokémon is reloading or flinched
+                if (isLoading(attackingPokemonServer, defendingPokemon, move, onChoiceListener) ||
+                        isReloading(attackingPokemonServer, defendingPokemon, move, onChoiceListener) ||
+                        isFlinched(attackingPokemonServer, defendingPokemon, onChoiceListener)){
+                    return;
                 }
 
-                if (move.getFRoundsToLoad() == -1){
-                    if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
-                        if (player.isLoading()){
-                            player.setLoading(false);
-                            gameDescription.setText(getString(R.string.player_possessive)+attackingPokemonServer.getFName()+getString(R.string.is_reloading));
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    finishAttackTurn(defendingPokemon,onChoiceListener);
-                                }
-                            },3000);
-                            return;
-                        }
-                    }else{
-                        if (cpu.isLoading()){
-                            cpu.setLoading(false);
-                            gameDescription.setText(getString(R.string.foe_possessive)+attackingPokemonServer.getFName()+getString(R.string.is_reloading));
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    finishAttackTurn(defendingPokemon,onChoiceListener);
-                                }
-                            },3000);
-                            return;
-                        }
-                    }
-                }
-
-                if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())) {
-                    if (player.isFlinched()){
-                        gameDescription.setText(getString(R.string.player_possessive)+attackingPokemonServer.getFName()+" is flinched.");
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                finishAttackTurn(defendingPokemon,onChoiceListener);
-                            }
-                        },3000);
-                        return;
-                    }
-                }else{
-                    if (cpu.isFlinched()){
-                        gameDescription.setText(getString(R.string.player_possessive)+attackingPokemonServer.getFName()+" is flinched.");
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                finishAttackTurn(defendingPokemon,onChoiceListener);
-                            }
-                        },3000);
-                        return;
-                    }
-                }
-
+                // shows to the player the move that is going to be used
                 if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())) {
                     gameDescription.setText(getString(R.string.player_possessive) + player.getCurrentPokemon().getPokemonServer().getFName() +
                             getString(R.string.used) + player.getCurrentMove().getFName());
@@ -667,6 +612,135 @@ public class GameActivity extends AppCompatActivity {
                 }, 3000);
             }
         }).execute();
+    }
+
+    private boolean isLoading(Pokemon attackingPokemonServer, InGamePokemon defendingPokemon, Move move, OnChoiceListener onChoiceListener) {
+        if (move.getFRoundsToLoad() == 1){
+            if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
+                if (!player.isLoading()){ // no need to set to load if pokémon is already loading
+                    playerLoadsAttack(attackingPokemonServer, defendingPokemon, onChoiceListener);
+                    return true;
+                }
+            }else{
+                if (!cpu.isLoading()){ // no need to set to load if pokémon is already loading
+                    cpuLoadsAttack(attackingPokemonServer, defendingPokemon, onChoiceListener);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isReloading(Pokemon attackingPokemonServer, InGamePokemon defendingPokemon, Move move, OnChoiceListener onChoiceListener) {
+        if (move.getFRoundsToLoad() == -1){
+            if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
+                if (player.isLoading()){
+                    playerReloadsAttack(attackingPokemonServer, defendingPokemon, onChoiceListener);
+                    return true;
+                }
+            }else{
+                if (cpu.isLoading()){
+                    cpuReloadsAttack(attackingPokemonServer, defendingPokemon, onChoiceListener);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isFlinched(Pokemon attackingPokemonServer, InGamePokemon defendingPokemon, OnChoiceListener onChoiceListener) {
+        if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())) {
+            if (player.isFlinched()){
+                gameDescription.setText(getString(R.string.player_possessive)+ attackingPokemonServer.getFName()+" is flinched.");
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finishAttackTurn(defendingPokemon, onChoiceListener);
+                    }
+                },3000);
+                return true;
+            }
+        }else{
+            if (cpu.isFlinched()){
+                gameDescription.setText(getString(R.string.player_possessive)+ attackingPokemonServer.getFName()+" is flinched.");
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finishAttackTurn(defendingPokemon, onChoiceListener);
+                    }
+                },3000);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Sets the player's pokémon to load the move and makes the necessary UI changes.
+     * @param attackingPokemonServer pokémon that will use the move being loaded.
+     * @param defendingPokemon pokémon that will receive the move.
+     * @param onChoiceListener code to be executed at the end of this round.
+     */
+    private void playerLoadsAttack(Pokemon attackingPokemonServer, InGamePokemon defendingPokemon, OnChoiceListener onChoiceListener) {
+        player.setLoading(true);    // set to false, because in the next turn the trainer will not be able to pick a move
+        gameDescription.setText(getString(R.string.player_possessive)+attackingPokemonServer.getFName()+getString(R.string.loads_attack));
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finishAttackTurn(defendingPokemon,onChoiceListener);
+            }
+        },3000);
+    }
+
+    /**
+     * Makes the player to finish realoding and makes the necessary UI changes.
+     * @param attackingPokemonServer pokémon that used the move being reloaded.
+     * @param defendingPokemon pokémon that received the move.
+     * @param onChoiceListener code to be executed at the end of this round.
+     */
+    private void playerReloadsAttack(Pokemon attackingPokemonServer, InGamePokemon defendingPokemon, OnChoiceListener onChoiceListener) {
+        player.setLoading(false);   // set to false, because in the next turn the trainer will be able to pick a move
+        gameDescription.setText(getString(R.string.player_possessive)+attackingPokemonServer.getFName()+getString(R.string.is_reloading));
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finishAttackTurn(defendingPokemon,onChoiceListener);
+            }
+        },3000);
+    }
+
+    /**
+     * Sets the cpu's pokémon to load the move and makes the necessary UI changes.
+     * @param attackingPokemonServer pokémon that will use the move being loaded.
+     * @param defendingPokemon pokémon that will receive the move.
+     * @param onChoiceListener code to be executed at the end of this round.
+     */
+    private void cpuLoadsAttack(Pokemon attackingPokemonServer, InGamePokemon defendingPokemon, OnChoiceListener onChoiceListener) {
+        cpu.setLoading(true);   // set to false, because in the next turn the trainer will not be able to pick a move
+        gameDescription.setText(getString(R.string.foe_possessive)+attackingPokemonServer.getFName()+getString(R.string.loads_attack));
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finishAttackTurn(defendingPokemon,onChoiceListener);
+            }
+        },3000);
+    }
+
+    /**
+     * Makes the cpu to finish realoding and makes the necessary UI changes.
+     * @param attackingPokemonServer pokémon that used the move being reloaded.
+     * @param defendingPokemon pokémon that received the move.
+     * @param onChoiceListener code to be executed at the end of this round.
+     */
+    private void cpuReloadsAttack(Pokemon attackingPokemonServer, InGamePokemon defendingPokemon, OnChoiceListener onChoiceListener) {
+        cpu.setLoading(false);  // set to false, because in the next turn the trainer will be able to pick a move
+        gameDescription.setText(getString(R.string.foe_possessive)+attackingPokemonServer.getFName()+getString(R.string.is_reloading));
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finishAttackTurn(defendingPokemon,onChoiceListener);
+            }
+        },3000);
     }
 
     private void hit(InGamePokemon defendingPokemon, Move move, double stab, double typeFactor,
@@ -754,6 +828,19 @@ public class GameActivity extends AppCompatActivity {
         }, delay);
     }
 
+    /**
+     * Determines the message to be shown just after the text informing the move that was used. This
+     * message makes clearer the understanding of the bonus or the penalty that is applied to the
+     * damage as a consequence of the relationship between the types of the move and the ones of the
+     * defending pokémon. There are 3 possible messages : <br>
+     * <br>
+     *     - <b>"It's super effective!"</b> : means that a <b>bonus</b> (i.e. <b>typeFactor > 1</b>) was applied.<br>
+     *     - <b>"It's not effective..."</b> : means that a <b>penalty</b> (i.e. <b>typeFactor < 1</b>) was applied.<br>
+     *     - <b>"It has no effect..."</b> : means that there is <b>no damage</b> (i.e. <b>typeFactor = 0</b>).<br>
+     * @param typeFactor the factor due to the relationship between the type of the move and the types
+     *                   of the defending pokémon (computed by <b>computeTypeFactor</b>).
+     * @return the message which is shown for the players so as to give a friendly feedback for them.
+     */
     private String getMessageEffectiveness(double typeFactor) {
         String messageEffectiveness = "";
         if (typeFactor > 1){
@@ -766,6 +853,27 @@ public class GameActivity extends AppCompatActivity {
         return messageEffectiveness;
     }
 
+    /**
+     * Computes a factor derived from the relationship between the <b>type of the inflicted move</b>
+     * and the <b>types of the pokémon that receives it</b>. This factor is initially 1. We
+     * distinguish 3 cases : <br>
+     *  <br>
+     *      - If the type of the move is <b>effective</b> against one of the pokémon's type, the factor
+     *  is multiplied by 2.<br>
+     *      - If the type of the move is <b>not effective</b> against one of the pokémon's type, the
+     *  factor is multiplied by 0.5.<br>
+     *      - If the type of the move has <b>no effect</b> against one of the pokémon's type, the factor
+     *  is multiplied by 0 (that is, it causes no damage at all).<br>
+     *  <br>
+     * The damage of the move must be multiplied by this factor afterwards in order to reflect the
+     * strategy of the player when choosing the type of move considering the types of the foe's pokémon .
+     * @param defendingPokemonTypes types of the pokémon that receives the attack.
+     * @param effectiveTypes types against which the type of the attacking pokémon is effective.
+     * @param notEffectiveTypes types against which the type of the attacking pokémon is not effective.
+     * @param noEffectType types against which the type of the attacking pokémon is ineffective.
+     * @return a factor resultant from the effectiveness of the inflicted move's type against the types
+     * of the defending pokémon.
+     */
     private double computeTypeFactor(List<Long> defendingPokemonTypes, List<Long> effectiveTypes, List<Long> notEffectiveTypes, List<Long> noEffectType) {
         double typeFactor = 1.0;
         for (Long typeDefending : defendingPokemonTypes){
