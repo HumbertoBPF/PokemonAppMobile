@@ -259,9 +259,15 @@ public class Trainer {
         this.currentPokemonName.setText(currentPokemon.getPokemonServer().getFName());
     }
 
+    /**
+     * Updates smoothly the value and the color of the HP bar
+     * @param context context of the activity calling this method
+     * @param allPokemon list with all the pokémon of the DB
+     */
     public void setHpBar(Context context, List<Pokemon> allPokemon) {
         long fullHp = 100;
-        for (Pokemon pokemon : allPokemon){
+        for (Pokemon pokemon : allPokemon){ // iterates over all the pokémon from the DB to get the fullHp of the currentPokemon,
+                                            // which will define the maximum of the HPBar
             if (pokemon.getFId().equals(currentPokemon.getPokemonServer().getFId())){
                 fullHp = pokemon.getFHp();
                 break;
@@ -272,9 +278,11 @@ public class Trainer {
         if (hp < 0){
             hp = 0;
         }
+        // animator to smooth the transition between the old and the new value of the progress bar
         ObjectAnimator animation = ObjectAnimator.ofInt(this.currentPokemonProgressBarHP, "progress", hp);
         animation.setDuration(3000);
         animation.setInterpolator(new LinearInterpolator());
+        // update the color of the hp bar according to its current value
         long finalFullHp = fullHp;
         animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
