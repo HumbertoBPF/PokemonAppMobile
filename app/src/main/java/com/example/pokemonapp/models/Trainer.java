@@ -133,40 +133,73 @@ public class Trainer {
         return getCurrentPokemon().getPokemonServer().getFHp()>0;
     }
 
-    // if returns -1, the pokémon missed the attack
+    /**
+     * Determines if the attack hits or misses and, for the first case, determines the damage
+     * inflicted.
+     * @param defendingPokemon pokémon that is going to be hit / that will receive the attack.
+     * @param currentHit number of times that this move has already hit the opponent so far + 1.
+     * @param move move is being used.
+     * @param stab stab factor (1.5 if there is stab, 1.0 otherwise).
+     * @param typeFactor type factor (greater than 1 if the move is super effective, between 0 and 1.
+     *                   if it is not effective or 0 if it has no effect).
+     * @return the damage inflicted if the move hits the opponent or -1 if it misses.
+     */
     public double hitOpponent(InGamePokemon defendingPokemon, int currentHit, Move move, double stab, double typeFactor){
-        double randomFactor = Math.random()*0.15 + 0.85;
-        double attackStat = this.getCurrentPokemon().getPokemonServer().getFAttack();
-        double defenseStat = move.getFCategory().equals("Special")?defendingPokemon.getPokemonServer().getFSpDefense():defendingPokemon.getPokemonServer().getFDefense();
-
+        // updates the number of PP when the first hit is processed (because all the moves hit at least once)
         if (currentHit == 1){
             this.getCurrentPokemon().setMoves(updatePPs(this.getCurrentPokemon(), move));
         }
+
         if (!attackMissed(move)) {
+            double randomFactor = Math.random()*0.15 + 0.85;
+            double attackStat;
+            double defenseStat;
+
+            // decides if the attack and defense stats should be special ou physical
+            if (move.getFCategory().equals("Special")){
+                attackStat = this.getCurrentPokemon().getPokemonServer().getFSpAttack();
+                defenseStat = this.getCurrentPokemon().getPokemonServer().getFSpDefense();
+            }else{
+                attackStat = this.getCurrentPokemon().getPokemonServer().getFAttack();
+                defenseStat = this.getCurrentPokemon().getPokemonServer().getFDefense();
+            }
+
             Log.i(TAG, "RANDOM FACTOR:" + randomFactor + " " + "STAB:" + stab + " " + "TYPE_FACTOR:" + typeFactor);
+            // formula to compute the damage when the move hits the opponent
             double damage = ((42 * move.getFPower() * (attackStat / defenseStat)) / 50 + 2) * randomFactor * stab * typeFactor;
-            if (this.isLoading()){
+
+            if (this.isLoading()){  // if pokémon was loading the move, it does not need to keep loading
                 this.setLoading(false);
             }
-            if (move.getFUserFaints()){
+
+            if (move.getFUserFaints()){ // sets HP to 0 if the user of the move must faint after using it
                 this.getCurrentPokemon().getPokemonServer().setFHp(0);
             }
-            if (move.getFRoundsToLoad() == -1){
+
+            if (move.getFRoundsToLoad() == -1){ // if move requires reloading, set the pokémon to do it
                 this.setLoading(true);
             }
+
             return damage;
         }else{
-            return -1;
+            return -1; // if -1 is returned, the pokémon missed the attack
         }
     }
 
+    /**
+     * Processes a move inflicted by the opponent. This method updates UI (HP bar) and some attributes
+     * of the pokémon (flinched and trapped status).
+     * @param damage damage received.
+     * @param move move inflicted by the opponent.
+     */
     public void receiveDamage(double damage, Move move){
         Log.i(TAG,"ATTACK DAMAGE : "+damage);
+        // updates HP bar
         this.getCurrentPokemon().getPokemonServer().setFHp((int) (this.getCurrentPokemon().getPokemonServer().getFHp() - damage));
-        if (moveFlinchesOpponent(move)){
+        if (moveFlinchesOpponent(move)){    // if move flinches, set the pokémon as flinched
             this.setFlinched(true);
         }
-        if (move.getFTrapping()){
+        if (move.getFTrapping()){   // if move traps, set the pokémon trapped for 4 or 5 turns
             this.nbOfTurnsTrapped = getDistinctRandomIntegers(4,5,1).get(0);
         }
     }
@@ -208,6 +241,12 @@ public class Trainer {
         return (random < flinchingProbability);
     }
 
+    /**
+     * Compares a random between 0 and 100 to the accuracy of the move concerned to determine if the
+     * move missed the opponent.
+     * @param move move being used.
+     * @return a boolean indicating if the move missed the opponent.
+     */
     private boolean attackMissed(Move move) {
         double accuracy = move.getFAccuracy();
         double random = Math.random()*100;
