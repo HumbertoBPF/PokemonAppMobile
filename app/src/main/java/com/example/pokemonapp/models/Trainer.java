@@ -30,13 +30,33 @@ public class Trainer {
     private Move currentMove;
     private TextView currentPokemonName;
     private ProgressBar currentPokemonProgressBarHP;
+    private ImageView currentPokemonImageView;
     private List<ImageView> pokeballs = new ArrayList<>();
-    private ImageView pokemonImageView;
+    private int nbRemainingPokemon = 6;
     private boolean isLoading = false;
     private boolean isFlinched = false;
-    private int nbOfTurnsTrapped = 0;
-    private int remainingPokemon = 6;
+    private int nbTurnsTrapped = 0;
 
+    /**
+     * Class to gather and to treat information concerning the player and the cpu. Its attributes
+     * are :<br>
+     * <br>
+     *      - <b>team</b> : list of pokémon of the trainer.<br>
+     *      - <b>currentPokemon</b> : pokémon that is on the field.<br>
+     *      - <b>currentMove</b> : move that was choose lastly.<br>
+     *      - <b>currentPokemonName</b> : TextView with the name of the current pokémon.<br>
+     *      - <b>currentPokemonProgressBarHP</b> : ProgressBar representing the HP of the current
+     *      pokémon.<br>
+     *      - <b>currentPokemonImageView</b> : ImageView with the image of the current pokémon.<br>
+     *      - <b>pokeballs</b> : list of ImageViews with pokéballs to represent the remaining pokémon
+     *      of the trainer.<br>
+     *      - <b>nbRemainingPokemon</b> : integer indicating the number of remaining pokémon (i.e.
+     *      pokémon that can still be used in the current battle).<br>
+     *      - <b>isLoading</b> : boolean indicating if the pokémon is loading an attack.<br>
+     *      - <b>isFlinched</b> : boolean indicating if the pokémon is flinched during this round.<br>
+     *      - <b>nbTurnsTrapped</b> : integer indicating the number of turns during which the current
+     *      pokémon will keep trapped.<br>
+     */
     public Trainer() {
     }
 
@@ -72,8 +92,8 @@ public class Trainer {
         this.currentPokemonProgressBarHP = currentPokemonProgressBarHP;
     }
 
-    public void setPokemonImageView(ImageView pokemonImageView) {
-        this.pokemonImageView = pokemonImageView;
+    public void setCurrentPokemonImageView(ImageView currentPokemonImageView) {
+        this.currentPokemonImageView = currentPokemonImageView;
     }
 
     public void setPokemonImageResource(Context context, Position position) {
@@ -85,9 +105,9 @@ public class Trainer {
                             .replace(" ","_")
                             .replace(".","") + imageNameSuffix;
             int imageId = context.getResources().getIdentifier(pokemonImageName,"drawable",context.getPackageName());
-            this.pokemonImageView.setImageResource(imageId);
+            this.currentPokemonImageView.setImageResource(imageId);
         }else{
-            this.pokemonImageView.setImageResource(0);
+            this.currentPokemonImageView.setImageResource(0);
         }
     }
 
@@ -111,22 +131,22 @@ public class Trainer {
         this.isFlinched = flinched;
     }
 
-    public int getNbOfTurnsTrapped() {
-        return nbOfTurnsTrapped;
+    public int getNbTurnsTrapped() {
+        return nbTurnsTrapped;
     }
 
-    public void setNbOfTurnsTrapped(int nbOfTurnsTrapped) {
-        this.nbOfTurnsTrapped = nbOfTurnsTrapped;
+    public void setNbTurnsTrapped(int nbTurnsTrapped) {
+        this.nbTurnsTrapped = nbTurnsTrapped;
     }
 
     /**
      * Reset some trainer attributes (isLoading, isFlinched and nbOfTurnsTrapped) when the current
-     * pokémon faints
+     * pokémon faints.
      */
     public void reset(){
         this.isLoading = false;
         this.isFlinched = false;
-        this.nbOfTurnsTrapped = 0;
+        this.nbTurnsTrapped = 0;
     }
 
     public boolean isPokemonAlive(){
@@ -200,13 +220,20 @@ public class Trainer {
             this.setFlinched(true);
         }
         if (move.getFTrapping()){   // if move traps, set the pokémon trapped for 4 or 5 turns
-            this.nbOfTurnsTrapped = getDistinctRandomIntegers(4,5,1).get(0);
+            this.nbTurnsTrapped = getDistinctRandomIntegers(4,5,1).get(0);
         }
     }
 
+    /**
+     * Inflicts wrapping damage if necessary. Wrapping damage reduces the current HP of a pokémon by
+     * 1/8 of the total HP.
+     * @param allPokemon list with all the pokémon from DB.
+     * @return true if wrapping damage was inflicted, false otherwise.
+     */
     public boolean receiveWrappingDamage(List<Pokemon> allPokemon){
-        if (getNbOfTurnsTrapped() > 0 && currentPokemon.getPokemonServer().getFHp() > 0){
-            for (Pokemon pokemon : allPokemon){
+        if (getNbTurnsTrapped() > 0 && currentPokemon.getPokemonServer().getFHp() > 0){
+            for (Pokemon pokemon : allPokemon){ // iterates over the list of all pokémon to find the full HP, since we will reduce
+                                                // the current HP by 1/8 of the full HP
                 if (pokemon.getFId().equals(currentPokemon.getPokemonServer().getFId())){
                     int fullHp = pokemon.getFHp();
                     this.getCurrentPokemon().getPokemonServer().setFHp((this.getCurrentPokemon().getPokemonServer().getFHp() - fullHp/8));
@@ -214,7 +241,7 @@ public class Trainer {
                     break;
                 }
             }
-            this.nbOfTurnsTrapped--;
+            this.nbTurnsTrapped--;
             return true;
         }
 
@@ -233,12 +260,20 @@ public class Trainer {
         return moves;
     }
 
+    /**
+     * Takes into account the move's probability of flinching to determine if the foe's pokémon will
+     * be flinched. It only has any effect if the pokémon using the move that may flinch attacks first
+     * since isFlinched is reset after both pokémon attack.
+     * @param move move being used.
+     * @return a boolean indicating if the move flinches the opponent.
+     */
     private boolean moveFlinchesOpponent(Move move) {
         double flinchingProbability = move.getFFlinchingProbability();
-        double random = Math.random()*100;
+        double random = Math.random()*100; // we get a random number between 0 and 100
         Log.i(TAG,"RANDOM FOR FLINCHING:"+random);
 
-        return (random < flinchingProbability);
+        return (random < flinchingProbability); // if the random is lower than the probability of flinching,
+                                                // foe's pokémon is flinched
     }
 
     /**
@@ -260,9 +295,9 @@ public class Trainer {
     }
 
     /**
-     * Updates smoothly the value and the color of the HP bar
-     * @param context context of the activity calling this method
-     * @param allPokemon list with all the pokémon of the DB
+     * Updates smoothly the value and the color of the HP bar.
+     * @param context context of the activity calling this method.
+     * @param allPokemon list with all the pokémon of the DB.
      */
     public void setHpBar(Context context, List<Pokemon> allPokemon) {
         long fullHp = 100;
@@ -301,19 +336,28 @@ public class Trainer {
     }
 
     /**
-     * Updates the UI (pokéballs below the HP bar) and the number of remaining pokémon
+     * Updates the UI (pokéballs below the HP bar) and the number of remaining pokémon.
      */
     public void updateRemainingPokemon(){
-        this.pokeballs.get(remainingPokemon-1).setImageResource(R.drawable.pokeball_defeated);
-        this.remainingPokemon--;
-        Log.i(TAG,"REMAINING POKEMON : "+this.remainingPokemon);
+        this.pokeballs.get(nbRemainingPokemon -1).setImageResource(R.drawable.pokeball_defeated);
+        this.nbRemainingPokemon--;
+        Log.i(TAG,"REMAINING POKEMON : "+this.nbRemainingPokemon);
     }
 
+    /**
+     * Enum to indicate the positions of the pokémon in the image loaded into its ImageView. These
+     * positions are : <br>
+     * <br>
+     *     - <b>FRONT</b> : frontal image.<br>
+     *     - <b>BACK</b> : back image.<br>
+     *     - <b>DEFEATED</b> : no image. It is used for the moments where the pokémon still has not
+     *     been chosen or where it is defeated.<br>
+     */
     public enum Position{
 
-        FRONT(""),
-        BACK("_back"),
-        DEFEATED(null);
+        FRONT(""),  // frontal image of the pokémon
+        BACK("_back"),  // back image of the pokémon
+        DEFEATED(null); // no image
 
         private final String imageNameSuffix;
 

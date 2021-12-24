@@ -139,7 +139,7 @@ public class GameActivity extends AppCompatActivity {
         player.addPokeball(findViewById(R.id.player_pokeball_4));
         player.addPokeball(findViewById(R.id.player_pokeball_5));
         player.addPokeball(findViewById(R.id.player_pokeball_6));
-        player.setPokemonImageView(findViewById(R.id.player_pokemon_image));
+        player.setCurrentPokemonImageView(findViewById(R.id.player_pokemon_image));
 
         cpu.setCurrentPokemonName(findViewById(R.id.cpu_pokemon_name));
         cpu.setCurrentPokemonProgressBarHP(findViewById(R.id.progress_bar_hp_cpu));
@@ -149,7 +149,7 @@ public class GameActivity extends AppCompatActivity {
         cpu.addPokeball(findViewById(R.id.cpu_pokeball_4));
         cpu.addPokeball(findViewById(R.id.cpu_pokeball_5));
         cpu.addPokeball(findViewById(R.id.cpu_pokeball_6));
-        cpu.setPokemonImageView(findViewById(R.id.cpu_pokemon_image));
+        cpu.setCurrentPokemonImageView(findViewById(R.id.cpu_pokemon_image));
     }
 
     private void getDAOs() {
@@ -269,7 +269,7 @@ public class GameActivity extends AppCompatActivity {
             cpu.reset();
             // the nbOfTurnsTrapped of the pokémon that stays on the field is set to 0 since the pokémon
             // which was trapping it was defeated
-            player.setNbOfTurnsTrapped(0);
+            player.setNbTurnsTrapped(0);
 
             pickPokemonForCPU();
             handler.postDelayed(new Runnable() {
@@ -296,7 +296,7 @@ public class GameActivity extends AppCompatActivity {
             player.reset();
             // the nbOfTurnsTrapped of the pokémon that stays on the field is set to 0 since the pokémon
             // which was trapping it was defeated
-            cpu.setNbOfTurnsTrapped(0);
+            cpu.setNbTurnsTrapped(0);
 
             pickPokemonForPlayer(new OnChoiceListener() {
                 @Override
@@ -792,6 +792,8 @@ public class GameActivity extends AppCompatActivity {
                 }
             }
 
+            // updates HP bar (for the case when the pokémon faints after using a move, maybe it
+            // can be done in a better way)
             player.setHpBar(this, allPokemon);
             cpu.setHpBar(this, allPokemon);
 
@@ -799,11 +801,22 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Decides if the move must hit the opponent again or if the turn is finished.
+     * @param defendingPokemon opponent pokémon (i.e. pokémon that receives the attack).
+     * @param move move that is being used.
+     * @param stab stab factor (bonus of 50% over damage when the type of the attack matches the type of the user).
+     * @param typeFactor type factor derived from the relationship between the type of the move and the types of defendingPokémon.
+     * @param messageEffectiveness message reflecting the effectiveness of the move.
+     * @param currentHit number of times that this move has already touched the opponent this turn + 1.
+     * @param nbOfHits number of hits that this move is intended to touch the opponent this turn.
+     * @param onChoiceListener code to be executed at the end of the current turn.
+     */
     private void hitAgainOrStop(InGamePokemon defendingPokemon, Move move, double stab, double typeFactor, String messageEffectiveness, int currentHit, int nbOfHits, OnChoiceListener onChoiceListener) {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (nbOfHits > 1){
+                if (nbOfHits > 1){ // if this move must hit more than once, we keep hitting until reaching the number of hits
                     gameDescription.setText(getString(R.string.hit)+ currentHit +getString(R.string.times));
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -815,13 +828,19 @@ public class GameActivity extends AppCompatActivity {
                             }
                         }
                     },3000);
-                }else{
+                }else{ // else we can finish the turn
                     finishAttackTurn(defendingPokemon, onChoiceListener);
                 }
             }
         },3000);
     }
 
+    /**
+     * Finishes the turn by inflicting wrapping damage on the opponent and executing the code specified
+     * in the listener.
+     * @param defendingPokemon pokémon that receives the attack this turn.
+     * @param onChoiceListener code to be executed at the end of this turn.
+     */
     private void finishAttackTurn(InGamePokemon defendingPokemon, OnChoiceListener onChoiceListener) {
         int delay = 0;
         if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())) {

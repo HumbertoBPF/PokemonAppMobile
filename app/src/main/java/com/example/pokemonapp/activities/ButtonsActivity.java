@@ -12,6 +12,11 @@ import com.example.pokemonapp.models.RoundedButton;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * <b>ButtonsActivity</b> : this activity is used for screens where we have only some buttons whose width
+ * corresponds to almost the whole width of the screen. The content and specificities of each button is
+ * informed using a list of <b>RoundedButton</b> that is loaded into a RecyclerView.
+ */
 public abstract class ButtonsActivity extends AppCompatActivity {
 
     private RecyclerView buttonsRecyclerView;
@@ -26,6 +31,10 @@ public abstract class ButtonsActivity extends AppCompatActivity {
         buttonsRecyclerView.setAdapter(new RoundedButtonListAdapter(this,buttons));
     }
 
+    /**
+     * This method should be used to initialize the list of buttons, that is to specify the text, color
+     * and listener associated to each button to be shown.
+     */
     protected abstract void declareButtons();
 
 }

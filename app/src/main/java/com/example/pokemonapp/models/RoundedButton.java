@@ -1,20 +1,19 @@
 package com.example.pokemonapp.models;
 
-import android.content.Context;
 import android.view.View;
 
-import com.example.pokemonapp.R;
-
+/**
+ * Object to configure each button to be shown on the screen. Each button has :<br>
+ * <br>
+ *     - <b>text</b><br>
+ *     - <b>color</b><br>
+ *     - <b>onClickListener</b><br>
+ */
 public class RoundedButton {
 
     private String text;
     private int color;
-    private View.OnClickListener onClickListener = null;
-
-    public RoundedButton(Context context, String text) {
-        this.text = text;
-        this.color = context.getResources().getColor(R.color.red);
-    }
+    private View.OnClickListener onClickListener;
 
     public RoundedButton(String text, int color, View.OnClickListener onClickListener) {
         this.text = text;

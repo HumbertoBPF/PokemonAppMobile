@@ -53,7 +53,9 @@ import retrofit2.Response;
 
 public class MainActivity extends ButtonsActivity {
 
+    // progress dialog to inform the current step of the synchro
     private ProgressDialog loadingDialog;
+    // DAOs allowing to communicate with the local DB
     private MoveDAO moveDAO;
     private PokemonDAO pokemonDAO;
     private TypeDAO typeDAO;
@@ -63,8 +65,10 @@ public class MainActivity extends ButtonsActivity {
     private TypeEffectiveDAO typeEffectiveDAO;
     private TypeNotEffectiveDAO typeNotEffectiveDAO;
     private TypeNoEffectDAO typeNoEffectDAO;
+    // service that is used to communicate with the remote DB
     private PokemonDbService pokemonDbService;
-    private Handler handler;
+
+    private final Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,11 +76,11 @@ public class MainActivity extends ButtonsActivity {
         super.onCreate(savedInstanceState);
         getDAOs();
         pokemonDbService = new PokemonDbRetrofit().getPokemonDbService();
-        handler = new Handler();
     }
 
     @Override
     protected void declareButtons() {
+        // button to launch a game
         RoundedButton gameButton = new RoundedButton(getResources().getString(R.string.game_button_text),
                 getResources().getColor(R.color.pokemon_theme_color),
                 new View.OnClickListener() {
@@ -103,6 +107,7 @@ public class MainActivity extends ButtonsActivity {
                         }).execute();
                     }
                 });
+        // button to navigate through the database
         RoundedButton databaseButton = new RoundedButton(getResources().getString(R.string.databases_button_text),
                 getResources().getColor(R.color.types_theme_color),
                 new View.OnClickListener() {
@@ -157,6 +162,8 @@ public class MainActivity extends ButtonsActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    //================================callback to get the pokemon DB================================
 
     private void callbackPokemon() {
         loadingDialog.setMessage(getString(R.string.fetch_pokemon_db));
@@ -219,6 +226,8 @@ public class MainActivity extends ButtonsActivity {
         },2000);
     }
 
+    //================================callback to get the move DB===================================
+
     private void callbackMove() {
         loadingDialog.setMessage(getString(R.string.fetch_move_db));
         handler.postDelayed(new Runnable() {
@@ -278,6 +287,8 @@ public class MainActivity extends ButtonsActivity {
             }
         },2000);
     }
+
+    //================================callback to get the type DB===================================
 
     private void callbackType() {
         loadingDialog.setMessage(getString(R.string.fetch_type_db));
@@ -339,6 +350,8 @@ public class MainActivity extends ButtonsActivity {
         },2000);
     }
 
+    //==============================callback to get the move_type DB================================
+
     private void callbackMoveType(){
         loadingDialog.setMessage(getString(R.string.fetch_move_type_db));
         handler.postDelayed(new Runnable() {
@@ -398,6 +411,8 @@ public class MainActivity extends ButtonsActivity {
             }
         },2000);
     }
+
+    //=============================callback to get the pokemon_type DB==============================
 
     private void callbackPokemonType(){
         loadingDialog.setMessage(getString(R.string.fetch_pokemon_type_db));
@@ -459,6 +474,8 @@ public class MainActivity extends ButtonsActivity {
         },2000);
     }
 
+    //==============================callback to get the pokemon_move DB=============================
+
     private void callbackPokemonMove(){
         loadingDialog.setMessage(getString(R.string.fetch_pokemon_move_db));
         handler.postDelayed(new Runnable() {
@@ -518,6 +535,8 @@ public class MainActivity extends ButtonsActivity {
             }
         },2000);
     }
+
+    //=========================callback to get the type_typeEffective DB============================
 
     private void callbackTypeEffective(){
         loadingDialog.setMessage(getString(R.string.fetch_type_effective_db));
@@ -579,6 +598,8 @@ public class MainActivity extends ButtonsActivity {
         },2000);
     }
 
+    //=========================callback to get the type_typeNotEffective DB=========================
+
     private void callbackTypeNotEffective(){
         loadingDialog.setMessage(getString(R.string.fetch_type_not_effective_db));
         handler.postDelayed(new Runnable() {
@@ -638,6 +659,8 @@ public class MainActivity extends ButtonsActivity {
             }
         },2000);
     }
+
+    //===========================callback to get the type_typeNoEffect DB===========================
 
     private void callbackTypeNoEffect(){
         loadingDialog.setMessage(getString(R.string.fetch_type_no_effect_db));
