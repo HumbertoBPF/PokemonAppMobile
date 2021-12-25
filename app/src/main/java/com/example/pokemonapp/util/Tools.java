@@ -73,6 +73,13 @@ public class Tools {
         return builder.create();
     }
 
+    public static AlertDialog singleButtonDialog(Context context, String title, String message, String yesOption,
+                                                 DialogInterface.OnClickListener onClickListenerYes){
+        AlertDialog.Builder builder =  new AlertDialog.Builder(context);
+        builder.setTitle(title).setMessage(message).setPositiveButton(yesOption, onClickListenerYes);
+        return builder.create();
+    }
+
     public static ProgressDialog loadingDialog(Context context){
         ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setTitle("Processing...");

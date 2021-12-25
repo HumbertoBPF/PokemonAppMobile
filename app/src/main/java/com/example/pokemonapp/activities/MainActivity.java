@@ -4,10 +4,14 @@ import static com.example.pokemonapp.util.Tools.loadingDialog;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,10 +44,13 @@ import com.example.pokemonapp.entities.TypeNotEffective;
 import com.example.pokemonapp.models.RoundedButton;
 import com.example.pokemonapp.retrofit.PokemonDbRetrofit;
 import com.example.pokemonapp.room.PokemonAppDatabase;
-import com.example.pokemonapp.services.SynchroCallback;
 import com.example.pokemonapp.services.PokemonDbService;
+import com.example.pokemonapp.services.SynchroCallback;
 import com.example.pokemonapp.util.Tools;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +58,7 @@ import retrofit2.Call;
 
 public class MainActivity extends ButtonsActivity {
 
+    private final String TAG = "MainActivity";
     // progress dialog to inform the current step of the synchro
     private ProgressDialog loadingDialog;
     // DAOs allowing to communicate with the local DB
@@ -145,10 +153,58 @@ public class MainActivity extends ButtonsActivity {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             loadingDialog = loadingDialog(MainActivity.this);
                             loadingDialog.show();
-                            new Handler().postDelayed(new Runnable() {
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callbackPokemon();
+                                    new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                                        @Override
+                                        public List<Object> doInBackground() {
+                                            loadingDialog.setMessage("Verifying internet connexion...");
+                                            List<Object> objects = new ArrayList<>();
+                                            objects.add(hasInternetAccess());
+                                            return objects;
+                                        }
+
+                                        @Override
+                                        public void onPostExecute(List<Object> objects) {
+                                            if ((Boolean) objects.get(0)){
+                                                handler.postDelayed(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        callbackPokemon();
+                                                    }
+                                                },2000);
+                                            }else{
+                                                handler.postDelayed(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        loadingDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                                            @Override
+                                                            public void onDismiss(DialogInterface dialog) {
+                                                                Dialog noInternetDialog = Tools.singleButtonDialog(
+                                                                        MainActivity.this,
+                                                                        "No internet connexion",
+                                                                        "No internet connexion detected. Please connect your device" +
+                                                                                "to synchronize data.",
+                                                                        "Understood",
+                                                                        new DialogInterface.OnClickListener() {
+                                                                            @Override
+                                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                                dialog.dismiss();
+                                                                            }
+                                                                        }
+                                                                );
+                                                                noInternetDialog.setCancelable(false);
+                                                                noInternetDialog.show();
+                                                            }
+                                                        });
+                                                        loadingDialog.dismiss();
+                                                    }
+                                                },2000);
+                                            }
+                                        }
+                                    }).execute();
                                 }
                             },2000);
                         }
@@ -336,6 +392,34 @@ public class MainActivity extends ButtonsActivity {
                 }
         );
         typeNoEffectCallback.run();
+    }
+
+    public boolean hasInternetAccess() {
+        if (isNetworkAvailable()) {
+            try {
+                HttpURLConnection url = (HttpURLConnection)
+                        (new URL("http://clients3.google.com/generate_204")
+                                .openConnection());
+                url.setRequestProperty("User-Agent", "Android");
+                url.setRequestProperty("Connection", "close");
+                url.setConnectTimeout(1500);
+                url.connect();
+                return (url.getResponseCode() == 204 &&
+                        url.getContentLength() == 0);
+            } catch (IOException e) {
+                Log.e(TAG, "Error checking internet connection", e);
+            }
+        } else {
+            Log.d(TAG, "No network available!");
+        }
+        return false;
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null;
     }
 
 }
