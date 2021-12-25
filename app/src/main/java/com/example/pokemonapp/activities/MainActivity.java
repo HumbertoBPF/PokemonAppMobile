@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,6 +40,7 @@ import com.example.pokemonapp.entities.TypeNotEffective;
 import com.example.pokemonapp.models.RoundedButton;
 import com.example.pokemonapp.retrofit.PokemonDbRetrofit;
 import com.example.pokemonapp.room.PokemonAppDatabase;
+import com.example.pokemonapp.services.SynchroCallback;
 import com.example.pokemonapp.services.PokemonDbService;
 import com.example.pokemonapp.util.Tools;
 
@@ -48,8 +48,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends ButtonsActivity {
 
@@ -67,8 +65,6 @@ public class MainActivity extends ButtonsActivity {
     private TypeNoEffectDAO typeNoEffectDAO;
     // service that is used to communicate with the remote DB
     private PokemonDbService pokemonDbService;
-
-    private final Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,7 +145,7 @@ public class MainActivity extends ButtonsActivity {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             loadingDialog = loadingDialog(MainActivity.this);
                             loadingDialog.show();
-                            handler.postDelayed(new Runnable() {
+                            new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     callbackPokemon();
@@ -166,560 +162,180 @@ public class MainActivity extends ButtonsActivity {
     //================================callback to get the pokemon DB================================
 
     private void callbackPokemon() {
-        loadingDialog.setMessage(getString(R.string.fetch_pokemon_db));
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Call<List<Pokemon>> callPokemon = pokemonDbService.getAllPokemonFromRemote();
-                callPokemon.enqueue(new Callback<List<Pokemon>>() {
+        SynchroCallback<Pokemon> pokemonCallback = new SynchroCallback<Pokemon>(
+                this, loadingDialog, pokemonDAO, Pokemon.class,
+                new SynchroCallback.CallbackSetup<Pokemon>() {
                     @Override
-                    public void onResponse(Call<List<Pokemon>> call, Response<List<Pokemon>> responsePokemon) {
-                        if (responsePokemon.isSuccessful()){
-                            List<Pokemon> pokemons = responsePokemon.body();
-                            if (pokemons != null) {
-                                Log.i("numberOfPokemons",pokemons.size()+"");
-                                Log.i("pokemon",pokemons.get(0).getFName());
-                            }else{
-                                Log.i("numberOfPokemons","null");
-                            }
-                            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
-                                @Override
-                                public List<Object> doInBackground() {
-                                    pokemonDAO.save(pokemons);
-                                    return null;
-                                }
-
-                                @Override
-                                public void onPostExecute(List<Object> objects) {
-                                    loadingDialog.setMessage(getString(R.string.success_pokemon_download));
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            callbackMove();
-                                        }
-                                    },2000);
-                                }
-                            }).execute();
-                        }else{
-                            loadingDialog.setMessage(getString(R.string.fail_pokemon_download));
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    callbackMove();
-                                }
-                            },2000);
-                        }
+                    public Call<List<Pokemon>> callService() {
+                        return pokemonDbService.getAllPokemonFromRemote();
                     }
 
                     @Override
-                    public void onFailure(Call<List<Pokemon>> call, Throwable t) {
-                        loadingDialog.setMessage(getString(R.string.fail_pokemon_download));
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                callbackMove();
-                            }
-                        },2000);
+                    public void onResult() {
+                        callbackMove();
                     }
                 });
-            }
-        },2000);
+        pokemonCallback.run();
     }
 
     //================================callback to get the move DB===================================
 
     private void callbackMove() {
-        loadingDialog.setMessage(getString(R.string.fetch_move_db));
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Call<List<Move>> callMove = pokemonDbService.getAllMovesFromRemote();
-                callMove.enqueue(new Callback<List<Move>>() {
+        SynchroCallback<Move> moveCallback = new SynchroCallback<Move>(
+                this, loadingDialog, moveDAO, Move.class,
+                new SynchroCallback.CallbackSetup<Move>() {
                     @Override
-                    public void onResponse(Call<List<Move>> call, Response<List<Move>> responseMove) {
-                        if (responseMove.isSuccessful()){
-                            List<Move> moves = responseMove.body();
-                            if (moves != null) {
-                                Log.i("numberOfMoves",moves.size()+"");
-                            }else{
-                                Log.i("numberOfMoves","null");
-                            }
-                            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
-                                @Override
-                                public List<Object> doInBackground() {
-                                    moveDAO.save(moves);
-                                    return null;
-                                }
-
-                                @Override
-                                public void onPostExecute(List<Object> objects) {
-                                    loadingDialog.setMessage(getString(R.string.success_moves_download));
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            callbackType();
-                                        }
-                                    },2000);
-                                }
-                            }).execute();
-                        }else{
-                            loadingDialog.setMessage(getString(R.string.fail_moves_download));
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    callbackType();
-                                }
-                            },2000);
-                        }
+                    public Call<List<Move>> callService() {
+                        return pokemonDbService.getAllMovesFromRemote();
                     }
 
                     @Override
-                    public void onFailure(Call<List<Move>> call, Throwable t) {
-                        loadingDialog.setMessage(getString(R.string.fail_moves_download));
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                callbackType();
-                            }
-                        },2000);
+                    public void onResult() {
+                        callbackType();
                     }
-                });
-            }
-        },2000);
+                }
+        );
+        moveCallback.run();
     }
 
     //================================callback to get the type DB===================================
 
     private void callbackType() {
-        loadingDialog.setMessage(getString(R.string.fetch_type_db));
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Call<List<Type>> callType = pokemonDbService.getAllTypesFromRemote();
-                callType.enqueue(new Callback<List<Type>>() {
+        SynchroCallback<Type> typeCallback = new SynchroCallback<Type>(
+                this, loadingDialog, typeDAO, Type.class,
+                new SynchroCallback.CallbackSetup<Type>() {
                     @Override
-                    public void onResponse(Call<List<Type>> call, Response<List<Type>> responseType) {
-                        if (responseType.isSuccessful()){
-                            List<Type> types = responseType.body();
-                            if (types != null) {
-                                Log.i("numberOfTypes",types.size()+"");
-                            }else{
-                                Log.i("numberOfTypes","null");
-                            }
-                            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
-                                @Override
-                                public List<Object> doInBackground() {
-                                    typeDAO.save(types);
-                                    return null;
-                                }
-
-                                @Override
-                                public void onPostExecute(List<Object> objects) {
-                                    loadingDialog.setMessage(getString(R.string.success_types_download));
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            callbackMoveType();
-                                        }
-                                    },2000);
-                                }
-                            }).execute();
-                        }else{
-                            loadingDialog.setMessage(getString(R.string.fail_types_download));
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    callbackMoveType();
-                                }
-                            },2000);
-                        }
+                    public Call<List<Type>> callService() {
+                        return pokemonDbService.getAllTypesFromRemote();
                     }
 
                     @Override
-                    public void onFailure(Call<List<Type>> call, Throwable t) {
-                        loadingDialog.setMessage(getString(R.string.fail_types_download));
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                callbackMoveType();
-                            }
-                        },2000);
+                    public void onResult() {
+                        callbackMoveType();
                     }
-                });
-            }
-        },2000);
+                }
+        );
+        typeCallback.run();
     }
 
     //==============================callback to get the move_type DB================================
 
     private void callbackMoveType(){
-        loadingDialog.setMessage(getString(R.string.fetch_move_type_db));
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Call<List<MoveType>> callMoveType = pokemonDbService.getAllMoveTypesFromRemote();
-                callMoveType.enqueue(new Callback<List<MoveType>>() {
+        SynchroCallback<MoveType> moveTypeCallback = new SynchroCallback<MoveType>(
+                this, loadingDialog, moveTypeDAO, MoveType.class,
+                new SynchroCallback.CallbackSetup<MoveType>() {
                     @Override
-                    public void onResponse(Call<List<MoveType>> call, Response<List<MoveType>> responseMoveType) {
-                        if (responseMoveType.isSuccessful()){
-                            List<MoveType> moveTypes = responseMoveType.body();
-                            if (moveTypes != null) {
-                                Log.i("numberOfMoveTypes",moveTypes.size()+"");
-                            }else{
-                                Log.i("numberOfMoveTypes","null");
-                            }
-                            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
-                                @Override
-                                public List<Object> doInBackground() {
-                                    moveTypeDAO.save(moveTypes);
-                                    return null;
-                                }
-
-                                @Override
-                                public void onPostExecute(List<Object> objects) {
-                                    loadingDialog.setMessage(getString(R.string.success_move_types_download));
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            callbackPokemonType();
-                                        }
-                                    },2000);
-                                }
-                            }).execute();
-                        }else{
-                            loadingDialog.setMessage(getString(R.string.fail_move_types_download));
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    callbackPokemonType();
-                                }
-                            },2000);
-                        }
+                    public Call<List<MoveType>> callService() {
+                        return pokemonDbService.getAllMoveTypesFromRemote();
                     }
 
                     @Override
-                    public void onFailure(Call<List<MoveType>> call, Throwable t) {
-                        loadingDialog.setMessage(getString(R.string.fail_move_types_download));
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                callbackPokemonType();
-                            }
-                        },2000);
+                    public void onResult() {
+                        callbackPokemonType();
                     }
-                });
-            }
-        },2000);
+                }
+        );
+        moveTypeCallback.run();
     }
 
     //=============================callback to get the pokemon_type DB==============================
 
     private void callbackPokemonType(){
-        loadingDialog.setMessage(getString(R.string.fetch_pokemon_type_db));
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Call<List<PokemonType>> callPokemonType = pokemonDbService.getAllPokemonTypesFromRemote();
-                callPokemonType.enqueue(new Callback<List<PokemonType>>() {
+        SynchroCallback<PokemonType> pokemonTypeCallback = new SynchroCallback<PokemonType>(
+                this, loadingDialog, pokemonTypeDAO, PokemonType.class,
+                new SynchroCallback.CallbackSetup<PokemonType>() {
                     @Override
-                    public void onResponse(Call<List<PokemonType>> call, Response<List<PokemonType>> responsePokemonType) {
-                        if (responsePokemonType.isSuccessful()){
-                            List<PokemonType> pokemonTypes = responsePokemonType.body();
-                            if (pokemonTypes != null) {
-                                Log.i("numberOfPokemonTypes", pokemonTypes.size()+"");
-                            }else{
-                                Log.i("numberOfPokemonTypes","null");
-                            }
-                            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
-                                @Override
-                                public List<Object> doInBackground() {
-                                    pokemonTypeDAO.save(pokemonTypes);
-                                    return null;
-                                }
-
-                                @Override
-                                public void onPostExecute(List<Object> objects) {
-                                    loadingDialog.setMessage(getString(R.string.success_pokemon_types_download));
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            callbackPokemonMove();
-                                        }
-                                    },2000);
-                                }
-                            }).execute();
-                        }else{
-                            loadingDialog.setMessage(getString(R.string.fail_pokemon_types_download));
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    callbackPokemonMove();
-                                }
-                            },2000);
-                        }
+                    public Call<List<PokemonType>> callService() {
+                        return pokemonDbService.getAllPokemonTypesFromRemote();
                     }
 
                     @Override
-                    public void onFailure(Call<List<PokemonType>> call, Throwable t) {
-                        loadingDialog.setMessage(getString(R.string.fail_pokemon_types_download));
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                callbackPokemonMove();
-                            }
-                        },2000);
+                    public void onResult() {
+                        callbackPokemonMove();
                     }
-                });
-            }
-        },2000);
+                }
+        );
+        pokemonTypeCallback.run();
     }
 
     //==============================callback to get the pokemon_move DB=============================
 
     private void callbackPokemonMove(){
-        loadingDialog.setMessage(getString(R.string.fetch_pokemon_move_db));
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Call<List<PokemonMove>> callPokemonMove = pokemonDbService.getAllPokemonMovesFromRemote();
-                callPokemonMove.enqueue(new Callback<List<PokemonMove>>() {
+        SynchroCallback<PokemonMove> pokemonMoveCallback = new SynchroCallback<PokemonMove>(
+                this, loadingDialog, pokemonMoveDAO, PokemonMove.class,
+                new SynchroCallback.CallbackSetup<PokemonMove>() {
                     @Override
-                    public void onResponse(Call<List<PokemonMove>> call, Response<List<PokemonMove>> responsePokemonMove) {
-                        if (responsePokemonMove.isSuccessful()){
-                            List<PokemonMove> pokemonMoves = responsePokemonMove.body();
-                            if (pokemonMoves != null) {
-                                Log.i("numberOfPokemonMoves", pokemonMoves.size()+"");
-                            }else{
-                                Log.i("numberOfPokemonMoves","null");
-                            }
-                            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
-                                @Override
-                                public List<Object> doInBackground() {
-                                    pokemonMoveDAO.save(pokemonMoves);
-                                    return null;
-                                }
-
-                                @Override
-                                public void onPostExecute(List<Object> objects) {
-                                    loadingDialog.setMessage(getString(R.string.success_pokemon_moves_download));
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            callbackTypeEffective();
-                                        }
-                                    },2000);
-                                }
-                            }).execute();
-                        }else{
-                            loadingDialog.setMessage(getString(R.string.fail_pokemon_moves_download));
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    callbackTypeEffective();
-                                }
-                            },2000);
-                        }
+                    public Call<List<PokemonMove>> callService() {
+                        return pokemonDbService.getAllPokemonMovesFromRemote();
                     }
 
                     @Override
-                    public void onFailure(Call<List<PokemonMove>> call, Throwable t) {
-                        loadingDialog.setMessage(getString(R.string.fail_pokemon_moves_download));
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                callbackTypeEffective();
-                            }
-                        },2000);
+                    public void onResult() {
+                        callbackTypeEffective();
                     }
-                });
-            }
-        },2000);
+                }
+        );
+        pokemonMoveCallback.run();
     }
 
     //=========================callback to get the type_typeEffective DB============================
 
     private void callbackTypeEffective(){
-        loadingDialog.setMessage(getString(R.string.fetch_type_effective_db));
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Call<List<TypeEffective>> callTypeEffective = pokemonDbService.getAllTypeEffectiveFromRemote();
-                callTypeEffective.enqueue(new Callback<List<TypeEffective>>() {
+        SynchroCallback<TypeEffective> typeEffectiveCallback = new SynchroCallback<TypeEffective>(
+                this, loadingDialog, typeEffectiveDAO, TypeEffective.class,
+                new SynchroCallback.CallbackSetup<TypeEffective>() {
                     @Override
-                    public void onResponse(Call<List<TypeEffective>> call, Response<List<TypeEffective>> responseTypeEffective) {
-                        if (responseTypeEffective.isSuccessful()){
-                            List<TypeEffective> typeEffectives = responseTypeEffective.body();
-                            if (typeEffectives != null) {
-                                Log.i("numberOfTypeEffectives", typeEffectives.size()+"");
-                            }else{
-                                Log.i("numberOfTypeEffectives","null");
-                            }
-                            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
-                                @Override
-                                public List<Object> doInBackground() {
-                                    typeEffectiveDAO.save(typeEffectives);
-                                    return null;
-                                }
-
-                                @Override
-                                public void onPostExecute(List<Object> objects) {
-                                    loadingDialog.setMessage(getString(R.string.success_type_effective_download));
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            callbackTypeNotEffective();
-                                        }
-                                    },2000);
-                                }
-                            }).execute();
-                        }else{
-                            loadingDialog.setMessage(getString(R.string.fail_type_effective_download));
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    callbackTypeNotEffective();
-                                }
-                            },2000);
-                        }
+                    public Call<List<TypeEffective>> callService() {
+                        return pokemonDbService.getAllTypeEffectiveFromRemote();
                     }
 
                     @Override
-                    public void onFailure(Call<List<TypeEffective>> call, Throwable t) {
-                        loadingDialog.setMessage(getString(R.string.fail_type_effective_download));
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                callbackTypeNotEffective();
-                            }
-                        },2000);
+                    public void onResult() {
+                        callbackTypeNotEffective();
                     }
-                });
-            }
-        },2000);
+                }
+        );
+        typeEffectiveCallback.run();
     }
 
     //=========================callback to get the type_typeNotEffective DB=========================
 
     private void callbackTypeNotEffective(){
-        loadingDialog.setMessage(getString(R.string.fetch_type_not_effective_db));
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Call<List<TypeNotEffective>> callTypeNotEffective = pokemonDbService.getAllNotEffectiveTypesFromRemote();
-                callTypeNotEffective.enqueue(new Callback<List<TypeNotEffective>>() {
+        SynchroCallback<TypeNotEffective> typeNotEffectiveCallback = new SynchroCallback<TypeNotEffective>(
+                this, loadingDialog, typeNotEffectiveDAO, TypeNotEffective.class,
+                new SynchroCallback.CallbackSetup<TypeNotEffective>() {
                     @Override
-                    public void onResponse(Call<List<TypeNotEffective>> call, Response<List<TypeNotEffective>> responseTypeNotEffective) {
-                        if (responseTypeNotEffective.isSuccessful()){
-                            List<TypeNotEffective> typeNotEffectives = responseTypeNotEffective.body();
-                            if (typeNotEffectives != null) {
-                                Log.i("numbOfTypeNotEffectives", typeNotEffectives.size()+"");
-                            }else{
-                                Log.i("numbOfTypeNotEffectives","null");
-                            }
-                            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
-                                @Override
-                                public List<Object> doInBackground() {
-                                    typeNotEffectiveDAO.save(typeNotEffectives);
-                                    return null;
-                                }
-
-                                @Override
-                                public void onPostExecute(List<Object> objects) {
-                                    loadingDialog.setMessage(getString(R.string.success_type_not_effective_download));
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            callbackTypeNoEffect();
-                                        }
-                                    },2000);
-                                }
-                            }).execute();
-                        }else{
-                            loadingDialog.setMessage(getString(R.string.fail_type_not_effective_download));
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    callbackTypeNoEffect();
-                                }
-                            },2000);
-                        }
+                    public Call<List<TypeNotEffective>> callService() {
+                        return pokemonDbService.getAllNotEffectiveTypesFromRemote();
                     }
 
                     @Override
-                    public void onFailure(Call<List<TypeNotEffective>> call, Throwable t) {
-                        loadingDialog.setMessage(getString(R.string.fail_type_not_effective_download));
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                callbackTypeNoEffect();
-                            }
-                        },2000);
+                    public void onResult() {
+                        callbackTypeNoEffect();
                     }
-                });
-            }
-        },2000);
+                }
+        );
+        typeNotEffectiveCallback.run();
     }
 
     //===========================callback to get the type_typeNoEffect DB===========================
 
     private void callbackTypeNoEffect(){
-        loadingDialog.setMessage(getString(R.string.fetch_type_no_effect_db));
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Call<List<TypeNoEffect>> callTypeNoEffect = pokemonDbService.getAllNoEffectTypesFromRemote();
-                callTypeNoEffect.enqueue(new Callback<List<TypeNoEffect>>() {
+        SynchroCallback<TypeNoEffect> typeNoEffectCallback = new SynchroCallback<TypeNoEffect>(
+                this, loadingDialog, typeNoEffectDAO, TypeNoEffect.class,
+                new SynchroCallback.CallbackSetup<TypeNoEffect>() {
                     @Override
-                    public void onResponse(Call<List<TypeNoEffect>> call, Response<List<TypeNoEffect>> responseTypeNoEffect) {
-                        if (responseTypeNoEffect.isSuccessful()){
-                            List<TypeNoEffect> typeNoEffects = responseTypeNoEffect.body();
-                            if (typeNoEffects != null) {
-                                Log.i("numberOfTypeNoEffects", typeNoEffects.size()+"");
-                            }else{
-                                Log.i("numberOfTypeNoEffects","null");
-                            }
-                            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
-                                @Override
-                                public List<Object> doInBackground() {
-                                    typeNoEffectDAO.save(typeNoEffects);
-                                    return null;
-                                }
-
-                                @Override
-                                public void onPostExecute(List<Object> objects) {
-                                    loadingDialog.setMessage(getString(R.string.success_type_no_effect_download));
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            loadingDialog.dismiss();
-                                        }
-                                    },2000);
-                                }
-                            }).execute();
-                        }else{
-                            loadingDialog.setMessage(getString(R.string.fail_type_no_effect_download));
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    loadingDialog.dismiss();
-                                }
-                            },2000);
-                        }
+                    public Call<List<TypeNoEffect>> callService() {
+                        return pokemonDbService.getAllNoEffectTypesFromRemote();
                     }
 
                     @Override
-                    public void onFailure(Call<List<TypeNoEffect>> call, Throwable t) {
-                        loadingDialog.setMessage(getString(R.string.fail_type_no_effect_download));
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                loadingDialog.dismiss();
-                            }
-                        },2000);
+                    public void onResult() {
+                        loadingDialog.dismiss();
                     }
-                });
-            }
-        },2000);
+                }
+        );
+        typeNoEffectCallback.run();
     }
 
 }

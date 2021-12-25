@@ -31,10 +31,6 @@ public class PokemonType {
         return pokemonId;
     }
 
-    public void setPokemonId(@NonNull Long pokemonId) {
-        this.pokemonId = pokemonId;
-    }
-
     @NonNull
     public Long getTypeId() {
         return typeId;

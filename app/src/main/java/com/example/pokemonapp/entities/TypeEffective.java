@@ -39,8 +39,4 @@ public class TypeEffective {
     public Long getEffectiveId() {
         return effectiveId;
     }
-
-    public void setEffectiveId(@NonNull Long effectiveId) {
-        this.effectiveId = effectiveId;
-    }
 }

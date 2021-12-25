@@ -39,8 +39,4 @@ public class TypeNotEffective {
     public Long getNotEffectiveId() {
         return notEffectiveId;
     }
-
-    public void setNotEffectiveId(@NonNull Long notEffectiveId) {
-        this.notEffectiveId = notEffectiveId;
-    }
 }

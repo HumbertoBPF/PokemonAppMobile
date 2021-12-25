@@ -39,8 +39,4 @@ public class TypeNoEffect {
     public Long getNoEffectId() {
         return noEffectId;
     }
-
-    public void setNoEffectId(@NonNull Long noEffectId) {
-        this.noEffectId = noEffectId;
-    }
 }

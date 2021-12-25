@@ -1,9 +1,6 @@
 package com.example.pokemonapp.dao;
 
-import static androidx.room.OnConflictStrategy.REPLACE;
-
 import androidx.room.Dao;
-import androidx.room.Insert;
 import androidx.room.Query;
 
 import com.example.pokemonapp.entities.PokemonType;
@@ -12,10 +9,7 @@ import com.example.pokemonapp.entities.Type;
 import java.util.List;
 
 @Dao
-public interface PokemonTypeDAO {
-
-    @Insert(onConflict = REPLACE)
-    void save(List<PokemonType> pokemonTypes);
+public interface PokemonTypeDAO extends PokemonAppDAO<PokemonType>{
 
     @Query("SELECT * FROM pokemon_type")
     List<PokemonType> getAllPokemonTypeRelationshipsFromLocal();

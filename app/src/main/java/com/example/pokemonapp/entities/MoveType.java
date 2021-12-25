@@ -31,10 +31,6 @@ public class MoveType {
         return moveId;
     }
 
-    public void setMoveId(@NonNull Long moveId) {
-        this.moveId = moveId;
-    }
-
     @NonNull
     public Long getTypeId() {
         return typeId;

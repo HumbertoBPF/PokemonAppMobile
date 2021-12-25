@@ -31,16 +31,8 @@ public class PokemonMove {
         return pokemonId;
     }
 
-    public void setPokemonId(@NonNull Long pokemonId) {
-        this.pokemonId = pokemonId;
-    }
-
     @NonNull
     public Long getMoveId() {
         return moveId;
-    }
-
-    public void setMoveId(@NonNull Long moveId) {
-        this.moveId = moveId;
     }
 }
