@@ -19,13 +19,15 @@ import com.example.pokemonapp.R;
 public abstract class SelectionActivity extends AppCompatActivity {
 
     protected String gameMode;
-    protected RecyclerView playerRecyclerView;
-    protected RecyclerView cpuRecyclerView;
+
+    protected TextView instructionTextView;
     protected NestedScrollView rootScrollView;
+    protected RecyclerView playerRecyclerView;
     protected TextView playerTeamLabel;
+    protected RecyclerView cpuRecyclerView;
     protected TextView cpuTeamLabel;
     protected Button nextActivityButton;
-    protected String nextActivityButtonText;
+
     protected Class nextActivity;
     protected ProgressDialog loadingDialog;
 
@@ -33,16 +35,18 @@ public abstract class SelectionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_selection);
-        loadingDialog = loadingDialog(this);
 
+        loadingDialog = loadingDialog(this);     // dialog shown while some processing is being performed (for instance
+                                                        // while accessing database)
         getLayoutElements();
 
         SharedPreferences sh = getSharedPreferences(getResources().getString(R.string.name_shared_preferences_file), MODE_PRIVATE);
-
-        gameMode = sh.getString(getResources().getString(R.string.key_game_mode),null);
+        gameMode = sh.getString(getResources().getString(R.string.key_game_mode),null); // getting game mode if it has
+                                                                                                // already been defined
     }
 
     protected void getLayoutElements() {
+        instructionTextView = findViewById(R.id.instruction_text_view);
         rootScrollView = findViewById(R.id.root_scroll_view);
         nextActivityButton = findViewById(R.id.next_activity_button);
         playerRecyclerView = findViewById(R.id.player_choices_recycler_view);
@@ -51,12 +55,8 @@ public abstract class SelectionActivity extends AppCompatActivity {
         cpuTeamLabel = findViewById(R.id.cpu_team_label);
     }
 
-    protected void configureNextActivityButton(boolean enabled) {
-        if (enabled){
-            nextActivityButton.setBackgroundColor(getResources().getColor(R.color.red));
-        }
-        nextActivityButton.setText(nextActivityButtonText);
-        nextActivityButton.setVisibility(View.VISIBLE);
+    protected void configureNextActivityButton(String buttonText) {
+        nextActivityButton.setBackgroundColor(getResources().getColor(R.color.red));
         nextActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,6 +64,8 @@ public abstract class SelectionActivity extends AppCompatActivity {
                 finish();
             }
         });
+        nextActivityButton.setText(buttonText);
+        nextActivityButton.setVisibility(View.VISIBLE);
     }
 
 }

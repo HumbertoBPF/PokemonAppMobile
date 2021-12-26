@@ -7,8 +7,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.Spannable;
-import android.text.Spanned;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,14 +35,14 @@ public class GameModeSelectionActivity extends ButtonsActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.item_info) {
-            Dialog dialog = singleButtonDialog(GameModeSelectionActivity.this, "Game modes",
+            Dialog infoDialog = singleButtonDialog(GameModeSelectionActivity.this, "Game modes",
                     Html.fromHtml(getString(R.string.info_game_mode)), "Understood", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
                     });
-            dialog.show();
+            infoDialog.show();
         }
         return super.onOptionsItemSelected(item);
     }

@@ -7,10 +7,24 @@
     android:layout_height="match_parent"
     tools:context=".activities.game.PokemonSelectionActivity">
 
+    <TextView
+        android:id="@+id/instruction_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_margin="5dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:text="Text text"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:visibility="gone"/>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/instruction_text_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/next_activity_button"
@@ -18,7 +32,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp">
 
             <TextView
                 android:id="@+id/player_team_label"
@@ -27,7 +42,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:text="@string/player_team_label"
-                android:layout_margin="5dp"
+                android:layout_marginVertical="5dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -40,8 +55,8 @@
                 android:layout_marginVertical="5dp"
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintTop_toBottomOf="@id/player_team_label"
-                app:layout_constraintStart_toStartOf="@id/player_team_label"
-                app:layout_constraintEnd_toEndOf="@id/player_team_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
             <TextView
@@ -53,8 +68,8 @@
                 android:text="@string/cpu_team_label"
                 android:layout_marginVertical="5dp"
                 app:layout_constraintTop_toBottomOf="@id/player_choices_recycler_view"
-                app:layout_constraintStart_toStartOf="@id/player_team_label"
-                app:layout_constraintEnd_toEndOf="@id/player_team_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -64,8 +79,8 @@
                 android:layout_marginVertical="5dp"
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintTop_toBottomOf="@id/cpu_team_label"
-                app:layout_constraintStart_toStartOf="@id/player_team_label"
-                app:layout_constraintEnd_toEndOf="@id/player_team_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
