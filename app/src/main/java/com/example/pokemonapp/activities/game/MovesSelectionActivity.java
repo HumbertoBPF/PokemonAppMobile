@@ -35,7 +35,6 @@ public class MovesSelectionActivity extends SelectionActivity {
     protected void onCreate(Bundle savedInstanceState) {
         pokemonMoveDAO = PokemonAppDatabase.getInstance(this).getPokemonMoveDAO();
         nextActivityButtonText = "Start battle";
-        titleAppbar = "Move selection";
         nextActivity = GameActivity.class;
 
         super.onCreate(savedInstanceState);

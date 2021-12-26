@@ -15,6 +15,7 @@ public class GameModeSelectionActivity extends ButtonsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("Select a mode");
     }
 
     @Override

@@ -11,7 +11,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -398,19 +397,15 @@ public class MainActivity extends ButtonsActivity {
         if (isNetworkAvailable()) {
             try {
                 HttpURLConnection url = (HttpURLConnection)
-                        (new URL("http://clients3.google.com/generate_204")
-                                .openConnection());
+                        (new URL("http://clients3.google.com/generate_204").openConnection());
                 url.setRequestProperty("User-Agent", "Android");
                 url.setRequestProperty("Connection", "close");
                 url.setConnectTimeout(1500);
                 url.connect();
-                return (url.getResponseCode() == 204 &&
-                        url.getContentLength() == 0);
+                return (url.getResponseCode() == 204 && url.getContentLength() == 0);
             } catch (IOException e) {
-                Log.e(TAG, "Error checking internet connection", e);
+                e.printStackTrace();
             }
-        } else {
-            Log.d(TAG, "No network available!");
         }
         return false;
     }

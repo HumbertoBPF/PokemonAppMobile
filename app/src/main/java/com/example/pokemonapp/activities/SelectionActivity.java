@@ -26,13 +26,11 @@ public abstract class SelectionActivity extends AppCompatActivity {
     protected TextView cpuTeamLabel;
     protected Button nextActivityButton;
     protected String nextActivityButtonText;
-    protected String titleAppbar;
     protected Class nextActivity;
     protected ProgressDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTitle(titleAppbar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_selection);
         loadingDialog = loadingDialog(this);

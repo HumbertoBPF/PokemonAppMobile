@@ -25,49 +25,53 @@
         </activity>
         <activity
             android:name=".activities.SelectionActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/Theme.PokemonApp.NoActionBar"/>
         <activity
             android:name=".activities.game.PokemonSelectionActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/Theme.PokemonApp.NoActionBar"/>
         <activity
             android:name=".activities.game.GameActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/Theme.PokemonApp.NoActionBar"/>
         <activity
             android:name=".activities.game.MovesSelectionActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/Theme.PokemonApp.NoActionBar"/>
         <activity
             android:name=".activities.ButtonsActivity"
-            android:exported="true" />
+            android:exported="true"/>
         <activity
             android:name=".activities.databases_navigation.types.TypesDetailsActivity"
-            android:exported="true" />
+            android:exported="true"/>
         <activity
             android:name=".activities.databases_navigation.DatabaseDetailsActivity"
-            android:exported="true" />
+            android:exported="true"/>
         <activity
             android:name=".activities.databases_navigation.moves.MovesDetailsActivity"
-            android:exported="true" />
+            android:exported="true"/>
         <activity
             android:name=".activities.databases_navigation.pokemon.PokemonDetailsActivity"
-            android:exported="true" />
+            android:exported="true"/>
         <activity
             android:name=".activities.databases_navigation.DatabaseNavigationActivity"
-            android:exported="true" />
+            android:exported="true"/>
         <activity
             android:name=".activities.databases_navigation.types.TypesDatabaseActivity"
-            android:exported="true" />
+            android:exported="true"/>
         <activity
             android:name=".activities.databases_navigation.moves.MovesDatabaseActivity"
-            android:exported="true" />
+            android:exported="true"/>
         <activity
             android:name=".activities.databases_navigation.pokemon.PokemonDatabaseActivity"
-            android:exported="true" />
+            android:exported="true"/>
         <activity
             android:name=".activities.game.GameModeSelectionActivity"
-            android:exported="true" />
+            android:exported="true"/>
         <activity
             android:name=".activities.databases_navigation.DatabasesActivity"
-            android:exported="true" />
+            android:exported="true"/>
         <activity
             android:name=".activities.MainActivity"
             android:exported="true"/>

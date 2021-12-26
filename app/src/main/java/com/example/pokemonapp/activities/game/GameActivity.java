@@ -71,7 +71,6 @@ public class GameActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTitle("Game activity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_layout);
 
