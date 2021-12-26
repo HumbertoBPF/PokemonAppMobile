@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
+import android.text.Spanned;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
@@ -73,10 +74,17 @@ public class Tools {
         return builder.create();
     }
 
-    public static AlertDialog singleButtonDialog(Context context, String title, String message, String yesOption,
-                                                 DialogInterface.OnClickListener onClickListenerYes){
+    public static AlertDialog singleButtonDialog(Context context, String title, String message, String buttonText,
+                                                 DialogInterface.OnClickListener onClickListenerButton){
         AlertDialog.Builder builder =  new AlertDialog.Builder(context);
-        builder.setTitle(title).setMessage(message).setPositiveButton(yesOption, onClickListenerYes);
+        builder.setTitle(title).setMessage(message).setPositiveButton(buttonText, onClickListenerButton);
+        return builder.create();
+    }
+
+    public static AlertDialog singleButtonDialog(Context context, String title, Spanned message, String buttonText,
+                                                 DialogInterface.OnClickListener onClickListenerButton){
+        AlertDialog.Builder builder =  new AlertDialog.Builder(context);
+        builder.setTitle(title).setMessage(message).setPositiveButton(buttonText, onClickListenerButton);
         return builder.create();
     }
 

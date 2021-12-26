@@ -1,10 +1,20 @@
 package com.example.pokemonapp.activities.game;
 
 import static com.example.pokemonapp.util.Tools.goToNextActivityWithStringExtra;
+import static com.example.pokemonapp.util.Tools.singleButtonDialog;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.Spanned;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.ButtonsActivity;
@@ -16,6 +26,27 @@ public class GameModeSelectionActivity extends ButtonsActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("Select a mode");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.appbar_info, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.item_info) {
+            Dialog dialog = singleButtonDialog(GameModeSelectionActivity.this, "Game modes",
+                    Html.fromHtml(getString(R.string.info_game_mode)), "Understood", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            dialog.show();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -36,6 +36,22 @@
     <string name="fetch_typenoteffective_db">Fetching type_not_effective database</string>
     <string name="fetch_typenoeffect_db">Fetching type_no_effect database</string>
 
+    <string name="favorite_team_mode_button_text">Favorite team mode</string>
+    <string name="strategy_mode_button_text">Strategy mode</string>
+    <string name="random_mode_button_text">Random mode</string>
+    <string name="label_favorite_team_mode">FAVORITE_TEAM</string>
+    <string name="label_strategy_mode">STRATEGY</string>
+    <string name="label_random_mode">RANDOM</string>
+    <string name="key_game_mode">gameMode</string>
+    <string name="info_game_mode"><![CDATA[ <p>By choosing the <b>favorite team mode</b>, you can choose a team with
+    whatever pokémon and whatever move you want, but respecting obviously the general rules of a pokémon
+    battle (6 pokémon with at most 4 moves each).<br></p>
+    <p>On the other hand, by choosing the <b>strategy mode</b>,
+    you know the force (sum of status) of your foe\'s team and you have to build a team with at most the
+    same force.<br></p>
+    <p>Finally, when you choose the <b>random mode</b>, the pokémon and moves are selected randomly for
+    you.</p>]]></string>
+
     <string name="title_synchronization_dialog">Database Synchronization</string>
     <string name="message_synchronization_dialog">Would you like to perform a synchronization now ?</string>
     <string name="confirm_button_text_synchronization_dialog">Confirm</string>
@@ -53,14 +69,7 @@
     <string name="title_appbar_pokemon_db">Pokémon Database</string>
     <string name="title_appbar_moves_db">Moves Database</string>
     <string name="title_appbar_types_db">Types Database</string>
-    <string name="favorite_team_mode_button_text">Favorite team mode</string>
-    <string name="strategy_mode_button_text">Strategy mode</string>
-    <string name="random_mode_button_text">Random mode</string>
     <string name="name_shared_preferences_file">MySharedPrefs</string>
-    <string name="key_game_mode">gameMode</string>
-    <string name="label_favorite_team_mode">FAVORITE_TEAM</string>
-    <string name="label_strategy_mode">STRATEGY</string>
-    <string name="label_random_mode">RANDOM</string>
     <string name="filename_json_player_team">Player</string>
     <string name="filename_json_cpu_team">CPU</string>
     <string name="choose_pokemon_msg">Choose a pokémon</string>
