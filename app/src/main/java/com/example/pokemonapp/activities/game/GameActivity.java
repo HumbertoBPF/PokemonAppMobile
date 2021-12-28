@@ -11,6 +11,7 @@ import static com.example.pokemonapp.util.Tools.yesOrNoDialog;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -69,6 +70,8 @@ public class GameActivity extends AppCompatActivity {
     private final Trainer player = new Trainer();
     private final Trainer cpu = new Trainer();
 
+    private MediaPlayer mp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +82,10 @@ public class GameActivity extends AppCompatActivity {
 
         SharedPreferences sh = getSharedPreferences(getString(R.string.name_shared_preferences_file), MODE_PRIVATE);
         gameMode = sh.getString(getString(R.string.key_game_mode),null);
+
+        mp = MediaPlayer.create(this, R.raw.battle);
+        mp.setLooping(true);
+        mp.start();
 
         quitGameDialog = yesOrNoDialog(this, "Quit game ?", "Do you want to quit the game ?", "Yes", "No",
                 new DialogInterface.OnClickListener() {
@@ -279,7 +286,7 @@ public class GameActivity extends AppCompatActivity {
             },6000);
         }else{  // otherwise, finish game
             Log.i(TAG,"CPU was defeated");
-            endGame(R.string.player_win_msg);
+            endGame(true);
         }
     }
 
@@ -305,16 +312,25 @@ public class GameActivity extends AppCompatActivity {
             });
         }else{  // otherwise, finish game
             Log.i(TAG,"Player was defeated");
-            endGame(R.string.cpu_win_msg);
+            endGame(false);
         }
     }
 
     /**
      * Shows the result to the player in the TextView on the bottom of the screen and shows a play
-     * again dialog
-     * @param idResultString text to be shown with the result of the match
+     * again dialog.
+     * @param playerWon boolean indicating if player won the battle
      */
-    private void endGame(int idResultString) {
+    private void endGame(boolean playerWon) {
+        int idResultString;
+        int idResultAudio;
+        if (playerWon){
+            idResultString = R.string.player_win_msg;
+            idResultAudio = R.raw.success;
+        }else{
+            idResultString = R.string.cpu_win_msg;
+            idResultAudio = R.raw.fail;
+        }
         gameDescription.setText(idResultString);
         endGameDialog = yesOrNoDialog(this, getString(idResultString),
                 "Would you like to play again this mode ?", "Yes", "No",
@@ -334,6 +350,9 @@ public class GameActivity extends AppCompatActivity {
                     }
                 });
         endGameDialog.setCancelable(false);
+        mp.stop();
+        mp = MediaPlayer.create(this, idResultAudio);
+        mp.start();
         endGameDialog.show();
     }
 
@@ -937,6 +956,24 @@ public class GameActivity extends AppCompatActivity {
         if (!quitGameDialog.isShowing()){
             quitGameDialog.show();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mp.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mp.pause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mp.release();
     }
 
     interface OnChoiceListener {

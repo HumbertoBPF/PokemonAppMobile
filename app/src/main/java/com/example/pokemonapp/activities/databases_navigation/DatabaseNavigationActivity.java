@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Dao;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
@@ -28,7 +27,6 @@ public abstract class DatabaseNavigationActivity extends AppCompatActivity {
     protected String titleAppbar;
     protected Class detailsActivity;
     protected ProgressDialog loadingDialog;
-    protected Dao dao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
