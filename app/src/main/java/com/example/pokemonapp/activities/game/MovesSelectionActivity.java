@@ -3,6 +3,7 @@ package com.example.pokemonapp.activities.game;
 import static com.example.pokemonapp.util.Tools.dismissDialogWhenViewIsDrawn;
 import static com.example.pokemonapp.util.Tools.getDistinctRandomIntegers;
 import static com.example.pokemonapp.util.Tools.loadTeam;
+import static com.example.pokemonapp.util.Tools.makeSelector;
 import static com.example.pokemonapp.util.Tools.saveTeam;
 
 import android.os.Bundle;
@@ -10,7 +11,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
@@ -69,13 +69,13 @@ public class MovesSelectionActivity extends SelectionActivity {
                     @Override
                     public void onClick(View view, Move move) {
                         if (playerTeam.get(currentPokemonIndex).getMoves().contains(move)){
-                            ((CardView) view).setCardBackgroundColor(getResources().getColor(R.color.white));
+                            view.setBackground(makeSelector(getResources().getColor(R.color.white),0.8f));
                             playerTeam.get(currentPokemonIndex).removeMove(move);
                         }else{
                             if (playerTeam.get(currentPokemonIndex).getMoves().size() >= 4){
                                 Toast.makeText(getApplicationContext(),"You can choose at most 4 moves",Toast.LENGTH_LONG).show();
                             }else{
-                                ((CardView) view).setCardBackgroundColor(getResources().getColor(R.color.selection_gray));
+                                view.setBackground(makeSelector(getResources().getColor(R.color.selection_gray),1.0f));
                                 playerTeam.get(currentPokemonIndex).addMove(move);
                             }
                         }

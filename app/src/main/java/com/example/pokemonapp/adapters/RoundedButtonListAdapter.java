@@ -1,5 +1,7 @@
 package com.example.pokemonapp.adapters;
 
+import static com.example.pokemonapp.util.Tools.makeSelector;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,7 +59,7 @@ public class RoundedButtonListAdapter extends RecyclerView.Adapter<RoundedButton
         }
 
         public void bind(RoundedButton roundedButton){
-            this.buttonParent.setCardBackgroundColor(roundedButton.getColor());
+            this.buttonParent.setBackground(makeSelector(roundedButton.getColor(),0.8f));
             this.textView.setText(roundedButton.getText());
             this.itemView.setOnClickListener(roundedButton.getOnClickListener());
         }

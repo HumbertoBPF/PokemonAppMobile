@@ -3,6 +3,7 @@ package com.example.pokemonapp.activities.game;
 import static com.example.pokemonapp.util.Tools.dismissDialogWhenViewIsDrawn;
 import static com.example.pokemonapp.util.Tools.getDistinctRandomIntegers;
 import static com.example.pokemonapp.util.Tools.loadTeam;
+import static com.example.pokemonapp.util.Tools.makeSelector;
 import static com.example.pokemonapp.util.Tools.saveTeam;
 
 import android.os.Bundle;
@@ -122,14 +123,14 @@ public class PokemonSelectionActivity extends SelectionActivity {
     private void selectItemRecyclerView(CardView view, Pokemon pokemon) {
         if (playerPokemonList.contains(pokemon)){   // if the pokémon had already been selected, it is deselected, i.e. the background
                                                     // color is set to white and it is removed from the list
-            view.setCardBackgroundColor(getResources().getColor(R.color.white));
+            view.setBackground(makeSelector(getResources().getColor(R.color.white),0.8f));
             playerPokemonList.remove(pokemon);
         }else{                                      // otherwise, it is verified if 6 pokémon were already chosen. If not, the pokémon
                                                     // view is marked as selected and added to the list.
             if (playerPokemonList.size() >= 6){
                 Toast.makeText(getApplicationContext(), "You cannot choose more than 6 pokémon", Toast.LENGTH_LONG).show();
             }else{
-                view.setCardBackgroundColor(getResources().getColor(R.color.selection_gray));
+                view.setBackground(makeSelector(getResources().getColor(R.color.selection_gray),1.0f));
                 playerPokemonList.add(pokemon);
             }
         }

@@ -1,5 +1,7 @@
 package com.example.pokemonapp.adapters;
 
+import static com.example.pokemonapp.util.Tools.makeSelector;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,12 +60,13 @@ public class TypesAdapter extends RecyclerView.Adapter<TypesAdapter.TypeViewHold
 
         public TypeViewHolder(@NonNull View itemView) {
             super(itemView);
+            this.itemView = itemView;
             this.typeName = itemView.findViewById(R.id.type_name);
             this.nbPokemonType = itemView.findViewById(R.id.nb_pokemon_type);
-            this.itemView = itemView;
         }
 
         public void bind(Type type){
+            itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
             this.typeName.setText(type.getFName());
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override

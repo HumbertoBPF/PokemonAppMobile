@@ -1,6 +1,7 @@
 package com.example.pokemonapp.adapters;
 
 import static com.example.pokemonapp.util.Tools.listOfTypesAsString;
+import static com.example.pokemonapp.util.Tools.makeSelector;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -54,7 +55,7 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
 
     class MovesViewHolder extends RecyclerView.ViewHolder{
 
-        private View moveView;
+        private View itemView;
         private TextView moveName;
         private TextView moveType;
         private TextView moveCategory;
@@ -64,7 +65,7 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
 
         public MovesViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.moveView = itemView;
+            this.itemView = itemView;
             this.moveName = itemView.findViewById(R.id.move_name);
             this.moveType = itemView.findViewById(R.id.move_type);
             this.moveCategory = itemView.findViewById(R.id.move_category);
@@ -74,6 +75,7 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
         }
 
         public void bind(Move move){
+            itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
             this.moveName.setText(move.getFName());
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override
@@ -92,7 +94,7 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
             this.movePower.setText(context.getResources().getString(R.string.power_move_label)+"\n"+move.getFPower().toString());
             this.moveAccuracy.setText(context.getResources().getString(R.string.accuracy_move_label)+"\n"+move.getFAccuracy());
             this.movePp.setText(context.getResources().getString(R.string.pp_move_label)+"\n"+move.getFPp());
-            this.moveView.setOnClickListener(new View.OnClickListener() {
+            this.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     onClickListener.onClick(view, move);

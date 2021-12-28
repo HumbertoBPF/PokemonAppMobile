@@ -1,6 +1,7 @@
 package com.example.pokemonapp.adapters;
 
 import static com.example.pokemonapp.util.Tools.listOfTypesAsString;
+import static com.example.pokemonapp.util.Tools.makeSelector;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -54,7 +55,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
     class PokemonViewHolder extends RecyclerView.ViewHolder{
 
-        private View pokemonView;
+        private View itemView;
         private TextView pokemonName;
         private TextView pokemonTypes;
         private TextView pokemonAttack;
@@ -66,7 +67,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
         public PokemonViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.pokemonView = itemView;
+            this.itemView = itemView;
             this.pokemonName = itemView.findViewById(R.id.pokemon_name);
             this.pokemonTypes = itemView.findViewById(R.id.pokemon_types);
             this.pokemonAttack = itemView.findViewById(R.id.pokemon_attack);
@@ -78,6 +79,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
         }
 
         public void bind(Pokemon pokemon){
+            itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
             this.pokemonName.setText(pokemon.getFName());
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override
