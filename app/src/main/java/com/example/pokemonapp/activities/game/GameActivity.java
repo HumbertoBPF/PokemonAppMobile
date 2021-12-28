@@ -246,6 +246,8 @@ public class GameActivity extends AppCompatActivity {
         gameDescription.setText(getString(R.string.foe_possessive) +
                 cpu.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.fainted));
         cpu.setPokemonImageResource(this,DEFEATED);
+        // plays fainting sound
+        playsFaintSound();
         // decides the next step
         handler.postDelayed(this::pickAnotherCpuPokemonOrEndgame, 3000);
     }
@@ -259,8 +261,21 @@ public class GameActivity extends AppCompatActivity {
         gameDescription.setText(getString(R.string.player_possessive) +
                 player.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.fainted));
         player.setPokemonImageResource(this,DEFEATED);
+        // plays fainting sound
+        playsFaintSound();
         // decides the next step
         handler.postDelayed(GameActivity.this::pickAnotherPlayerPokemonOrEndGame, 3000);
+    }
+
+    private void playsFaintSound() {
+        MediaPlayer mpLocal = MediaPlayer.create(this, R.raw.faint);
+        mpLocal.start();
+        mpLocal.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mpLocal.release();
+            }
+        });
     }
 
     /**
