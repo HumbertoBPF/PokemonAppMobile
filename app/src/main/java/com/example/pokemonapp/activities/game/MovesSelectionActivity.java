@@ -40,8 +40,8 @@ public class MovesSelectionActivity extends SelectionActivity {
         super.onCreate(savedInstanceState);
 
         if (gameMode.equals(getResources().getString(R.string.label_random_mode))){
-            saveRandomMoves(playerRecyclerView,getResources().getString(R.string.filename_json_player_team));
-            saveRandomMoves(cpuRecyclerView,getResources().getString(R.string.filename_json_cpu_team));
+            saveRandomMoves(playerRecyclerView,getString(R.string.filename_json_player_team));
+            saveRandomMoves(cpuRecyclerView,getString(R.string.filename_json_cpu_team));
         }else if (gameMode.equals(getResources().getString(R.string.label_favorite_team_mode))){
             playerTeam = loadTeam(this, getResources().getString(R.string.filename_json_player_team));
             playerTeamLabel.setVisibility(View.GONE);
@@ -111,7 +111,11 @@ public class MovesSelectionActivity extends SelectionActivity {
                     saveTeam(getApplicationContext(),getResources().getString(R.string.filename_json_player_team),playerTeam);
                     playerRecyclerView.setAdapter(new PokemonMovesAdapter(getApplicationContext(), playerTeam));
 
-                    saveRandomMoves(cpuRecyclerView, getResources().getString(R.string.filename_json_cpu_team));
+                    if (gameLevel.equals(getString(R.string.easy_level))){
+                        saveRandomMoves(cpuRecyclerView, getResources().getString(R.string.filename_json_cpu_team));
+                    }else{
+                        saveBestMoves(cpuRecyclerView, getResources().getString(R.string.filename_json_cpu_team));
+                    }
                 }
             }
         });
@@ -150,6 +154,43 @@ public class MovesSelectionActivity extends SelectionActivity {
                     if (inGamePokemonList.indexOf(inGamePokemon) == inGamePokemonList.size() - 1){
                         saveTeam(getApplicationContext(),key,inGamePokemonList);    // when all the pokémon have been set, save in
                                                                                     // Shared Preferences
+                        recyclerView.setAdapter(new PokemonMovesAdapter(getApplicationContext(),
+                                inGamePokemonList));                                // and show the list of moves of each pokémon
+                        // the moves of the CPU are chosen lastly, so we are done when the CPU's moves are saved
+                        if (key.equals(getResources().getString(R.string.filename_json_cpu_team))){
+                            configureNextActivityButton("Start battle");
+                            dismissDialogWhenViewIsDrawn(cpuRecyclerView,loadingDialog);
+                        }
+                    }
+                }
+            }).execute();
+        }
+    }
+
+    private void saveBestMoves(RecyclerView recyclerView, String key){
+        List<InGamePokemon> inGamePokemonList = loadTeam(this, key);    // get list of pokémon
+        loadingDialog.show();
+        for (InGamePokemon inGamePokemon : inGamePokemonList){                 // iterates over all the pokémon
+            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                @Override
+                public List<Object> doInBackground() {                          // get list of moves of the current pokémon ordered
+                                                                                // by power
+                    List<Move> bestMoves = pokemonMoveDAO.getBestMovesOfPokemon(inGamePokemon.getPokemonServer().getFId());
+                    List<Object> objects = new ArrayList<>();
+                    objects.addAll(bestMoves);
+                    return objects;
+                }
+
+                @Override
+                public void onPostExecute(List<Object> objects) {
+                    List<Move> movesInGamePokemon = new ArrayList<>();
+                    for (Object o : objects){                                  // add the best moves to the list of moves
+                        movesInGamePokemon.add((Move) o);
+                    }
+                    inGamePokemon.setMoves(movesInGamePokemon);                 // set the list of moves of the current pokémon
+                    if (inGamePokemonList.indexOf(inGamePokemon) == inGamePokemonList.size() - 1){
+                        saveTeam(getApplicationContext(),key,inGamePokemonList);    // when all the pokémon have been set, save in
+                        // Shared Preferences
                         recyclerView.setAdapter(new PokemonMovesAdapter(getApplicationContext(),
                                 inGamePokemonList));                                // and show the list of moves of each pokémon
                         // the moves of the CPU are chosen lastly, so we are done when the CPU's moves are saved

@@ -23,20 +23,33 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         getLayoutElements();
 
+        setLevelUI();
+
         saveSettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (easyOption.isChecked()){
-                    saveDifficultLevel("Easy");
+                    saveDifficultLevel(getString(R.string.easy_level));
                 }else if (intermediateOption.isChecked()){
-                    saveDifficultLevel("Intermediate");
+                    saveDifficultLevel(getString(R.string.intermediate_level));
                 }else if (hardOption.isChecked()){
-                    saveDifficultLevel("Hard");
+                    saveDifficultLevel(getString(R.string.hard_level));
                 }
                 finish();
             }
         });
 
+    }
+
+    public void setLevelUI() {
+        SharedPreferences sh = getSharedPreferences(getResources().getString(R.string.name_shared_preferences_file), MODE_PRIVATE);
+        String gameLevel = sh.getString(getString(R.string.key_game_level),getString(R.string.easy_level));// getting difficult level
+
+        if (gameLevel.equals(getString(R.string.intermediate_level))){
+            intermediateOption.setChecked(true);
+        }else if(gameLevel.equals(getString(R.string.hard_level))){
+            hardOption.setChecked(true);
+        }
     }
 
     private void saveDifficultLevel(String difficultLevel) {
@@ -45,7 +58,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putString("DifficultLevel", difficultLevel);
+        editor.putString("difficultLevel", difficultLevel);
 
         editor.apply();
     }

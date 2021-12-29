@@ -70,8 +70,8 @@
     <string name="title_appbar_moves_db">Moves Database</string>
     <string name="title_appbar_types_db">Types Database</string>
     <string name="name_shared_preferences_file">MySharedPrefs</string>
-    <string name="filename_json_player_team">Player</string>
-    <string name="filename_json_cpu_team">CPU</string>
+    <string name="filename_json_player_team">player</string>
+    <string name="filename_json_cpu_team">cpu</string>
     <string name="choose_pokemon_msg">Choose a pokémon</string>
     <string name="choose_move_msg">Choose a move</string>
     <string name="player_win_msg">Player won</string>
@@ -95,4 +95,8 @@
     <string name="player_team_label">Player\'s team :</string>
     <string name="cpu_team_label">CPU team :</string>
     <string name="no_data_message">No data available, \n consider to do a synchronization to get data from the server</string>
+    <string name="key_game_level">difficultLevel</string>
+    <string name="easy_level">easy</string>
+    <string name="intermediate_level">intermediate</string>
+    <string name="hard_level">hard</string>
 </resources>

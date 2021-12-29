@@ -19,6 +19,7 @@ import com.example.pokemonapp.R;
 public abstract class SelectionActivity extends AppCompatActivity {
 
     protected String gameMode;
+    protected String gameLevel;
 
     protected TextView instructionTextView;
     protected NestedScrollView rootScrollView;
@@ -43,6 +44,7 @@ public abstract class SelectionActivity extends AppCompatActivity {
         SharedPreferences sh = getSharedPreferences(getResources().getString(R.string.name_shared_preferences_file), MODE_PRIVATE);
         gameMode = sh.getString(getResources().getString(R.string.key_game_mode),null); // getting game mode if it has
                                                                                                 // already been defined
+        gameLevel = sh.getString(getString(R.string.key_game_level),getString(R.string.easy_level));// getting difficult level
     }
 
     protected void getLayoutElements() {
