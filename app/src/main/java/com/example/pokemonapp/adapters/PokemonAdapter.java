@@ -1,21 +1,23 @@
 package com.example.pokemonapp.adapters;
 
-import static com.example.pokemonapp.util.Tools.listOfTypesAsString;
 import static com.example.pokemonapp.util.Tools.makeSelector;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.entities.Pokemon;
+import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
@@ -57,7 +59,10 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
         private View itemView;
         private TextView pokemonName;
-        private TextView pokemonTypes;
+        private CardView pokemonTypeContainer1;
+        private TextView pokemonType1;
+        private CardView pokemonTypeContainer2;
+        private TextView pokemonType2;
         private TextView pokemonAttack;
         private TextView pokemonDefense;
         private TextView pokemonSpAttack;
@@ -69,7 +74,10 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
             super(itemView);
             this.itemView = itemView;
             this.pokemonName = itemView.findViewById(R.id.pokemon_name);
-            this.pokemonTypes = itemView.findViewById(R.id.pokemon_types);
+            this.pokemonTypeContainer1 = itemView.findViewById(R.id.pokemon_type_container_1);
+            this.pokemonType1 = itemView.findViewById(R.id.pokemon_type_1);
+            this.pokemonTypeContainer2 = itemView.findViewById(R.id.pokemon_type_container_2);
+            this.pokemonType2 = itemView.findViewById(R.id.pokemon_type_2);
             this.pokemonAttack = itemView.findViewById(R.id.pokemon_attack);
             this.pokemonDefense = itemView.findViewById(R.id.pokemon_defense);
             this.pokemonSpAttack = itemView.findViewById(R.id.pokemon_sp_attack);
@@ -91,7 +99,16 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
                 @Override
                 public void onPostExecute(List<Object> objects) {
-                    pokemonTypes.setText(listOfTypesAsString(objects));
+                    Type type2 = (Type) objects.get(0);
+                    pokemonType2.setText(type2.getFName());
+                    pokemonTypeContainer2.setCardBackgroundColor(Color.parseColor("#"+ type2.getFColorCode()));
+                    if (objects.size() > 1){
+                        Type type1 = (Type) objects.get(1);
+                        pokemonType1.setText(type1.getFName());
+                        pokemonTypeContainer1.setCardBackgroundColor(Color.parseColor("#"+ type1.getFColorCode()));
+                    }else{
+                        pokemonType1.setVisibility(View.GONE);
+                    }
                 }
             }).execute();
             this.pokemonAttack.setText(context.getResources().getString(R.string.attack_pokemon_label)+

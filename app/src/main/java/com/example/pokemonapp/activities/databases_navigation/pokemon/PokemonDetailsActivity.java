@@ -1,16 +1,19 @@
 package com.example.pokemonapp.activities.databases_navigation.pokemon;
 
-import static com.example.pokemonapp.util.Tools.listOfTypesAsString;
-
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.cardview.widget.CardView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.databases_navigation.DatabaseDetailsActivity;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.entities.Pokemon;
+import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
@@ -22,7 +25,10 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
     private Pokemon pokemon;
 
     private TextView pokemonName;
-    private TextView pokemonTypes;
+    private CardView pokemonTypeContainer1;
+    private TextView pokemonType1;
+    private CardView pokemonTypeContainer2;
+    private TextView pokemonType2;
     private TextView pokemonCategory;
     private TextView pokemonDescription;
     private TextView pokemonHeight;
@@ -56,7 +62,10 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
 
     protected void getLayoutElements() {
         pokemonName = findViewById(R.id.pokemon_name);
-        pokemonTypes = findViewById(R.id.pokemon_types);
+        pokemonTypeContainer1 = findViewById(R.id.pokemon_type_container_1);
+        pokemonType1 = findViewById(R.id.pokemon_type_1);
+        pokemonTypeContainer2 = findViewById(R.id.pokemon_type_container_2);
+        pokemonType2 = findViewById(R.id.pokemon_type_2);
         pokemonCategory = findViewById(R.id.pokemon_category);
         pokemonDescription = findViewById(R.id.pokemon_description);
         pokemonWeight = findViewById(R.id.pokemon_weight);
@@ -84,7 +93,16 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
 
             @Override
             public void onPostExecute(List<Object> objects) {
-                pokemonTypes.setText("Types : "+listOfTypesAsString(objects));
+                Type type1 = (Type) objects.get(0);
+                pokemonTypeContainer2.setCardBackgroundColor(Color.parseColor("#"+type1.getFColorCode()));
+                pokemonType2.setText(type1.getFName());
+                if (objects.size() > 1){
+                    Type type2 = (Type) objects.get(1);
+                    pokemonTypeContainer1.setCardBackgroundColor(Color.parseColor("#"+type2.getFColorCode()));
+                    pokemonType1.setText(type2.getFName());
+                }else{
+                    pokemonTypeContainer1.setVisibility(View.GONE);
+                }
             }
         }).execute();
         pokemonCategory.setText("Category : "+pokemon.getFCategory());

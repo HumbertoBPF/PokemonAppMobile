@@ -11,17 +11,20 @@ public class Type implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private Long fId;
     private String fName;
+    private String fColorCode;
 
     public Type() {
     }
 
-    public Type(String fName) {
+    public Type(String fName, String fColorCode) {
         this.fName = fName;
+        this.fColorCode = fColorCode;
     }
 
-    public Type(Long fId, String fName) {
+    public Type(Long fId, String fName, String fColorCode) {
         this.fId = fId;
         this.fName = fName;
+        this.fColorCode = fColorCode;
     }
 
     public Long getFId() {
@@ -40,4 +43,11 @@ public class Type implements Serializable {
         this.fName = fName;
     }
 
+    public String getFColorCode() {
+        return fColorCode;
+    }
+
+    public void setFColorCode(String fColorCode) {
+        this.fColorCode = fColorCode;
+    }
 }

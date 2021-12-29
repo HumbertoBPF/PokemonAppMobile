@@ -1,8 +1,7 @@
 package com.example.pokemonapp.adapters;
 
-import static com.example.pokemonapp.util.Tools.listOfTypesAsString;
-
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
@@ -18,6 +18,7 @@ import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.Pokemon;
+import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.models.InGamePokemon;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
@@ -60,7 +61,10 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
 
         private View pokemonView;
         private TextView pokemonName;
-        private TextView pokemonTypes;
+        private CardView pokemonTypeContainer1;
+        private TextView pokemonType1;
+        private CardView pokemonTypeContainer2;
+        private TextView pokemonType2;
         private TextView pokemonAttack;
         private TextView pokemonDefense;
         private TextView pokemonSpAttack;
@@ -68,6 +72,7 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
         private TextView pokemonSpeed;
         private TextView pokemonHp;
 
+        private List<CardView> moveTypeContainers = new ArrayList<>();
         private List<TextView> moveNames = new ArrayList<>();
         private List<TextView> moveTypes = new ArrayList<>();
         private List<TextView> moveCategories = new ArrayList<>();
@@ -79,7 +84,10 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
             super(itemView);
             this.pokemonView = itemView;
             this.pokemonName = itemView.findViewById(R.id.pokemon_name);
-            this.pokemonTypes = itemView.findViewById(R.id.pokemon_types);
+            this.pokemonTypeContainer1 = itemView.findViewById(R.id.pokemon_type_container_1);
+            this.pokemonType1 = itemView.findViewById(R.id.pokemon_type_1);
+            this.pokemonTypeContainer2 = itemView.findViewById(R.id.pokemon_type_container_2);
+            this.pokemonType2 = itemView.findViewById(R.id.pokemon_type_2);
             this.pokemonAttack = itemView.findViewById(R.id.pokemon_attack);
             this.pokemonDefense = itemView.findViewById(R.id.pokemon_defense);
             this.pokemonSpAttack = itemView.findViewById(R.id.pokemon_sp_attack);
@@ -89,6 +97,7 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
 
             this.moveNames.add(itemView.findViewById(R.id.move1_name));
             this.moveTypes.add(itemView.findViewById(R.id.move1_type));
+            this.moveTypeContainers.add(itemView.findViewById(R.id.move1_type_container));
             this.moveCategories.add(itemView.findViewById(R.id.move1_category));
             this.movePowers.add(itemView.findViewById(R.id.move1_power));
             this.moveAccuracies.add(itemView.findViewById(R.id.move1_accuracy));
@@ -96,6 +105,7 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
 
             this.moveNames.add(itemView.findViewById(R.id.move2_name));
             this.moveTypes.add(itemView.findViewById(R.id.move2_type));
+            this.moveTypeContainers.add(itemView.findViewById(R.id.move2_type_container));
             this.moveCategories.add(itemView.findViewById(R.id.move2_category));
             this.movePowers.add(itemView.findViewById(R.id.move2_power));
             this.moveAccuracies.add(itemView.findViewById(R.id.move2_accuracy));
@@ -103,6 +113,7 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
 
             this.moveNames.add(itemView.findViewById(R.id.move3_name));
             this.moveTypes.add(itemView.findViewById(R.id.move3_type));
+            this.moveTypeContainers.add(itemView.findViewById(R.id.move3_type_container));
             this.moveCategories.add(itemView.findViewById(R.id.move3_category));
             this.movePowers.add(itemView.findViewById(R.id.move3_power));
             this.moveAccuracies.add(itemView.findViewById(R.id.move3_accuracy));
@@ -110,6 +121,7 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
 
             this.moveNames.add(itemView.findViewById(R.id.move4_name));
             this.moveTypes.add(itemView.findViewById(R.id.move4_type));
+            this.moveTypeContainers.add(itemView.findViewById(R.id.move4_type_container));
             this.moveCategories.add(itemView.findViewById(R.id.move4_category));
             this.movePowers.add(itemView.findViewById(R.id.move4_power));
             this.moveAccuracies.add(itemView.findViewById(R.id.move4_accuracy));
@@ -132,7 +144,16 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
 
                 @Override
                 public void onPostExecute(List<Object> objects) {
-                    pokemonTypes.setText(listOfTypesAsString(objects));
+                    Type type2 = (Type) objects.get(0);
+                    pokemonType2.setText(type2.getFName());
+                    pokemonTypeContainer2.setCardBackgroundColor(Color.parseColor("#"+type2.getFColorCode()));
+                    if (objects.size()>1){
+                        Type type1 = (Type) objects.get(1);
+                        pokemonType1.setText(type1.getFName());
+                        pokemonTypeContainer1.setCardBackgroundColor(Color.parseColor("#"+type1.getFColorCode()));
+                    }else{
+                        pokemonTypeContainer1.setVisibility(View.GONE);
+                    }
                 }
             }).execute();
             this.pokemonAttack.setText(context.getResources().getString(R.string.attack_pokemon_label)+
@@ -158,6 +179,7 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
                 }else{
                     Move move = moves.get(i);
                     this.moveNames.get(i).setText(move.getFName());
+                    CardView moveTypeContainer = moveTypeContainers.get(i);
                     TextView moveType = moveTypes.get(i);
                     new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                         @Override
@@ -169,7 +191,9 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
 
                         @Override
                         public void onPostExecute(List<Object> objects) {
-                            moveType.setText(listOfTypesAsString(objects));
+                            Type type = (Type) objects.get(0);
+                            moveTypeContainer.setCardBackgroundColor(Color.parseColor("#"+type.getFColorCode()));
+                            moveType.setText(type.getFName());
                         }
                     }).execute();
                     this.moveCategories.get(i).setText(move.getFCategory());

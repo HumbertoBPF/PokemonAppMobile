@@ -4,18 +4,21 @@ import static com.example.pokemonapp.util.Tools.listOfTypesAsString;
 import static com.example.pokemonapp.util.Tools.makeSelector;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.entities.Move;
+import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
@@ -56,6 +59,7 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
     class MovesViewHolder extends RecyclerView.ViewHolder{
 
         private View itemView;
+        private CardView moveTypeContainer;
         private TextView moveName;
         private TextView moveType;
         private TextView moveCategory;
@@ -66,6 +70,7 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
         public MovesViewHolder(@NonNull View itemView) {
             super(itemView);
             this.itemView = itemView;
+            this.moveTypeContainer = itemView.findViewById(R.id.move_type_container);
             this.moveName = itemView.findViewById(R.id.move_name);
             this.moveType = itemView.findViewById(R.id.move_type);
             this.moveCategory = itemView.findViewById(R.id.move_category);
@@ -88,6 +93,8 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
                 @Override
                 public void onPostExecute(List<Object> objects) {
                     moveType.setText(listOfTypesAsString(objects));
+                    Type typeMove = (Type) objects.get(0);
+                    moveTypeContainer.setCardBackgroundColor(Color.parseColor("#"+typeMove.getFColorCode()));
                 }
             }).execute();
             this.moveCategory.setText(context.getResources().getString(R.string.category_move_label)+"\n"+move.getFCategory());

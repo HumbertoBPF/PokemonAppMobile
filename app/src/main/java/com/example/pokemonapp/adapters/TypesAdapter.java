@@ -3,12 +3,14 @@ package com.example.pokemonapp.adapters;
 import static com.example.pokemonapp.util.Tools.makeSelector;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
@@ -55,18 +57,21 @@ public class TypesAdapter extends RecyclerView.Adapter<TypesAdapter.TypeViewHold
     class TypeViewHolder extends RecyclerView.ViewHolder{
 
         private View itemView;
+        private CardView typeNameContainer;
         private TextView typeName;
         private TextView nbPokemonType;
 
         public TypeViewHolder(@NonNull View itemView) {
             super(itemView);
             this.itemView = itemView;
+            this.typeNameContainer = itemView.findViewById(R.id.type_name_container);
             this.typeName = itemView.findViewById(R.id.type_name);
             this.nbPokemonType = itemView.findViewById(R.id.nb_pokemon_type);
         }
 
         public void bind(Type type){
             itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
+            this.typeNameContainer.setCardBackgroundColor(Color.parseColor("#"+type.getFColorCode()));
             this.typeName.setText(type.getFName());
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override

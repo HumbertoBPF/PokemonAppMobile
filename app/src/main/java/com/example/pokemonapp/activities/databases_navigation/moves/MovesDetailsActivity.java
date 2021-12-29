@@ -2,14 +2,18 @@ package com.example.pokemonapp.activities.databases_navigation.moves;
 
 import static com.example.pokemonapp.util.Tools.listOfTypesAsString;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TextView;
+
+import androidx.cardview.widget.CardView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.databases_navigation.DatabaseDetailsActivity;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.entities.Move;
+import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
@@ -20,6 +24,7 @@ public class MovesDetailsActivity extends DatabaseDetailsActivity {
     private Move move;
 
     private TextView moveName;
+    private CardView moveTypeContainer;
     private TextView moveType;
     private TextView moveCategory;
     private TextView movePower;
@@ -51,6 +56,7 @@ public class MovesDetailsActivity extends DatabaseDetailsActivity {
 
     protected void getLayoutElements() {
         moveName = findViewById(R.id.move_name);
+        moveTypeContainer = findViewById(R.id.move_type_container);
         moveType = findViewById(R.id.move_type);
         moveCategory = findViewById(R.id.move_category);
         movePower = findViewById(R.id.move_power);
@@ -76,7 +82,9 @@ public class MovesDetailsActivity extends DatabaseDetailsActivity {
 
             @Override
             public void onPostExecute(List<Object> objects) {
-                moveType.setText("Type : "+listOfTypesAsString(objects));
+                Type type = (Type) objects.get(0);
+                moveTypeContainer.setCardBackgroundColor(Color.parseColor("#"+type.getFColorCode()));
+                moveType.setText(listOfTypesAsString(objects));
             }
         }).execute();
         moveCategory.setText("Category\n"+move.getFCategory());

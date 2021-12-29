@@ -2,8 +2,11 @@ package com.example.pokemonapp.activities.databases_navigation.types;
 
 import static com.example.pokemonapp.util.Tools.listOfTypesAsStringFromTypeList;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TextView;
+
+import androidx.cardview.widget.CardView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.databases_navigation.DatabaseDetailsActivity;
@@ -23,6 +26,7 @@ public class TypesDetailsActivity extends DatabaseDetailsActivity {
 
     private Type type;
 
+    private CardView typeNameContainer;
     private TextView typeName;
     private TextView pokemonType;
     private TextView movesType;
@@ -57,6 +61,7 @@ public class TypesDetailsActivity extends DatabaseDetailsActivity {
 
     @Override
     protected void getLayoutElements() {
+        typeNameContainer = findViewById(R.id.type_name_container);
         typeName = findViewById(R.id.type_name);
         pokemonType = findViewById(R.id.pokemon_type);
         movesType = findViewById(R.id.moves_type);
@@ -67,7 +72,8 @@ public class TypesDetailsActivity extends DatabaseDetailsActivity {
 
     @Override
     protected void bind() {
-        typeName.setText("Name : "+type.getFName());
+        typeNameContainer.setCardBackgroundColor(Color.parseColor("#"+type.getFColorCode()));
+        typeName.setText(type.getFName());
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
             @Override
             public List<Object> doInBackground() {
