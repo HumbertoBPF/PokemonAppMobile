@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/drawable-anydpi/ic_info.xml" value="0.1" />
         <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/drawable/ic_launcher_background.xml" value="0.14635416666666667" />
         <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/layout/activity_buttons.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/layout/activity_database_navigation.xml" value="0.13020833333333334" />
@@ -17,6 +18,7 @@
         <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/layout/activity_pokemon_details.xml" value="0.25" />
         <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/layout/activity_pokemon_selection.xml" value="0.11043566362715299" />
         <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/layout/activity_selection.xml" value="0.2" />
+        <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/layout/activity_settings.xml" value="0.23854166666666668" />
         <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/layout/activity_splash.xml" value="0.13020833333333334" />
         <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/layout/activity_three_buttons.xml" value="0.13177083333333334" />
         <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/layout/activity_types_details.xml" value="0.264" />
@@ -26,6 +28,7 @@
         <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/layout/rounded_button_adapter_layout.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/layout/team_adapter_layout.xml" value="0.23854166666666668" />
         <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/layout/types_adapter_layout.xml" value="0.23854166666666668" />
+        <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/menu/appbar_game_mode_selection.xml" value="0.16875" />
         <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/menu/appbar_info.xml" value="0.23854166666666668" />
         <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/menu/appbar_menu.xml" value="0.13020833333333334" />
         <entry key="..\:/Users/Humberto/Desktop/Humberto/Study/PokemonApp/app/src/main/res/menu/appbar_synchro.xml" value="0.23854166666666668" />

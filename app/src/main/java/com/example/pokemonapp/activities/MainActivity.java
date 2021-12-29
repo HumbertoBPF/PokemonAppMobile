@@ -137,7 +137,7 @@ public class MainActivity extends ButtonsActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.appbar_synchro, menu);
+        getMenuInflater().inflate(R.menu.appbar_main_activity, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

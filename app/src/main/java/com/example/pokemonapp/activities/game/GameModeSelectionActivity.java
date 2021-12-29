@@ -5,6 +5,7 @@ import static com.example.pokemonapp.util.Tools.singleButtonDialog;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.Menu;
@@ -28,7 +29,7 @@ public class GameModeSelectionActivity extends ButtonsActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.appbar_info, menu);
+        getMenuInflater().inflate(R.menu.appbar_game_mode_selection, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -43,6 +44,8 @@ public class GameModeSelectionActivity extends ButtonsActivity {
                         }
                     });
             infoDialog.show();
+        }else{
+            startActivity(new Intent(this,SettingsActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
