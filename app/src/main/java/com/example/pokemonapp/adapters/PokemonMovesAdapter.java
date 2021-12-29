@@ -84,10 +84,13 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
             super(itemView);
             this.pokemonView = itemView;
             this.pokemonName = itemView.findViewById(R.id.pokemon_name);
+
             this.pokemonTypeContainer1 = itemView.findViewById(R.id.pokemon_type_container_1);
             this.pokemonType1 = itemView.findViewById(R.id.pokemon_type_1);
+
             this.pokemonTypeContainer2 = itemView.findViewById(R.id.pokemon_type_container_2);
             this.pokemonType2 = itemView.findViewById(R.id.pokemon_type_2);
+
             this.pokemonAttack = itemView.findViewById(R.id.pokemon_attack);
             this.pokemonDefense = itemView.findViewById(R.id.pokemon_defense);
             this.pokemonSpAttack = itemView.findViewById(R.id.pokemon_sp_attack);
@@ -147,7 +150,7 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
                     Type type2 = (Type) objects.get(0);
                     pokemonType2.setText(type2.getFName());
                     pokemonTypeContainer2.setCardBackgroundColor(Color.parseColor("#"+type2.getFColorCode()));
-                    if (objects.size()>1){
+                    if (objects.size()>1){  // if the pokémon has a second type, add it to layout
                         Type type1 = (Type) objects.get(1);
                         pokemonType1.setText(type1.getFName());
                         pokemonTypeContainer1.setCardBackgroundColor(Color.parseColor("#"+type1.getFColorCode()));

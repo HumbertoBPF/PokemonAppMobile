@@ -6,7 +6,7 @@ import static com.example.pokemonapp.models.Trainer.Position.FRONT;
 import static com.example.pokemonapp.util.Tools.getDistinctRandomIntegers;
 import static com.example.pokemonapp.util.Tools.goToNextActivityWithStringExtra;
 import static com.example.pokemonapp.util.Tools.loadTeam;
-import static com.example.pokemonapp.util.Tools.yesOrNoDialog;
+import static com.example.pokemonapp.util.Tools.dualButtonDialog;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -87,7 +87,7 @@ public class GameActivity extends AppCompatActivity {
         mp.setLooping(true);
         mp.start();
 
-        quitGameDialog = yesOrNoDialog(this, "Quit game ?", "Do you want to quit the game ?", "Yes", "No",
+        quitGameDialog = dualButtonDialog(this, "Quit game ?", "Do you want to quit the game ?", "Yes", "No",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -347,7 +347,7 @@ public class GameActivity extends AppCompatActivity {
             idResultAudio = R.raw.fail;
         }
         gameDescription.setText(idResultString);
-        endGameDialog = yesOrNoDialog(this, getString(idResultString),
+        endGameDialog = dualButtonDialog(this, getString(idResultString),
                 "Would you like to play again this mode ?", "Yes", "No",
                 new DialogInterface.OnClickListener() {
                     @Override

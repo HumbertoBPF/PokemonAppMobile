@@ -144,7 +144,7 @@ public class MainActivity extends ButtonsActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.item_sync) {
-            Dialog dialog = Tools.yesOrNoDialog(this, getString(R.string.title_synchronization_dialog),
+            Dialog dialog = Tools.dualButtonDialog(this, getString(R.string.title_synchronization_dialog),
                     getString(R.string.message_synchronization_dialog), getString(R.string.confirm_button_text_synchronization_dialog),
                     getString(R.string.cancel_button_text_synchronization_dialog),
                     new DialogInterface.OnClickListener() {

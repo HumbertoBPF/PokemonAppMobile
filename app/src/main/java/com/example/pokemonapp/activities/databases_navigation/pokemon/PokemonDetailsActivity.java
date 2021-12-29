@@ -96,7 +96,7 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
                 Type type1 = (Type) objects.get(0);
                 pokemonTypeContainer2.setCardBackgroundColor(Color.parseColor("#"+type1.getFColorCode()));
                 pokemonType2.setText(type1.getFName());
-                if (objects.size() > 1){
+                if (objects.size() > 1){    // if the pokémon has a second type, add it to layout
                     Type type2 = (Type) objects.get(1);
                     pokemonTypeContainer1.setCardBackgroundColor(Color.parseColor("#"+type2.getFColorCode()));
                     pokemonType1.setText(type2.getFName());
