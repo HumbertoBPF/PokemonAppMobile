@@ -13,6 +13,9 @@ public interface PokemonDAO extends PokemonAppDAO<Pokemon>{
     @Query("SELECT * FROM Pokemon")
     List<Pokemon> getPokemonFromLocal();
 
+    @Query("SELECT * FROM Pokemon ORDER BY pokemon.fOverallPts DESC")
+    List<Pokemon> getPokemonGreatestOverallPoints();
+
     @Query("SELECT COUNT(*) FROM Pokemon;")
     Long getNbOfElements();
 

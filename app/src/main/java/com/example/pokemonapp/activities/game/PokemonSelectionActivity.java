@@ -7,6 +7,7 @@ import static com.example.pokemonapp.util.Tools.makeSelector;
 import static com.example.pokemonapp.util.Tools.saveTeam;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -30,7 +31,9 @@ public class PokemonSelectionActivity extends SelectionActivity {
 
     private Integer id = 0;
     private PokemonDAO pokemonDAO;
-    private List<Pokemon> allPokemonList;
+    private List<Pokemon> allPokemonRanked;         // list with all the pokémon ranked by OverallPoints
+    private int indexWeakestPokemon;                // index of the weakest pokémon of allPokemonRanked to be considered
+                                                    // by the CPU when it chooses its pokémon
     private List<Pokemon> playerPokemonList = new ArrayList<>();
 
     @Override
@@ -45,13 +48,13 @@ public class PokemonSelectionActivity extends SelectionActivity {
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override
                 public List<Object> doInBackground() {
-                    return getAllPokemonFromLocalDB();
+                    return getAllPokemonOrderedByOverallPoints();
                 }
 
                 @Override
                 public void onPostExecute(List<Object> objects) {
-                    saveRandomTeam(getResources().getString(R.string.filename_json_player_team));
-                    saveRandomTeam(getResources().getString(R.string.filename_json_cpu_team));
+                    saveTeamAutomatically(getResources().getString(R.string.filename_json_player_team));
+                    saveTeamAutomatically(getResources().getString(R.string.filename_json_cpu_team));
                     configureRecyclerView(playerRecyclerView, getResources().getString(R.string.filename_json_player_team));
                     configureRecyclerView(cpuRecyclerView, getResources().getString(R.string.filename_json_cpu_team));
                     configureNextActivityButton("Go to move selection");
@@ -70,12 +73,14 @@ public class PokemonSelectionActivity extends SelectionActivity {
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override
                 public List<Object> doInBackground() {
-                    return getAllPokemonFromLocalDB();
+                    getAllPokemonOrderedByOverallPoints();  // gets list of the pokémon ordered by overall power to be used in the
+                                                            // random choice of pokémon for the CPU
+                    return getAllPokemon();                 // gets list unordered to be shown to the user in the order of pokédex
                 }
 
                 @Override
                 public void onPostExecute(List<Object> objects) {
-                    saveRandomTeam(getResources().getString(R.string.filename_json_cpu_team));  // save a random team for the CPU
+                    saveTeamAutomatically(getResources().getString(R.string.filename_json_cpu_team));  // save a random team for the CPU
                     // shows all the pokémon for the players so as he can pick 6 for their team
                     playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(),
                             objects,
@@ -93,11 +98,30 @@ public class PokemonSelectionActivity extends SelectionActivity {
         }
     }
 
+    /**
+     * @return List&lt;Object&gt; with all the pokémon(the pokémon are in the order that they appear
+     *          in the pokédex)
+     */
     @NonNull
-    private List<Object> getAllPokemonFromLocalDB() {
-        allPokemonList = pokemonDAO.getPokemonFromLocal();
+    private List<Object> getAllPokemon() {
         List<Object> objects = new ArrayList<>();
-        objects.addAll(allPokemonList);
+        objects.addAll(pokemonDAO.getPokemonFromLocal());
+        return objects;
+    }
+
+    /**
+     * Gets a sorted List&lt;Object&gt; of all the pokémon according to their OverallPoints. This
+     * list is returned by the method, but it is also stored as a List&lt;Pokemon&gt; in the
+     * attribute <b>allPokemonList</b>.
+     * @return List&lt;Object&gt; with all the pokémon sorted in the descendent order according to
+     * their OverallPoints.
+     */
+    @NonNull
+    private List<Object> getAllPokemonOrderedByOverallPoints() {
+        allPokemonRanked = pokemonDAO.getPokemonGreatestOverallPoints();  // get pokémon ordered by OverallPoints
+        indexWeakestPokemon = getIndexWeakestPokemon();                 // defines the top pokémon to be considered by the CPU
+        List<Object> objects = new ArrayList<>();
+        objects.addAll(allPokemonRanked);
         return objects;
     }
 
@@ -194,17 +218,40 @@ public class PokemonSelectionActivity extends SelectionActivity {
     }
 
     /**
-     * Picks a random group of 6 distinct pokémon and saves it in Shared Preferences.
+     * Picks randomly 6 distinct pokémon among a group that depends on the game mode and on the level
+     * and saves it in Shared Preferences.
      * @param key the key that will be used to store the team in Shared Preferences.
      */
-    private void saveRandomTeam(String key){
-        List<Integer> indexes = getDistinctRandomIntegers(0, allPokemonList.size()-1,6);    // get 6 random pokémon
+    private void saveTeamAutomatically(String key){
+        List<Integer> indexes = getDistinctRandomIntegers(0,indexWeakestPokemon,6);    // get 6 random pokémon
         List<InGamePokemon> team = new ArrayList<>();
         for (Integer index : indexes){  // put in a list
-            team.add(new InGamePokemon(id, allPokemonList.get(index)));
+            team.add(new InGamePokemon(id, allPokemonRanked.get(index)));
             id++;
         }
         saveTeam(getApplicationContext(), key, team);   // saves in Shared Preferences
+    }
+
+    /**
+     * When the game mode is favorite team and level is equal to intermediate or hard, the number of
+     * pokémon to be considered by the CPU to build its team is reduced so as to choose the strongest
+     * pokémon. In the intermediate level, the CPU chooses among the 50% strongest pokémon. On the
+     * other hand, when in the hard level, the CPU chooses among the 33% strongest pokémon.
+     * @return the number of top pokémon to be considered.
+     */
+    private int getIndexWeakestPokemon() {
+        int nbPokemon = allPokemonRanked.size();
+        if (gameMode.equals(getString(R.string.label_favorite_team_mode))){ //
+            if (gameLevel.equals(getString(R.string.hard_level))){
+                Log.i("getIndexWeakestPokemon",""+(nbPokemon/3 - 1));
+                return (nbPokemon/3 - 1);
+            }else if (gameLevel.equals(getString(R.string.intermediate_level))){
+                Log.i("getIndexWeakestPokemon",""+(nbPokemon/2 - 1));
+                return (nbPokemon/2 - 1);
+            }
+        }
+        Log.i("getIndexWeakestPokemon",""+(nbPokemon-1));
+        return (nbPokemon - 1);
     }
 
 }
