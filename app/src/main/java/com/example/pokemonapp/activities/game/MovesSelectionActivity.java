@@ -18,8 +18,11 @@ import com.example.pokemonapp.activities.SelectionActivity;
 import com.example.pokemonapp.adapters.MovesAdapter;
 import com.example.pokemonapp.adapters.PokemonMovesAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.dao.PokemonMoveDAO;
+import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.entities.Move;
+import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.models.InGamePokemon;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
@@ -29,12 +32,14 @@ import java.util.List;
 public class MovesSelectionActivity extends SelectionActivity {
 
     private PokemonMoveDAO pokemonMoveDAO;
+    private PokemonTypeDAO pokemonTypeDAO;
+    private MoveTypeDAO moveTypeDAO;
     private List<InGamePokemon> playerTeam;
     private int currentPokemonIndex = 0;    // index of the player's pokémon whose moves are being currenly chosen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        pokemonMoveDAO = PokemonAppDatabase.getInstance(this).getPokemonMoveDAO();
+        getDAOs();
         nextActivity = GameActivity.class;
 
         super.onCreate(savedInstanceState);
@@ -49,6 +54,12 @@ public class MovesSelectionActivity extends SelectionActivity {
 
             chooseMovesForCurrentPokemon();
         }
+    }
+
+    private void getDAOs() {
+        pokemonMoveDAO = PokemonAppDatabase.getInstance(this).getPokemonMoveDAO();
+        pokemonTypeDAO = PokemonAppDatabase.getInstance(this).getPokemonTypeDAO();
+        moveTypeDAO = PokemonAppDatabase.getInstance(this).getMoveTypeDAO();
     }
 
     private void chooseMovesForCurrentPokemon() {
@@ -175,9 +186,104 @@ public class MovesSelectionActivity extends SelectionActivity {
                 @Override
                 public List<Object> doInBackground() {                          // get list of moves of the current pokémon ordered
                                                                                 // by power
-                    List<Move> bestMoves = pokemonMoveDAO.getBestMovesOfPokemon(inGamePokemon.getPokemonServer().getFId());
-                    List<Object> objects = new ArrayList<>();
-                    objects.addAll(bestMoves);
+                    List<Move> bestMoves = pokemonMoveDAO.getStrongestMovesOfPokemon(inGamePokemon.getPokemonServer().getFId());
+
+                    List<Type> typesPokemon = pokemonTypeDAO.getTypesOfPokemon(inGamePokemon.getPokemonServer().getFId());
+
+                    Type type1;
+                    Type type2 = null;
+
+                    type1 = typesPokemon.get(0);
+                    if (typesPokemon.size() > 1){
+                        type1 = typesPokemon.get(1);
+                        type2 = typesPokemon.get(0);
+                    }
+
+                    List<Move> movesStabType1 = new ArrayList<>();  // list for moves whose type is the primary type of the pokémon
+                    List<Move> movesStabType2 = new ArrayList<>();  // list for moves whose type is the secondary type of the pokémon
+                    List<Move> movesNoStab = new ArrayList<>();     // list for all the other moves
+
+                    for (Move move : bestMoves){    // groups moves according to their type and the type(s) of the pokémon
+                        Type typeMove = moveTypeDAO.getTypesOfMove(move.getFId()).get(0);
+                        if (typeMove.getFId().equals(type1.getFId())){
+                            movesStabType1.add(move);
+                        }else if (type2 != null){
+                            if (typeMove.getFId().equals(type2.getFId())){
+                                movesStabType2.add(move);
+                            }else{
+                                movesNoStab.add(move);
+                            }
+                        }else{
+                            movesNoStab.add(move);
+                        }
+                    }
+
+                    List<Object> objects = new ArrayList<>();   // final list of moves
+
+                    // if there is any move with the secondary type, add the strongest one
+                    if (!movesStabType2.isEmpty()){
+                        objects.add(movesStabType2.get(0));     // the size should be 1 here in the best case
+                    }
+
+                    // if there is any move with the primary type, add the strongest one
+                    if (!movesStabType1.isEmpty()){
+                        objects.add(movesStabType1.get(0));     // the size should be 2 here in the best case
+
+                        // if there is no move with the secondary type, the size of the final list of moves is 1 so far. For that case,
+                        // if there are at least 2 moves with the primary type, add the second strongest one to the final list
+                        if (objects.size() < 2){
+                            if (movesStabType1.size() > 1){
+                                objects.add(movesStabType1.get(1));
+                            }
+                        }
+
+                    }
+
+                    // if only one move was added so far, it is possible that we have only
+                    // one move of the type2 and no move at all of the type1 for such case,
+                    // we add a second stab move of the type 2(hence, we will have both stab moves of type2)
+                    if (objects.size() < 2){
+                        if (movesStabType2.size() > 1){
+                            objects.add(movesStabType2.get(1));
+                        }
+                    }
+
+
+                    // at this point, we complete the list of moves with the no stab moves available
+                    if (!movesNoStab.isEmpty()){
+                        // we try to complete the list of final moves, but we have to check if we have enough moves to do so
+                        // this is the function of the Math.min
+                        List<Integer> indexes = getDistinctRandomIntegers(0,movesNoStab.size()-1,
+                                Math.min(4-objects.size(),movesNoStab.size()));
+                        for (Integer index : indexes){
+                            objects.add(movesNoStab.get(index));
+                        }
+                    }
+
+//                    // if there is any move with no stab, add the strongest one
+//                    if (!movesNoStab.isEmpty()){
+//                        objects.add(movesNoStab.get(0));     // the size should be 3 here in the best case
+//
+//                        // if there are at least 2 moves with no stab, add the second strongest one
+//                        if (movesNoStab.size() > 1){
+//                            objects.add(movesNoStab.get(1)); // the size should be 4 here in the best case
+//                        }
+//
+//                        if (movesNoStab.size() > 2){    // if there are at least 3 moves with no stab and there are not still 4 final
+//                                                        // moves, add the third strongest one
+//                            if (objects.size() < 4){
+//                                objects.add(movesNoStab.get(2));
+//                            }
+//                        }
+//
+//                        if (movesNoStab.size() > 3){    // if there are at least 4 moves with no stab and there are not still 4 final
+//                                                        // moves, add the fourth strongest one
+//                            if (objects.size() < 4){
+//                                objects.add(movesNoStab.get(3));
+//                            }
+//                        }
+//                    }
+
                     return objects;
                 }
 

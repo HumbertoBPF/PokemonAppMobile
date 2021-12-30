@@ -16,8 +16,8 @@ public interface PokemonMoveDAO extends PokemonAppDAO<PokemonMove>{
     List<Move> getMovesOfPokemon(long pokemonId);
 
     @Query("SELECT * FROM move INNER JOIN pokemon_moves ON move.fId = pokemon_moves.moveId" +
-            " WHERE (pokemon_moves.pokemonId = :pokemonId AND move.fUserFaints = 0) ORDER BY move.fPower DESC LIMIT 4")
-    List<Move> getBestMovesOfPokemon(long pokemonId);
+            " WHERE (pokemon_moves.pokemonId = :pokemonId AND move.fUserFaints = 0) ORDER BY move.fPower DESC")
+    List<Move> getStrongestMovesOfPokemon(long pokemonId);
 
     @Query("SELECT COUNT(*) FROM pokemon_moves;")
     Long getNbOfElements();
