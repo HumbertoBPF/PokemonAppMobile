@@ -48,7 +48,7 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         colorAppbar = getResources().getColor(R.color.pokemon_theme_color);
-        titleAppbar = getResources().getString(R.string.title_appbar_pokemon_db);
+        titleAppbar = getString(R.string.title_appbar_pokemon_db);
         layout = R.layout.activity_pokemon_details;
         super.onCreate(savedInstanceState);
 

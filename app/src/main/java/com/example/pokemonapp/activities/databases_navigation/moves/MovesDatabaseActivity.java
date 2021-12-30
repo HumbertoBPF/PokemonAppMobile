@@ -22,7 +22,7 @@ public class MovesDatabaseActivity extends DatabaseNavigationActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         colorAppbar = getResources().getColor(R.color.moves_theme_color);
-        titleAppbar = getResources().getString(R.string.title_appbar_moves_db);
+        titleAppbar = getString(R.string.title_appbar_moves_db);
         detailsActivity = MovesDetailsActivity.class;
         moveDAO = PokemonAppDatabase.getInstance(this).getMoveDAO();
         super.onCreate(savedInstanceState);

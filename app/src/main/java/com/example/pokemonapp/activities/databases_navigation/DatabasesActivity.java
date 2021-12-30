@@ -15,13 +15,13 @@ public class DatabasesActivity extends ButtonsActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTitle(getResources().getString(R.string.databases_button_text));
+        setTitle(getString(R.string.databases_button_text));
         super.onCreate(savedInstanceState);
     }
 
     @Override
     protected void declareButtons() {
-        RoundedButton pokemonDbButton = new RoundedButton(getResources().getString(R.string.title_appbar_pokemon_db),
+        RoundedButton pokemonDbButton = new RoundedButton(getString(R.string.title_appbar_pokemon_db),
                 getResources().getColor(R.color.pokemon_theme_color),
                 new View.OnClickListener() {
                     @Override
@@ -29,7 +29,7 @@ public class DatabasesActivity extends ButtonsActivity {
                         startActivity(new Intent(getApplicationContext(), PokemonDatabaseActivity.class));
                     }
                 });
-        RoundedButton movesDbButton = new RoundedButton(getResources().getString(R.string.title_appbar_moves_db),
+        RoundedButton movesDbButton = new RoundedButton(getString(R.string.title_appbar_moves_db),
                 getResources().getColor(R.color.moves_theme_color),
                 new View.OnClickListener() {
                     @Override
@@ -37,7 +37,7 @@ public class DatabasesActivity extends ButtonsActivity {
                         startActivity(new Intent(getApplicationContext(), MovesDatabaseActivity.class));
                     }
                 });
-        RoundedButton typesDbButton = new RoundedButton(getResources().getString(R.string.title_appbar_types_db),
+        RoundedButton typesDbButton = new RoundedButton(getString(R.string.title_appbar_types_db),
                 getResources().getColor(R.color.types_theme_color),
                 new View.OnClickListener() {
                     @Override

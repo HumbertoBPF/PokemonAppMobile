@@ -39,11 +39,11 @@ public class MovesSelectionActivity extends SelectionActivity {
 
         super.onCreate(savedInstanceState);
 
-        if (gameMode.equals(getResources().getString(R.string.label_random_mode))){
+        if (gameMode.equals(getString(R.string.label_random_mode))){
             saveRandomMoves(playerRecyclerView,getString(R.string.filename_json_player_team));
             saveRandomMoves(cpuRecyclerView,getString(R.string.filename_json_cpu_team));
-        }else if (gameMode.equals(getResources().getString(R.string.label_favorite_team_mode))){
-            playerTeam = loadTeam(this, getResources().getString(R.string.filename_json_player_team));
+        }else if (gameMode.equals(getString(R.string.label_favorite_team_mode))){
+            playerTeam = loadTeam(this, getString(R.string.filename_json_player_team));
             playerTeamLabel.setVisibility(View.GONE);
             cpuTeamLabel.setVisibility(View.GONE);
 
@@ -108,13 +108,13 @@ public class MovesSelectionActivity extends SelectionActivity {
                     cpuTeamLabel.setVisibility(View.VISIBLE);
                     instructionTextView.setVisibility(View.GONE);
 
-                    saveTeam(getApplicationContext(),getResources().getString(R.string.filename_json_player_team),playerTeam);
+                    saveTeam(getApplicationContext(),getString(R.string.filename_json_player_team),playerTeam);
                     playerRecyclerView.setAdapter(new PokemonMovesAdapter(getApplicationContext(), playerTeam));
 
                     if (gameLevel.equals(getString(R.string.easy_level))){
-                        saveRandomMoves(cpuRecyclerView, getResources().getString(R.string.filename_json_cpu_team));
+                        saveRandomMoves(cpuRecyclerView,getString(R.string.filename_json_cpu_team));
                     }else{
-                        saveBestMoves(cpuRecyclerView, getResources().getString(R.string.filename_json_cpu_team));
+                        saveBestMoves(cpuRecyclerView,getString(R.string.filename_json_cpu_team));
                     }
                 }
             }
@@ -157,7 +157,7 @@ public class MovesSelectionActivity extends SelectionActivity {
                         recyclerView.setAdapter(new PokemonMovesAdapter(getApplicationContext(),
                                 inGamePokemonList));                                // and show the list of moves of each pokémon
                         // the moves of the CPU are chosen lastly, so we are done when the CPU's moves are saved
-                        if (key.equals(getResources().getString(R.string.filename_json_cpu_team))){
+                        if (key.equals(getString(R.string.filename_json_cpu_team))){
                             configureNextActivityButton("Start battle");
                             dismissDialogWhenViewIsDrawn(cpuRecyclerView,loadingDialog);
                         }
@@ -194,7 +194,7 @@ public class MovesSelectionActivity extends SelectionActivity {
                         recyclerView.setAdapter(new PokemonMovesAdapter(getApplicationContext(),
                                 inGamePokemonList));                                // and show the list of moves of each pokémon
                         // the moves of the CPU are chosen lastly, so we are done when the CPU's moves are saved
-                        if (key.equals(getResources().getString(R.string.filename_json_cpu_team))){
+                        if (key.equals(getString(R.string.filename_json_cpu_team))){
                             configureNextActivityButton("Start battle");
                             dismissDialogWhenViewIsDrawn(cpuRecyclerView,loadingDialog);
                         }

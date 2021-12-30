@@ -52,7 +52,7 @@ public class GameModeSelectionActivity extends ButtonsActivity {
 
     @Override
     protected void declareButtons() {
-        RoundedButton favoriteTeamMode = new RoundedButton(getResources().getString(R.string.favorite_team_mode_button_text),
+        RoundedButton favoriteTeamMode = new RoundedButton(getString(R.string.favorite_team_mode_button_text),
                 getResources().getColor(R.color.pokemon_theme_color),
                 new View.OnClickListener() {
                     @Override
@@ -61,7 +61,7 @@ public class GameModeSelectionActivity extends ButtonsActivity {
                                 getString(R.string.label_favorite_team_mode), PokemonSelectionActivity.class);
                     }
                 });
-        RoundedButton strategyMode = new RoundedButton(getResources().getString(R.string.strategy_mode_button_text),
+        RoundedButton strategyMode = new RoundedButton(getString(R.string.strategy_mode_button_text),
                 getResources().getColor(R.color.moves_theme_color),
                 new View.OnClickListener() {
                     @Override
@@ -71,7 +71,7 @@ public class GameModeSelectionActivity extends ButtonsActivity {
                         Toast.makeText(getApplicationContext(),"Not available for the moment",Toast.LENGTH_LONG).show();
                     }
                 });
-        RoundedButton randomMode = new RoundedButton(getResources().getString(R.string.random_mode_button_text),
+        RoundedButton randomMode = new RoundedButton(getString(R.string.random_mode_button_text),
                 getResources().getColor(R.color.types_theme_color),
                 new View.OnClickListener() {
                     @Override

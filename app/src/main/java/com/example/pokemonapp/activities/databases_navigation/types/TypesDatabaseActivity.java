@@ -21,7 +21,7 @@ public class TypesDatabaseActivity extends DatabaseNavigationActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         colorAppbar = getResources().getColor(R.color.types_theme_color);
-        titleAppbar = getResources().getString(R.string.title_appbar_types_db);
+        titleAppbar = getString(R.string.title_appbar_types_db);
         detailsActivity = TypesDetailsActivity.class;
         typeDAO = PokemonAppDatabase.getInstance(this).getTypeDAO();
         super.onCreate(savedInstanceState);

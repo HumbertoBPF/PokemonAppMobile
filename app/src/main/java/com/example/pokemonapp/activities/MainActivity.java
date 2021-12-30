@@ -75,7 +75,7 @@ public class MainActivity extends ButtonsActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTitle(getResources().getString(R.string.app_name));
+        setTitle(getString(R.string.app_name));
         super.onCreate(savedInstanceState);
         getDAOs();
         pokemonDbService = new PokemonDbRetrofit().getPokemonDbService();
@@ -111,7 +111,7 @@ public class MainActivity extends ButtonsActivity {
                     }
                 });
         // button to navigate through the database
-        RoundedButton databaseButton = new RoundedButton(getResources().getString(R.string.databases_button_text),
+        RoundedButton databaseButton = new RoundedButton(getString(R.string.databases_button_text),
                 getResources().getColor(R.color.types_theme_color),
                 new View.OnClickListener() {
                     @Override

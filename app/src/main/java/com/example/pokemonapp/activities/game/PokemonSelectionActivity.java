@@ -43,7 +43,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
 
         super.onCreate(savedInstanceState);
 
-        if (gameMode.equals(getResources().getString(R.string.label_random_mode))){
+        if (gameMode.equals(getString(R.string.label_random_mode))){
             loadingDialog.show();
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override
@@ -53,16 +53,16 @@ public class PokemonSelectionActivity extends SelectionActivity {
 
                 @Override
                 public void onPostExecute(List<Object> objects) {
-                    saveTeamAutomatically(getResources().getString(R.string.filename_json_player_team));
-                    saveTeamAutomatically(getResources().getString(R.string.filename_json_cpu_team));
-                    configureRecyclerView(playerRecyclerView, getResources().getString(R.string.filename_json_player_team));
-                    configureRecyclerView(cpuRecyclerView, getResources().getString(R.string.filename_json_cpu_team));
+                    saveTeamAutomatically(getString(R.string.filename_json_player_team));
+                    saveTeamAutomatically(getString(R.string.filename_json_cpu_team));
+                    configureRecyclerView(playerRecyclerView, getString(R.string.filename_json_player_team));
+                    configureRecyclerView(cpuRecyclerView, getString(R.string.filename_json_cpu_team));
                     configureNextActivityButton("Go to move selection");
                     dismissDialogWhenViewIsDrawn(cpuRecyclerView, loadingDialog);   // when both teams have been chosen, the loading
                                                                                     // dialog is dismissed
                 }
             }).execute();
-        }else if (gameMode.equals(getResources().getString(R.string.label_favorite_team_mode))){
+        }else if (gameMode.equals(getString(R.string.label_favorite_team_mode))){
 
             instructionTextView.setVisibility(View.VISIBLE);
             instructionTextView.setText("Choose 6 pokémon for your team : ");
@@ -80,7 +80,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
 
                 @Override
                 public void onPostExecute(List<Object> objects) {
-                    saveTeamAutomatically(getResources().getString(R.string.filename_json_cpu_team));  // save a random team for the CPU
+                    saveTeamAutomatically(getString(R.string.filename_json_cpu_team));  // save a random team for the CPU
                     // shows all the pokémon for the players so as he can pick 6 for their team
                     playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(),
                             objects,
@@ -178,14 +178,14 @@ public class PokemonSelectionActivity extends SelectionActivity {
                         team.add(new InGamePokemon(id, pokemon));
                         id++;
                     }
-                    saveTeam(getApplicationContext(), getResources().getString(R.string.filename_json_player_team), team);
+                    saveTeam(getApplicationContext(), getString(R.string.filename_json_player_team), team);
 
                     instructionTextView.setVisibility(View.GONE);
                     playerTeamLabel.setVisibility(View.VISIBLE);
                     cpuTeamLabel.setVisibility(View.VISIBLE);
 
-                    configureRecyclerView(playerRecyclerView, getResources().getString(R.string.filename_json_player_team));
-                    configureRecyclerView(cpuRecyclerView, getResources().getString(R.string.filename_json_cpu_team));
+                    configureRecyclerView(playerRecyclerView, getString(R.string.filename_json_player_team));
+                    configureRecyclerView(cpuRecyclerView, getString(R.string.filename_json_cpu_team));
                     rootScrollView.smoothScrollTo(0,0);
                     configureNextActivityButton("Go to move selection");
                 }else{                              // otherwise, show toast giving instructions to the player

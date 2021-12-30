@@ -42,7 +42,7 @@ public class MovesDetailsActivity extends DatabaseDetailsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         colorAppbar = getResources().getColor(R.color.moves_theme_color);
-        titleAppbar = getResources().getString(R.string.title_appbar_moves_db);
+        titleAppbar = getString(R.string.title_appbar_moves_db);
         layout = R.layout.activity_moves_details;
         super.onCreate(savedInstanceState);
 

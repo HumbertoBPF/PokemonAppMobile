@@ -43,7 +43,7 @@ public class TypesDetailsActivity extends DatabaseDetailsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         colorAppbar = getResources().getColor(R.color.types_theme_color);
-        titleAppbar = getResources().getString(R.string.title_appbar_types_db);
+        titleAppbar = getString(R.string.title_appbar_types_db);
         layout = R.layout.activity_types_details;
         super.onCreate(savedInstanceState);
 
