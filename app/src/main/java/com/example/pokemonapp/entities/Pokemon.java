@@ -22,6 +22,7 @@ public class Pokemon implements Serializable {
     private Integer fSpDefense;
     private Integer fSpeed;
     private Integer fHp;
+    private Integer fOverallPts;
     private Integer fAccuracy = 100;
     private Integer fEvasion = 0;
 
@@ -164,6 +165,14 @@ public class Pokemon implements Serializable {
 
     public void setFHp(Integer fHp) {
         this.fHp = fHp;
+    }
+
+    public Integer getFOverallPts() {
+        return fOverallPts;
+    }
+
+    public void setFOverallPts(Integer fOverallPts) {
+        this.fOverallPts = fOverallPts;
     }
 
     public Integer getFAccuracy() {
