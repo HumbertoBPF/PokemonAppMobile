@@ -47,7 +47,8 @@ public class MovesSelectionActivity extends SelectionActivity {
         if (gameMode.equals(getString(R.string.label_random_mode))){
             saveRandomMoves(playerRecyclerView,getString(R.string.filename_json_player_team));
             saveRandomMoves(cpuRecyclerView,getString(R.string.filename_json_cpu_team));
-        }else if (gameMode.equals(getString(R.string.label_favorite_team_mode))){
+        }else if (gameMode.equals(getString(R.string.label_favorite_team_mode)) ||
+            gameMode.equals(getString(R.string.label_strategy_mode))){
             playerTeam = loadTeam(this, getString(R.string.filename_json_player_team));
             playerTeamLabel.setVisibility(View.GONE);
             cpuTeamLabel.setVisibility(View.GONE);

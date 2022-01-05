@@ -149,6 +149,7 @@
     <string name="max_moves_warning">You can choose at most 4 moves</string>
     <string name="not_available_warning">Not available for the moment</string>
     <string name="max_pokemon_warning">You cannot choose more than 6 pokémon</string>
+    <string name="max_overall_points_warning">You do not have enough Overall Points</string>
     <string name="min_pokemon_warning">You have to choose 6 pokémon for your team</string>
     <string name="needs_synchro_warning">It seems that you have not synchronized data. Please click on the synchronization option to fetch data necessary for the game.</string>
     <string name="no_data_warning">No data available, \n consider to do a synchronization to get data from the server</string>

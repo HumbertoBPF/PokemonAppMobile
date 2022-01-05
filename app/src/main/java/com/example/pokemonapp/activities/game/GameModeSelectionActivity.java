@@ -11,7 +11,6 @@ import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -66,9 +65,8 @@ public class GameModeSelectionActivity extends ButtonsActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                        goToNextActivityWithStringExtra(getApplicationContext(),getString(R.string.key_game_mode),
-//                                getString(R.string.label_strategy_mode), PokemonSelectionActivity.class);
-                        Toast.makeText(getApplicationContext(), getString(R.string.not_available_warning),Toast.LENGTH_LONG).show();
+                        goToNextActivityWithStringExtra(GameModeSelectionActivity.this, getString(R.string.key_game_mode),
+                                getString(R.string.label_strategy_mode), PokemonSelectionActivity.class);
                     }
                 });
         RoundedButton randomMode = new RoundedButton(getString(R.string.random_mode_button_text),

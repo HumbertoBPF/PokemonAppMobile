@@ -34,6 +34,8 @@ public class PokemonSelectionActivity extends SelectionActivity {
     private List<Pokemon> allPokemonRanked;         // list with all the pokémon ranked by OverallPoints
     private int indexWeakestPokemon;                // index of the weakest pokémon of allPokemonRanked to be considered
                                                     // by the CPU when it chooses its pokémon
+    private int currentOverallPoints;               // current overall points
+    private int maxOverallPoints;                   // max overall points
     private List<Pokemon> playerPokemonList = new ArrayList<>();
 
     @Override
@@ -62,10 +64,10 @@ public class PokemonSelectionActivity extends SelectionActivity {
                                                                                     // dialog is dismissed
                 }
             }).execute();
-        }else if (gameMode.equals(getString(R.string.label_favorite_team_mode))){
+        }else if (gameMode.equals(getString(R.string.label_favorite_team_mode)) ||
+                gameMode.equals(getString(R.string.label_strategy_mode))){
 
             instructionTextView.setVisibility(View.VISIBLE);
-            instructionTextView.setText(R.string.choose_pokemon);
             playerTeamLabel.setVisibility(View.GONE);
             cpuTeamLabel.setVisibility(View.GONE);
 
@@ -81,6 +83,15 @@ public class PokemonSelectionActivity extends SelectionActivity {
                 @Override
                 public void onPostExecute(List<Object> objects) {
                     saveTeamAutomatically(getString(R.string.filename_json_cpu_team));  // save a random team for the CPU
+
+                    if (gameMode.equals(getString(R.string.label_strategy_mode))){
+                        // at the beginning the current number of Overall Points corresponds to the maximum
+                        currentOverallPoints = maxOverallPoints;
+                    }
+
+                    // initializes the instruction on the top of the screen
+                    updateInstruction();
+
                     // shows all the pokémon for the players so as he can pick 6 for their team
                     playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(),
                             objects,
@@ -96,6 +107,19 @@ public class PokemonSelectionActivity extends SelectionActivity {
                 }
             }).execute();
         }
+    }
+
+    /**
+     * Updates the instruction specifying the number of OverallPoints if the strategy mode was
+     * chosen.
+     */
+    protected void updateInstruction() {
+        String instructionString = getString(R.string.choose_pokemon);
+        if (gameMode.equals(getString(R.string.label_strategy_mode))){  // the current OverallPoints are added if game mode
+                                                                        // corresponds to strategy mode
+            instructionString += "\n(remaining overall points : "+currentOverallPoints+")";
+        }
+        instructionTextView.setText(instructionString);
     }
 
     /**
@@ -149,15 +173,35 @@ public class PokemonSelectionActivity extends SelectionActivity {
                                                     // color is set to white and it is removed from the list
             view.setBackground(makeSelector(getResources().getColor(R.color.white),0.8f));
             playerPokemonList.remove(pokemon);
-        }else{                                      // otherwise, it is verified if 6 pokémon were already chosen. If not, the pokémon
-                                                    // view is marked as selected and added to the list.
+            if (gameMode.equals(getString(R.string.label_strategy_mode))){  // OverallPoints are considered only for strategy mode
+                currentOverallPoints += pokemon.getFOverallPts();
+                updateInstruction();
+            }
+        }else{                                              // It is verified if 6 pokémon were already chosen
             if (playerPokemonList.size() >= 6){
                 Toast.makeText(getApplicationContext(), R.string.max_pokemon_warning, Toast.LENGTH_LONG).show();
-            }else{
+            }else if (!hasEnoughOverallPoints(pokemon)) {   // It is verified if the player has enough OverallPoints
+                Toast.makeText(getApplicationContext(), R.string.max_overall_points_warning, Toast.LENGTH_LONG).show();
+            }else{                                          // Otherwise, the pokémon view is marked as selected and added to the list
                 view.setBackground(makeSelector(getResources().getColor(R.color.selection_gray),1.0f));
                 playerPokemonList.add(pokemon);
+                if (gameMode.equals(getString(R.string.label_strategy_mode))){  // OverallPoints are considered only for strategy mode
+                    currentOverallPoints -= pokemon.getFOverallPts();
+                    updateInstruction();
+                }
             }
         }
+    }
+
+    /**
+     * Verifies if the players have enough OverallPoints to add the specified pokémon to their team.
+     * @param pokemon pokémon to be added.
+     * @return a boolean indicating if there are enough OverallPoints to spend on the specified
+     * pokémon.
+     */
+    private boolean hasEnoughOverallPoints(Pokemon pokemon) {
+        return (currentOverallPoints - pokemon.getFOverallPts() > 0) || // either the player needs to have enough OverallPoints
+                !gameMode.equals(getString(R.string.label_strategy_mode));  // or the mode needs to be different from strategy mode
     }
 
     /**
@@ -227,6 +271,9 @@ public class PokemonSelectionActivity extends SelectionActivity {
         List<InGamePokemon> team = new ArrayList<>();
         for (Integer index : indexes){  // put in a list
             team.add(new InGamePokemon(id, allPokemonRanked.get(index)));
+            if (gameMode.equals(getString(R.string.label_strategy_mode))){  // there is maximum for the OverallPoints only for strategy mode
+                maxOverallPoints += allPokemonRanked.get(index).getFOverallPts();
+            }
             id++;
         }
         saveTeam(getApplicationContext(), key, team);   // saves in Shared Preferences
@@ -241,7 +288,8 @@ public class PokemonSelectionActivity extends SelectionActivity {
      */
     private int getIndexWeakestPokemon() {
         int nbPokemon = allPokemonRanked.size();
-        if (gameMode.equals(getString(R.string.label_favorite_team_mode))){ //
+        if (gameMode.equals(getString(R.string.label_favorite_team_mode)) ||
+                gameMode.equals(getString(R.string.label_strategy_mode))){ //
             if (gameLevel.equals(getString(R.string.hard_level))){
                 Log.i("getIndexWeakestPokemon",""+(nbPokemon/3 - 1));
                 return (nbPokemon/3 - 1);
