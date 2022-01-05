@@ -103,8 +103,7 @@ public class MainActivity extends ButtonsActivity {
                                 if ((Boolean) objects.get(0)){
                                     startActivity(new Intent(getApplicationContext(), GameModeSelectionActivity.class));
                                 }else{
-                                    Toast.makeText(getApplicationContext(),"It seems that you have not synchronized data. Please " +
-                                            "click on the synchronization option to fetch data necessary for the game.",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(),R.string.needs_synchro_warning,Toast.LENGTH_LONG).show();
                                 }
                             }
                         }).execute();
@@ -159,7 +158,7 @@ public class MainActivity extends ButtonsActivity {
                                     new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                                         @Override
                                         public List<Object> doInBackground() {
-                                            loadingDialog.setMessage("Verifying internet connexion...");
+                                            loadingDialog.setMessage(getString(R.string.verifying_internet));
                                             List<Object> objects = new ArrayList<>();
                                             objects.add(hasInternetAccess());
                                             return objects;
@@ -183,10 +182,9 @@ public class MainActivity extends ButtonsActivity {
                                                             public void onDismiss(DialogInterface dialog) {
                                                                 Dialog noInternetDialog = Tools.singleButtonDialog(
                                                                         MainActivity.this,
-                                                                        "No internet connexion",
-                                                                        "No internet connexion detected. Please connect your device" +
-                                                                                "to synchronize data.",
-                                                                        "Understood",
+                                                                        getString(R.string.no_internet_dialog_title),
+                                                                        getString(R.string.no_internet_dialog_text),
+                                                                        getString(R.string.understood_button_text),
                                                                         new DialogInterface.OnClickListener() {
                                                                             @Override
                                                                             public void onClick(DialogInterface dialog, int which) {

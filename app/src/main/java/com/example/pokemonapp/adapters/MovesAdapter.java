@@ -97,10 +97,10 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
                     moveTypeContainer.setCardBackgroundColor(Color.parseColor("#"+typeMove.getFColorCode()));
                 }
             }).execute();
-            this.moveCategory.setText(context.getResources().getString(R.string.category_move_label)+"\n"+move.getFCategory());
-            this.movePower.setText(context.getResources().getString(R.string.power_move_label)+"\n"+move.getFPower().toString());
-            this.moveAccuracy.setText(context.getResources().getString(R.string.accuracy_move_label)+"\n"+move.getFAccuracy());
-            this.movePp.setText(context.getResources().getString(R.string.pp_move_label)+"\n"+move.getFPp());
+            this.moveCategory.setText(context.getResources().getString(R.string.label_category)+"\n"+move.getFCategory());
+            this.movePower.setText(context.getResources().getString(R.string.power_label)+"\n"+move.getFPower().toString());
+            this.moveAccuracy.setText(context.getResources().getString(R.string.accuracy_label)+"\n"+move.getFAccuracy());
+            this.movePp.setText(context.getResources().getString(R.string.pp_label)+"\n"+move.getFPp());
             this.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

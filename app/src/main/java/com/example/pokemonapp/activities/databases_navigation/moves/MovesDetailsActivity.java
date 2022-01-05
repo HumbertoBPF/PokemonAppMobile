@@ -48,7 +48,7 @@ public class MovesDetailsActivity extends DatabaseDetailsActivity {
 
         moveTypeDAO = PokemonAppDatabase.getInstance(this).getMoveTypeDAO();
 
-        move = (Move) getIntent().getSerializableExtra("databaseElement");
+        move = (Move) getIntent().getSerializableExtra(getString(R.string.key_extra_db_resource));
 
         getLayoutElements();
         bind();
@@ -71,7 +71,7 @@ public class MovesDetailsActivity extends DatabaseDetailsActivity {
     }
 
     protected void bind() {
-        moveName.setText("Name : "+move.getFName());
+        moveName.setText(getString(R.string.label_name)+" : "+move.getFName());
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
             @Override
             public List<Object> doInBackground() {
@@ -87,16 +87,16 @@ public class MovesDetailsActivity extends DatabaseDetailsActivity {
                 moveType.setText(listOfTypesAsString(objects));
             }
         }).execute();
-        moveCategory.setText("Category\n"+move.getFCategory());
-        movePower.setText("Power\n"+move.getFPower());
-        moveAccuracy.setText("Accuracty\n"+move.getFAccuracy());
-        movePp.setText("PP\n"+move.getFPp());
-        minimumNbHits.setText("The attack hits at least : "+move.getFMinTimesPerTour());
-        maximumNbHits.setText("The attack hits at most : "+move.getFMaxTimesPerTour());
-        userFaints.setText("Pokémon faints after attacking : "+move.getFUserFaints());
-        nbRoundsToLoad.setText("Number of rounds to load the attack : "+move.getFRoundsToLoad());
-        trapsOpponent.setText("Attack traps the opponent for 4 or 5 turns : "+move.getFTrapping());
-        flinchingProbability.setText("Flinching probability : "+move.getFFlinchingProbability());
+        moveCategory.setText(getString(R.string.label_category)+"\n"+move.getFCategory());
+        movePower.setText(getString(R.string.power_label)+"\n"+move.getFPower());
+        moveAccuracy.setText(getString(R.string.accuracy_label)+"\n"+move.getFAccuracy());
+        movePp.setText(getString(R.string.pp_label)+"\n"+move.getFPp());
+        minimumNbHits.setText(getString(R.string.label_min_hits)+" : "+move.getFMinTimesPerTour());
+        maximumNbHits.setText(getString(R.string.label_max_hits)+" : "+move.getFMaxTimesPerTour());
+        userFaints.setText(getString(R.string.label_faints)+" : "+move.getFUserFaints());
+        nbRoundsToLoad.setText(getString(R.string.label_nb_rounds_load)+" : "+move.getFRoundsToLoad());
+        trapsOpponent.setText(getString(R.string.label_attack_traps)+" : "+move.getFTrapping());
+        flinchingProbability.setText(getString(R.string.label_flinching_prob)+" : "+move.getFFlinchingProbability());
     }
 
 }

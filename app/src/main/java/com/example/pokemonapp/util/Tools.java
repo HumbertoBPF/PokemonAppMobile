@@ -139,8 +139,8 @@ public class Tools {
      */
     public static ProgressDialog loadingDialog(Context context){
         ProgressDialog progressDialog = new ProgressDialog(context);
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please, wait.");
+        progressDialog.setTitle(context.getString(R.string.loading_dialog_title));
+        progressDialog.setMessage(context.getString(R.string.loading_dialog_message));
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);    // it can be set to true if one wants to allow the
                                                 // dialog to be dismissed when clicking out of it

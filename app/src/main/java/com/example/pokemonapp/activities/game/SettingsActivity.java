@@ -58,7 +58,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putString("difficultLevel", difficultLevel);
+        editor.putString(getString(R.string.key_game_level), difficultLevel);
 
         editor.apply();
     }

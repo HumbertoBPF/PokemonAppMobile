@@ -152,6 +152,7 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
                     pokemonTypeContainer2.setCardBackgroundColor(Color.parseColor("#"+type2.getFColorCode()));
                     if (objects.size()>1){  // if the pokémon has a second type, add it to layout
                         Type type1 = (Type) objects.get(1);
+                        pokemonTypeContainer1.setVisibility(View.VISIBLE);
                         pokemonType1.setText(type1.getFName());
                         pokemonTypeContainer1.setCardBackgroundColor(Color.parseColor("#"+type1.getFColorCode()));
                     }else{
@@ -200,9 +201,9 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
                         }
                     }).execute();
                     this.moveCategories.get(i).setText(move.getFCategory());
-                    this.movePowers.get(i).setText(context.getResources().getString(R.string.power_move_label)+" : "+move.getFPower().toString());
-                    this.moveAccuracies.get(i).setText(context.getResources().getString(R.string.accuracy_move_label)+" : "+move.getFAccuracy().toString());
-                    this.movePps.get(i).setText(context.getResources().getString(R.string.pp_move_label)+" : "+move.getFPp().toString());
+                    this.movePowers.get(i).setText(context.getResources().getString(R.string.power_label)+" : "+move.getFPower().toString());
+                    this.moveAccuracies.get(i).setText(context.getResources().getString(R.string.accuracy_label)+" : "+move.getFAccuracy().toString());
+                    this.movePps.get(i).setText(context.getResources().getString(R.string.pp_label)+" : "+move.getFPp().toString());
                 }
             }
         }

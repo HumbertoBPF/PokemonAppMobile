@@ -84,7 +84,7 @@ public class TypesAdapter extends RecyclerView.Adapter<TypesAdapter.TypeViewHold
                 @Override
                 public void onPostExecute(List<Object> objects) {
                     Integer nbOfPokemon = (Integer) objects.get(0);
-                    nbPokemonType.setText(nbOfPokemon+" pokemon with this type");
+                    nbPokemonType.setText(nbOfPokemon+context.getString(R.string.pokemon_have_type));
                 }
             }).execute();
             this.itemView.setOnClickListener(new View.OnClickListener() {

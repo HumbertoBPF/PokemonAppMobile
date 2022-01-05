@@ -13,7 +13,7 @@
         android:textSize="14sp"
         android:textStyle="bold"
         android:textAlignment="center"
-        android:text="@string/no_data_message"
+        android:text="@string/no_data_warning"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"

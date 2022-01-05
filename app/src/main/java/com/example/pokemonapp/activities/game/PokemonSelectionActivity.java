@@ -57,7 +57,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
                     saveTeamAutomatically(getString(R.string.filename_json_cpu_team));
                     configureRecyclerView(playerRecyclerView, getString(R.string.filename_json_player_team));
                     configureRecyclerView(cpuRecyclerView, getString(R.string.filename_json_cpu_team));
-                    configureNextActivityButton("Go to move selection");
+                    configureNextActivityButton(getString(R.string.go_move_selection_button_text));
                     dismissDialogWhenViewIsDrawn(cpuRecyclerView, loadingDialog);   // when both teams have been chosen, the loading
                                                                                     // dialog is dismissed
                 }
@@ -65,7 +65,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
         }else if (gameMode.equals(getString(R.string.label_favorite_team_mode))){
 
             instructionTextView.setVisibility(View.VISIBLE);
-            instructionTextView.setText("Choose 6 pokémon for your team : ");
+            instructionTextView.setText(R.string.choose_pokemon);
             playerTeamLabel.setVisibility(View.GONE);
             cpuTeamLabel.setVisibility(View.GONE);
 
@@ -152,7 +152,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
         }else{                                      // otherwise, it is verified if 6 pokémon were already chosen. If not, the pokémon
                                                     // view is marked as selected and added to the list.
             if (playerPokemonList.size() >= 6){
-                Toast.makeText(getApplicationContext(), "You cannot choose more than 6 pokémon", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.max_pokemon_warning, Toast.LENGTH_LONG).show();
             }else{
                 view.setBackground(makeSelector(getResources().getColor(R.color.selection_gray),1.0f));
                 playerPokemonList.add(pokemon);
@@ -166,7 +166,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
      * toast is shown asking the user to choose 6 pokémon.
      */
     private void configureConfirmChoiceButton(){
-        nextActivityButton.setText("Done");
+        nextActivityButton.setText(getString(R.string.done_button_text));
         nextActivityButton.setVisibility(View.VISIBLE);
         nextActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,9 +187,9 @@ public class PokemonSelectionActivity extends SelectionActivity {
                     configureRecyclerView(playerRecyclerView, getString(R.string.filename_json_player_team));
                     configureRecyclerView(cpuRecyclerView, getString(R.string.filename_json_cpu_team));
                     rootScrollView.smoothScrollTo(0,0);
-                    configureNextActivityButton("Go to move selection");
+                    configureNextActivityButton(getString(R.string.go_move_selection_button_text));
                 }else{                              // otherwise, show toast giving instructions to the player
-                    Toast.makeText(getApplicationContext(),"You have to choose 6 pokémon for your team",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), R.string.min_pokemon_warning,Toast.LENGTH_LONG).show();
                 }
             }
         });

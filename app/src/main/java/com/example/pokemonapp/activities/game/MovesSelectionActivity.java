@@ -64,7 +64,7 @@ public class MovesSelectionActivity extends SelectionActivity {
 
     private void chooseMovesForCurrentPokemon() {
         instructionTextView.setVisibility(View.VISIBLE);
-        instructionTextView.setText("Choose the moves of "+playerTeam.get(currentPokemonIndex).getPokemonServer().getFName()+
+        instructionTextView.setText(getString(R.string.choose_moves_pokemon)+playerTeam.get(currentPokemonIndex).getPokemonServer().getFName()+
                 " :");
 
         loadingDialog.show();
@@ -84,7 +84,7 @@ public class MovesSelectionActivity extends SelectionActivity {
                             playerTeam.get(currentPokemonIndex).removeMove(move);
                         }else{
                             if (playerTeam.get(currentPokemonIndex).getMoves().size() >= 4){
-                                Toast.makeText(getApplicationContext(),"You can choose at most 4 moves",Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), R.string.max_moves_warning,Toast.LENGTH_LONG).show();
                             }else{
                                 view.setBackground(makeSelector(getResources().getColor(R.color.selection_gray),1.0f));
                                 playerTeam.get(currentPokemonIndex).addMove(move);
@@ -103,7 +103,7 @@ public class MovesSelectionActivity extends SelectionActivity {
      */
     private void configureConfirmChoiceButton(){
         nextActivityButton.setBackgroundColor(getResources().getColor(R.color.red));
-        nextActivityButton.setText("Done");
+        nextActivityButton.setText(R.string.done_button_text);
         nextActivityButton.setVisibility(View.VISIBLE);
         nextActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,7 +169,7 @@ public class MovesSelectionActivity extends SelectionActivity {
                                 inGamePokemonList));                                // and show the list of moves of each pokémon
                         // the moves of the CPU are chosen lastly, so we are done when the CPU's moves are saved
                         if (key.equals(getString(R.string.filename_json_cpu_team))){
-                            configureNextActivityButton("Start battle");
+                            configureNextActivityButton(getString(R.string.start_battle_button_text));
                             dismissDialogWhenViewIsDrawn(cpuRecyclerView,loadingDialog);
                         }
                     }
@@ -283,7 +283,7 @@ public class MovesSelectionActivity extends SelectionActivity {
                                 inGamePokemonList));                                // and show the list of moves of each pokémon
                         // the moves of the CPU are chosen lastly, so we are done when the CPU's moves are saved
                         if (key.equals(getString(R.string.filename_json_cpu_team))){
-                            configureNextActivityButton("Start battle");
+                            configureNextActivityButton(getString(R.string.start_battle_button_text));
                             dismissDialogWhenViewIsDrawn(cpuRecyclerView,loadingDialog);
                         }
                     }

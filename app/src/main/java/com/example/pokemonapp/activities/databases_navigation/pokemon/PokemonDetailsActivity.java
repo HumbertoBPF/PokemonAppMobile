@@ -82,7 +82,7 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
     }
 
     protected void bind() {
-        pokemonName.setText("Name : "+pokemon.getFName());
+        pokemonName.setText(getString(R.string.label_name)+" : "+pokemon.getFName());
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
             @Override
             public List<Object> doInBackground() {
@@ -105,18 +105,18 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
                 }
             }
         }).execute();
-        pokemonCategory.setText("Category : "+pokemon.getFCategory());
-        pokemonDescription.setText("Description : "+pokemon.getFDescription());
-        pokemonWeight.setText("Weight\n"+pokemon.getFWeight());
-        pokemonHeight.setText("Height\n"+pokemon.getFHeight());
-        pokemonGender.setText("Gender\n"+pokemon.getFGender());
-        pokemonAttack.setText("Att.\n"+pokemon.getFAttack());
-        pokemonDefense.setText("Def.\n"+pokemon.getFDefense());
-        pokemonSpAttack.setText("Sp.Att.\n"+pokemon.getFSpAttack());
-        pokemonSpDefense.setText("Sp.Def.\n"+pokemon.getFSpDefense());
-        pokemonSpeed.setText("Speed\n"+pokemon.getFSpeed());
-        pokemonHp.setText("HP\n"+pokemon.getFHp());
-        pokemonOverallPts.setText("Overall points(sum of the stats) : "+pokemon.getFOverallPts());
+        pokemonCategory.setText(getString(R.string.label_category)+" : "+pokemon.getFCategory());
+        pokemonDescription.setText(getString(R.string.label_description)+" : "+pokemon.getFDescription());
+        pokemonWeight.setText(getString(R.string.label_weight)+"\n"+pokemon.getFWeight());
+        pokemonHeight.setText(getString(R.string.label_height)+"\n"+pokemon.getFHeight());
+        pokemonGender.setText(getString(R.string.label_gender)+"\n"+pokemon.getFGender());
+        pokemonAttack.setText(getString(R.string.attack_pokemon_label)+"\n"+pokemon.getFAttack());
+        pokemonDefense.setText(getString(R.string.defense_pokemon_label)+"\n"+pokemon.getFDefense());
+        pokemonSpAttack.setText(getString(R.string.sp_attack_pokemon_label)+"\n"+pokemon.getFSpAttack());
+        pokemonSpDefense.setText(getString(R.string.sp_defense_pokemon_label)+"\n"+pokemon.getFSpDefense());
+        pokemonSpeed.setText(getString(R.string.speed_pokemon_label)+"\n"+pokemon.getFSpeed());
+        pokemonHp.setText(getString(R.string.hp_pokemon_label)+"\n"+pokemon.getFHp());
+        pokemonOverallPts.setText(getString(R.string.label_overall_pts)+" : "+pokemon.getFOverallPts());
         String pokemonImageName = "pokemon_"+
                 pokemon.getFName().toLowerCase(Locale.ROOT)
                         .replace("'","")

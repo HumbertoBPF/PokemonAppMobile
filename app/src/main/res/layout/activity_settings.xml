@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="Difficult level : "/>
+        android:text="@string/choose_difficult_level"/>
 
     <RadioGroup
         android:layout_width="0dp"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:checked="true"
-            android:text="Easy"
+            android:text="@string/easy_level_text"
             />
 
         <RadioButton
@@ -40,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:text="Intermediate"
+            android:text="@string/intermediate_level_text"
             />
 
         <RadioButton
@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:text="Hard"
+            android:text="@string/hard_level_text"
             />
 
     </RadioGroup>
@@ -62,7 +62,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:text="Save settings"
+        android:text="@string/save_settings_button_text"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

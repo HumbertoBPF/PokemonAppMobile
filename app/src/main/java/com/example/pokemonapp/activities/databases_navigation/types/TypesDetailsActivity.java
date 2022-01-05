@@ -47,7 +47,7 @@ public class TypesDetailsActivity extends DatabaseDetailsActivity {
         layout = R.layout.activity_types_details;
         super.onCreate(savedInstanceState);
 
-        type = (Type) getIntent().getSerializableExtra("databaseElement");
+        type = (Type) getIntent().getSerializableExtra(getString(R.string.key_extra_db_resource));
 
         pokemonTypeDAO = PokemonAppDatabase.getInstance(this).getPokemonTypeDAO();
         moveTypeDAO = PokemonAppDatabase.getInstance(this).getMoveTypeDAO();
@@ -93,11 +93,11 @@ public class TypesDetailsActivity extends DatabaseDetailsActivity {
                 String effectiveTypes = (String) objects.get(2);
                 String notEffectiveTypes = (String) objects.get(3);
                 String noEffectTypes = (String) objects.get(4);
-                pokemonType.setText(nbOfPokemon.toString() + " pokémon have this type");
-                movesType.setText(nbOfMoves.toString() + " moves have this type");
-                typeEffective.setText("This type is effective against : "+effectiveTypes);
-                typeNotEffective.setText("This type is not effective against : "+notEffectiveTypes);
-                typeNoEffect.setText("This type has no effect against : "+noEffectTypes);
+                pokemonType.setText(nbOfPokemon.toString() + getString(R.string.pokemon_have_type));
+                movesType.setText(nbOfMoves.toString() + getString(R.string.moves_have_type));
+                typeEffective.setText(getString(R.string.label_effective_against)+" : "+effectiveTypes);
+                typeNotEffective.setText(getString(R.string.label_not_effective_agains)+" : "+notEffectiveTypes);
+                typeNoEffect.setText(getString(R.string.label_no_effect_against)+" : "+noEffectTypes);
             }
         }).execute();
     }

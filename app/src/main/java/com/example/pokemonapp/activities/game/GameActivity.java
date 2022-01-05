@@ -703,7 +703,7 @@ public class GameActivity extends AppCompatActivity {
         if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())) {
             if (player.isFlinched()){
                 gameDescription.setText(getString(R.string.player_possessive) + attackingPokemon.getPokemonServer().getFName() +
-                        " is flinched.");
+                        getString(R.string.is_flinched));
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -715,7 +715,7 @@ public class GameActivity extends AppCompatActivity {
         }else{
             if (cpu.isFlinched()){
                 gameDescription.setText(getString(R.string.player_possessive) + attackingPokemon.getPokemonServer().getFName() +
-                        " is flinched.");
+                        getString(R.string.is_flinched));
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {

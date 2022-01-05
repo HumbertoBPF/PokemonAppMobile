@@ -24,6 +24,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:gravity="center"
         android:textSize="14sp"
-        android:text="App developed by Humberto Borges"/>
+        android:text="@string/author"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

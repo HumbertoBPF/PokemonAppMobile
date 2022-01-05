@@ -1,11 +1,15 @@
 <resources>
+    <!-- APPBAR TITLE/MENU BUTTONS -->
     <string name="app_name">PokemonApp</string>
     <string name="game_button_text">Game</string>
     <string name="databases_button_text">Pokédex</string>
+    <string name="title_appbar_pokemon_db">Pokémon Database</string>
+    <string name="title_appbar_moves_db">Moves Database</string>
+    <string name="title_appbar_types_db">Types Database</string>
     <string name="pokemon_button_text">Pokémon</string>
     <string name="moves_button_text">Moves</string>
     <string name="types_button_text">Types</string>
-
+    <!-- DOWNLOAD RESOURCE -->
     <string name="success_pokemon_download">Pokémon database downloaded</string>
     <string name="success_move_download">Move database downloaded</string>
     <string name="success_type_download">Type database downloaded</string>
@@ -15,7 +19,7 @@
     <string name="success_typeeffective_download">type_effective database downloaded</string>
     <string name="success_typenoteffective_download">type_not_effective database downloaded</string>
     <string name="success_typenoeffect_download">type_no_effect database downloaded</string>
-
+    <!-- FAIL GET RESOURCE -->
     <string name="fail_pokemon_download">Fail to get pokémon database</string>
     <string name="fail_move_download">Fail to get move database</string>
     <string name="fail_type_download">Fail to get type database</string>
@@ -25,7 +29,7 @@
     <string name="fail_typeeffective_download">Fail to get type_effective database</string>
     <string name="fail_typenoteffective_download">Fail to get type_not_effective database</string>
     <string name="fail_typenoeffect_download">Fail to get type_no_effect database</string>
-
+    <!-- FETCHING RESOURCE -->
     <string name="fetch_pokemon_db">Fetching pokémon database</string>
     <string name="fetch_move_db">Fetching move database</string>
     <string name="fetch_type_db">Fetching type database</string>
@@ -35,14 +39,58 @@
     <string name="fetch_typeeffective_db">Fetching type_effective database</string>
     <string name="fetch_typenoteffective_db">Fetching type_not_effective database</string>
     <string name="fetch_typenoeffect_db">Fetching type_no_effect database</string>
-
+    <!-- SYNCHRONIZATION DIALOG -->
+    <string name="title_synchronization_dialog">Database Synchronization</string>
+    <string name="message_synchronization_dialog">Would you like to perform a synchronization now ?</string>
+    <string name="confirm_button_text_synchronization_dialog">Confirm</string>
+    <string name="cancel_button_text_synchronization_dialog">Cancel</string>
+    <!-- LOADING DIALOG -->
+    <string name="loading_dialog_title">Processing...</string>
+    <string name="loading_dialog_message">Please, wait.</string>
+    <!-- NO INTERNET DIALOG -->
+    <string name="verifying_internet">Verifying internet connexion...</string>
+    <string name="no_internet_dialog_text">No internet connexion detected. Please connect your device to synchronize data.</string>
+    <string name="no_internet_dialog_title">No internet connexion</string>
+    <string name="understood_button_text">Understood</string>
+    <!-- EXPLAIN GAME MODE DIALOG -->
+    <string name="dialog_explain_mode_title">Game modes</string>
+    <!-- POKEMON/MOVES CHARACTERISTICS -->
+    <string name="label_name">Name</string>
+    <string name="label_category">Category</string>
+    <!-- POKEMON STATS -->
+    <string name="attack_pokemon_label">Att.</string>
+    <string name="defense_pokemon_label">Def.</string>
+    <string name="sp_attack_pokemon_label">Sp.Att.</string>
+    <string name="sp_defense_pokemon_label">Sp.Def.</string>
+    <string name="speed_pokemon_label">Speed</string>
+    <string name="hp_pokemon_label">HP</string>
+    <string name="label_overall_pts">Overall points(sum of the stats)</string>
+    <!-- MOVE STATS -->
+    <string name="power_label">Power</string>
+    <string name="accuracy_label">Accuracy</string>
+    <string name="pp_label">PP</string>
+    <!-- POKEMON DETAILS -->
+    <string name="label_description">Description</string>
+    <string name="label_weight">Weight</string>
+    <string name="label_height">Height</string>
+    <string name="label_gender">Gender</string>
+    <!-- MOVE DETAILS -->
+    <string name="label_min_hits">The attack hits at least</string>
+    <string name="label_max_hits">The attack hits at most</string>
+    <string name="label_faints">Pokémon faints after attacking</string>
+    <string name="label_nb_rounds_load">Number of rounds to load the attack</string>
+    <string name="label_attack_traps">Attack traps the opponent for 4 or 5 turns</string>
+    <string name="label_flinching_prob">Flinching probability</string>
+    <!-- TYPE DETAILS -->
+    <string name="label_effective_against">This type is effective against</string>
+    <string name="label_not_effective_agains">This type is not effective against</string>
+    <string name="label_no_effect_against">This type has no effect against</string>
+    <string name="pokemon_have_type">\u0020pokémon have this type</string>
+    <string name="moves_have_type">\u0020moves have this type</string>
+    <!-- GAME MODE -->
     <string name="favorite_team_mode_button_text">Favorite team mode</string>
     <string name="strategy_mode_button_text">Strategy mode</string>
     <string name="random_mode_button_text">Random mode</string>
-    <string name="label_favorite_team_mode">FAVORITE_TEAM</string>
-    <string name="label_strategy_mode">STRATEGY</string>
-    <string name="label_random_mode">RANDOM</string>
-    <string name="key_game_mode">gameMode</string>
     <string name="info_game_mode"><![CDATA[ <p>By choosing the <b>favorite team mode</b>, you can choose a team with
     whatever pokémon and whatever move you want, but respecting obviously the general rules of a pokémon
     battle (6 pokémon with at most 4 moves each).<br></p>
@@ -51,27 +99,7 @@
     same force.<br></p>
     <p>Finally, when you choose the <b>random mode</b>, the pokémon and moves are selected randomly for
     you.</p>]]></string>
-
-    <string name="title_synchronization_dialog">Database Synchronization</string>
-    <string name="message_synchronization_dialog">Would you like to perform a synchronization now ?</string>
-    <string name="confirm_button_text_synchronization_dialog">Confirm</string>
-    <string name="cancel_button_text_synchronization_dialog">Cancel</string>
-    <string name="category_move_label">Category</string>
-    <string name="power_move_label">Power</string>
-    <string name="accuracy_move_label">Accuracy</string>
-    <string name="pp_move_label">PP</string>
-    <string name="attack_pokemon_label">Att.</string>
-    <string name="defense_pokemon_label">Def.</string>
-    <string name="sp_attack_pokemon_label">Sp.Att.</string>
-    <string name="sp_defense_pokemon_label">Sp.Def.</string>
-    <string name="speed_pokemon_label">Speed</string>
-    <string name="hp_pokemon_label">HP</string>
-    <string name="title_appbar_pokemon_db">Pokémon Database</string>
-    <string name="title_appbar_moves_db">Moves Database</string>
-    <string name="title_appbar_types_db">Types Database</string>
-    <string name="name_shared_preferences_file">MySharedPrefs</string>
-    <string name="filename_json_player_team">player</string>
-    <string name="filename_json_cpu_team">cpu</string>
+    <!-- GAMEPLAY -->
     <string name="choose_pokemon_msg">Choose a pokémon</string>
     <string name="choose_move_msg">Choose a move</string>
     <string name="player_win_msg">Player won</string>
@@ -82,21 +110,54 @@
     <string name="player_possessive">Player\'s\u0020</string>
     <string name="used">\u0020used\u0020</string>
     <string name="fainted">\u0020fainted</string>
-    <string name="hp_label">HP\u0020:\u0020</string>
-    <string name="super_effective_msg">It\'s super effective!</string>
-    <string name="not_effective_msg">It\'s not effective...</string>
-    <string name="no_effect_msg">It has no effect...</string>
     <string name="attack_missed_msg">Attack missed</string>
     <string name="hit">Hit\u0020</string>
     <string name="times">\u0020time(s)</string>
     <string name="loads_attack">\u0020loads attack</string>
     <string name="is_reloading">\u0020is reloading</string>
     <string name="trapping_damage">\u0020receive trapping damage</string>
-    <string name="player_team_label">Player\'s team :</string>
-    <string name="cpu_team_label">CPU team :</string>
-    <string name="no_data_message">No data available, \n consider to do a synchronization to get data from the server</string>
+    <string name="super_effective_msg">It\'s super effective!</string>
+    <string name="not_effective_msg">It\'s not effective...</string>
+    <string name="no_effect_msg">It has no effect...</string>
+    <string name="is_flinched">\u0020is flinched.</string>
+    <!-- SHARED PREFERENCES -->
+    <string name="name_shared_preferences_file">MySharedPrefs</string>
+    <string name="filename_json_player_team">player</string>
+    <string name="filename_json_cpu_team">cpu</string>
     <string name="key_game_level">difficultLevel</string>
     <string name="easy_level">easy</string>
     <string name="intermediate_level">intermediate</string>
     <string name="hard_level">hard</string>
+    <string name="key_game_mode">gameMode</string>
+    <string name="label_favorite_team_mode">FAVORITE_TEAM</string>
+    <string name="label_strategy_mode">STRATEGY</string>
+    <string name="label_random_mode">RANDOM</string>
+    <!-- TEAM LIST -->
+    <string name="player_team_label">Player\'s team :</string>
+    <string name="cpu_team_label">CPU team :</string>
+    <!-- KEY INTENT EXTRA -->
+    <string name="key_extra_db_resource">databaseElement</string>
+    <!-- SELECTION ACTIVITY -->
+    <string name="choose_mode">Select a mode</string>
+    <string name="choose_moves_pokemon">Choose the moves of\u0020</string>
+    <string name="choose_pokemon">Choose 6 pokémon for your team :</string>
+    <!-- BUTTON TEXT -->
+    <string name="done_button_text">Done</string>
+    <string name="go_move_selection_button_text">Go to move selection</string>
+    <string name="start_battle_button_text">Start battle</string>
+    <!-- WARNINGS -->
+    <string name="max_moves_warning">You can choose at most 4 moves</string>
+    <string name="not_available_warning">Not available for the moment</string>
+    <string name="max_pokemon_warning">You cannot choose more than 6 pokémon</string>
+    <string name="min_pokemon_warning">You have to choose 6 pokémon for your team</string>
+    <string name="needs_synchro_warning">It seems that you have not synchronized data. Please click on the synchronization option to fetch data necessary for the game.</string>
+    <string name="no_data_warning">No data available, \n consider to do a synchronization to get data from the server</string>
+    <!-- SPLASHSCREEN -->
+    <string name="author">App developed by Humberto Borges</string>
+    <!-- DIFFICULTY LEVEL SELECTION -->
+    <string name="choose_difficult_level">Difficulty level :</string>
+    <string name="easy_level_text">Trainer</string>
+    <string name="intermediate_level_text">Gym Leader</string>
+    <string name="hard_level_text">Elite Four</string>
+    <string name="save_settings_button_text">Save settings</string>
 </resources>

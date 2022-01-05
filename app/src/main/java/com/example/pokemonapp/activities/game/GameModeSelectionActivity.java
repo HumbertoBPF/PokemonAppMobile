@@ -24,7 +24,7 @@ public class GameModeSelectionActivity extends ButtonsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("Select a mode");
+        setTitle(getString(R.string.choose_mode));
     }
 
     @Override
@@ -36,8 +36,8 @@ public class GameModeSelectionActivity extends ButtonsActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.item_info) {
-            Dialog infoDialog = singleButtonDialog(GameModeSelectionActivity.this, "Game modes",
-                    Html.fromHtml(getString(R.string.info_game_mode)), "Understood", new DialogInterface.OnClickListener() {
+            Dialog infoDialog = singleButtonDialog(GameModeSelectionActivity.this, getString(R.string.dialog_explain_mode_title),
+                    Html.fromHtml(getString(R.string.info_game_mode)), getString(R.string.understood_button_text), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
@@ -68,7 +68,7 @@ public class GameModeSelectionActivity extends ButtonsActivity {
                     public void onClick(View view) {
 //                        goToNextActivityWithStringExtra(getApplicationContext(),getString(R.string.key_game_mode),
 //                                getString(R.string.label_strategy_mode), PokemonSelectionActivity.class);
-                        Toast.makeText(getApplicationContext(),"Not available for the moment",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.not_available_warning),Toast.LENGTH_LONG).show();
                     }
                 });
         RoundedButton randomMode = new RoundedButton(getString(R.string.random_mode_button_text),

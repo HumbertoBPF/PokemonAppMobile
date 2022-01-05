@@ -104,6 +104,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
                     pokemonTypeContainer2.setCardBackgroundColor(Color.parseColor("#"+ type2.getFColorCode()));
                     if (objects.size() > 1){    // if the pokémon has a second type, add it to layout
                         Type type1 = (Type) objects.get(1);
+                        pokemonType1.setVisibility(View.VISIBLE);
                         pokemonType1.setText(type1.getFName());
                         pokemonTypeContainer1.setCardBackgroundColor(Color.parseColor("#"+ type1.getFColorCode()));
                     }else{

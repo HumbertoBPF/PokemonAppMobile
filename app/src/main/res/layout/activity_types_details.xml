@@ -27,7 +27,7 @@
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:text="Type"/>
+                tools:text="Type"/>
 
         </androidx.cardview.widget.CardView>
 
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:gravity="end"
-            android:text="n pokémon have this type"
+            tools:text="n pokémon have this type"
             android:layout_marginBottom="5dp"
             android:layout_marginHorizontal="5dp"
             app:layout_constraintTop_toTopOf="@id/type_name_container"
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:gravity="end"
-            android:text="n moves have this type"
+            tools:text="n moves have this type"
             android:layout_marginVertical="5dp"
             app:layout_constraintTop_toBottomOf="@id/type_name_container"
             app:layout_constraintStart_toStartOf="@id/pokemon_type"
@@ -62,7 +62,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:text="This type is effective against : "
+            tools:text="This type is effective against : "
             android:layout_marginVertical="5dp"
             app:layout_constraintTop_toBottomOf="@id/moves_type"
             app:layout_constraintStart_toStartOf="@id/type_name_container"
@@ -73,7 +73,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:text="This type is not effective against : "
+            tools:text="This type is not effective against : "
             android:layout_marginVertical="5dp"
             app:layout_constraintTop_toBottomOf="@id/type_effective"
             app:layout_constraintStart_toStartOf="@id/type_name_container"
@@ -84,7 +84,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:text="This type has no effect against : "
+            tools:text="This type has no effect against : "
             android:layout_marginVertical="5dp"
             app:layout_constraintTop_toBottomOf="@id/type_not_effective"
             app:layout_constraintStart_toStartOf="@id/type_name_container"

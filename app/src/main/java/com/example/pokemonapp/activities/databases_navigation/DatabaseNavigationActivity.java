@@ -71,7 +71,7 @@ public abstract class DatabaseNavigationActivity extends AppCompatActivity {
 
     protected void showDetails(Object resource){
         Intent intent = new Intent(getApplicationContext(),detailsActivity);
-        intent.putExtra("databaseElement", (Serializable) resource);
+        intent.putExtra(getString(R.string.key_extra_db_resource), (Serializable) resource);
         startActivity(intent);
     }
 
