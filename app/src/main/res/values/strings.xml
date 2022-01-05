@@ -64,6 +64,7 @@
     <string name="sp_defense_pokemon_label">Sp.Def.</string>
     <string name="speed_pokemon_label">Speed</string>
     <string name="hp_pokemon_label">HP</string>
+    <string name="overall_points_label">Overall Points</string>
     <string name="label_overall_pts">Overall points(sum of the stats)</string>
     <!-- MOVE STATS -->
     <string name="power_label">Power</string>

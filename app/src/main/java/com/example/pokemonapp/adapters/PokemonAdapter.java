@@ -69,6 +69,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
         private TextView pokemonSpDefense;
         private TextView pokemonSpeed;
         private TextView pokemonHp;
+        private TextView pokemonOverallPoints;
 
         public PokemonViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -84,6 +85,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
             this.pokemonSpDefense = itemView.findViewById(R.id.pokemon_sp_defense);
             this.pokemonSpeed = itemView.findViewById(R.id.pokemon_speed);
             this.pokemonHp = itemView.findViewById(R.id.pokemon_hp);
+            this.pokemonOverallPoints = itemView.findViewById(R.id.pokemon_overall_pts);
         }
 
         public void bind(Pokemon pokemon){
@@ -124,6 +126,8 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
                     "\n"+pokemon.getFSpeed().toString());
             this.pokemonHp.setText(context.getResources().getString(R.string.hp_pokemon_label)+
                     "\n"+pokemon.getFHp().toString());
+            this.pokemonOverallPoints.setText(context.getResources().getString(R.string.overall_points_label)+
+                    " : "+pokemon.getFOverallPts().toString());
             this.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
