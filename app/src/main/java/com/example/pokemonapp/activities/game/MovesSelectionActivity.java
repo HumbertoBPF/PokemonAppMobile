@@ -7,6 +7,8 @@ import static com.example.pokemonapp.util.Tools.makeSelector;
 import static com.example.pokemonapp.util.Tools.saveTeam;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -36,6 +38,7 @@ public class MovesSelectionActivity extends SelectionActivity {
     private MoveTypeDAO moveTypeDAO;
     private List<InGamePokemon> playerTeam;
     private int currentPokemonIndex = 0;    // index of the player's pokémon whose moves are being currenly chosen
+    private boolean canSave;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,9 @@ public class MovesSelectionActivity extends SelectionActivity {
         super.onCreate(savedInstanceState);
 
         if (gameMode.equals(getString(R.string.label_random_mode))){
+            setTitle(R.string.summary_title_app_bar);
+            enableSaving(true);
+
             saveRandomMoves(playerRecyclerView,getString(R.string.filename_json_player_team));
             saveRandomMoves(cpuRecyclerView,getString(R.string.filename_json_cpu_team));
         }else if (gameMode.equals(getString(R.string.label_favorite_team_mode)) ||
@@ -52,9 +58,28 @@ public class MovesSelectionActivity extends SelectionActivity {
             playerTeam = loadTeam(this, getString(R.string.filename_json_player_team));
             playerTeamLabel.setVisibility(View.GONE);
             cpuTeamLabel.setVisibility(View.GONE);
+            enableSaving(false);
 
             chooseMovesForCurrentPokemon();
         }
+    }
+
+    private void enableSaving(boolean state) {
+        canSave = state;
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.app_bar_save, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem itemSave = menu.findItem(R.id.item_save);
+        itemSave.setVisible(canSave);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     private void getDAOs() {
@@ -64,9 +89,7 @@ public class MovesSelectionActivity extends SelectionActivity {
     }
 
     private void chooseMovesForCurrentPokemon() {
-        instructionTextView.setVisibility(View.VISIBLE);
-        instructionTextView.setText(getString(R.string.choose_moves_pokemon)+playerTeam.get(currentPokemonIndex).getPokemonServer().getFName()+
-                " :");
+        setTitle(getString(R.string.choose_moves_pokemon)+playerTeam.get(currentPokemonIndex).getPokemonServer().getFName());
 
         loadingDialog.show();
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
@@ -118,7 +141,7 @@ public class MovesSelectionActivity extends SelectionActivity {
                 }else{  // if the players has selected the moves for all their pokémon, save it and pick random moves for the CPU
                     playerTeamLabel.setVisibility(View.VISIBLE);
                     cpuTeamLabel.setVisibility(View.VISIBLE);
-                    instructionTextView.setVisibility(View.GONE);
+                    setTitle(R.string.summary_title_app_bar);
 
                     saveTeam(getApplicationContext(),getString(R.string.filename_json_player_team),playerTeam);
                     playerRecyclerView.setAdapter(new PokemonMovesAdapter(getApplicationContext(), playerTeam));
@@ -166,13 +189,7 @@ public class MovesSelectionActivity extends SelectionActivity {
                     if (inGamePokemonList.indexOf(inGamePokemon) == inGamePokemonList.size() - 1){
                         saveTeam(getApplicationContext(),key,inGamePokemonList);    // when all the pokémon have been set, save in
                                                                                     // Shared Preferences
-                        recyclerView.setAdapter(new PokemonMovesAdapter(getApplicationContext(),
-                                inGamePokemonList));                                // and show the list of moves of each pokémon
-                        // the moves of the CPU are chosen lastly, so we are done when the CPU's moves are saved
-                        if (key.equals(getString(R.string.filename_json_cpu_team))){
-                            configureNextActivityButton(getString(R.string.start_battle_button_text));
-                            dismissDialogWhenViewIsDrawn(cpuRecyclerView,loadingDialog);
-                        }
+                        showSummary(recyclerView, key, inGamePokemonList);
                     }
                 }
             }).execute();
@@ -280,16 +297,21 @@ public class MovesSelectionActivity extends SelectionActivity {
                     if (inGamePokemonList.indexOf(inGamePokemon) == inGamePokemonList.size() - 1){
                         saveTeam(getApplicationContext(),key,inGamePokemonList);    // when all the pokémon have been set, save in
                         // Shared Preferences
-                        recyclerView.setAdapter(new PokemonMovesAdapter(getApplicationContext(),
-                                inGamePokemonList));                                // and show the list of moves of each pokémon
-                        // the moves of the CPU are chosen lastly, so we are done when the CPU's moves are saved
-                        if (key.equals(getString(R.string.filename_json_cpu_team))){
-                            configureNextActivityButton(getString(R.string.start_battle_button_text));
-                            dismissDialogWhenViewIsDrawn(cpuRecyclerView,loadingDialog);
-                        }
+                        showSummary(recyclerView, key, inGamePokemonList);
                     }
                 }
             }).execute();
+        }
+    }
+
+    private void showSummary(RecyclerView recyclerView, String key, List<InGamePokemon> inGamePokemonList) {
+        recyclerView.setAdapter(new PokemonMovesAdapter(getApplicationContext(),
+                inGamePokemonList));                                // and show the list of moves of each pokémon
+        // the moves of the CPU are chosen lastly, so we are done when the CPU's moves are saved
+        if (key.equals(getString(R.string.filename_json_cpu_team))) {
+            enableSaving(true);
+            configureNextActivityButton(getString(R.string.start_battle_button_text));
+            dismissDialogWhenViewIsDrawn(cpuRecyclerView, loadingDialog);
         }
     }
 

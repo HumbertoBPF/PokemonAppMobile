@@ -9,6 +9,7 @@
     <string name="pokemon_button_text">Pokémon</string>
     <string name="moves_button_text">Moves</string>
     <string name="types_button_text">Types</string>
+    <string name="summary_title_app_bar">Summary</string>
     <!-- DOWNLOAD RESOURCE -->
     <string name="success_pokemon_download">Pokémon database downloaded</string>
     <string name="success_move_download">Move database downloaded</string>
@@ -141,7 +142,7 @@
     <!-- SELECTION ACTIVITY -->
     <string name="choose_mode">Select a mode</string>
     <string name="choose_moves_pokemon">Choose the moves of\u0020</string>
-    <string name="choose_pokemon">Choose 6 pokémon for your team :</string>
+    <string name="choose_pokemon">Choose 6 pokémon</string>
     <!-- BUTTON TEXT -->
     <string name="done_button_text">Done</string>
     <string name="go_move_selection_button_text">Go to move selection</string>
@@ -162,4 +163,5 @@
     <string name="intermediate_level_text">Gym Leader</string>
     <string name="hard_level_text">Elite Four</string>
     <string name="save_settings_button_text">Save settings</string>
+    <string name="remaining_overall_points">Remaining overall points</string>
 </resources>

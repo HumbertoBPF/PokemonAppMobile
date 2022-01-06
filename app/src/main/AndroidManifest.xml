@@ -28,20 +28,17 @@
         </activity>
         <activity
             android:name=".activities.SelectionActivity"
-            android:exported="true"
-            android:theme="@style/Theme.PokemonApp.NoActionBar" />
+            android:exported="true" />
         <activity
             android:name=".activities.game.PokemonSelectionActivity"
-            android:exported="true"
-            android:theme="@style/Theme.PokemonApp.NoActionBar" />
+            android:exported="true" />
         <activity
             android:name=".activities.game.GameActivity"
             android:exported="true"
             android:theme="@style/Theme.PokemonApp.NoActionBar" />
         <activity
             android:name=".activities.game.MovesSelectionActivity"
-            android:exported="true"
-            android:theme="@style/Theme.PokemonApp.NoActionBar" />
+            android:exported="true"/>
         <activity
             android:name=".activities.ButtonsActivity"
             android:exported="true" />

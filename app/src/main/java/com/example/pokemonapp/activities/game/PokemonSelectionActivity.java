@@ -8,6 +8,8 @@ import static com.example.pokemonapp.util.Tools.saveTeam;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -37,6 +39,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
     private int currentOverallPoints;               // current overall points
     private int maxOverallPoints;                   // max overall points
     private List<Pokemon> playerPokemonList = new ArrayList<>();
+    private boolean canLoad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,8 @@ public class PokemonSelectionActivity extends SelectionActivity {
         super.onCreate(savedInstanceState);
 
         if (gameMode.equals(getString(R.string.label_random_mode))){
+            setTitle(R.string.summary_title_app_bar);
+            enableLoading(false);
             loadingDialog.show();
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override
@@ -66,11 +71,10 @@ public class PokemonSelectionActivity extends SelectionActivity {
             }).execute();
         }else if (gameMode.equals(getString(R.string.label_favorite_team_mode)) ||
                 gameMode.equals(getString(R.string.label_strategy_mode))){
-
-            instructionTextView.setVisibility(View.VISIBLE);
+            setTitle(R.string.choose_pokemon);
             playerTeamLabel.setVisibility(View.GONE);
             cpuTeamLabel.setVisibility(View.GONE);
-
+            enableLoading(true);
             loadingDialog.show();
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override
@@ -87,10 +91,10 @@ public class PokemonSelectionActivity extends SelectionActivity {
                     if (gameMode.equals(getString(R.string.label_strategy_mode))){
                         // at the beginning the current number of Overall Points corresponds to the maximum
                         currentOverallPoints = maxOverallPoints;
+                        // show the number of remaining points on the top of the screen
+                        instructionTextView.setVisibility(View.VISIBLE);
+                        instructionTextView.setText(getString(R.string.remaining_overall_points)+" : "+currentOverallPoints);
                     }
-
-                    // initializes the instruction on the top of the screen
-                    updateInstruction();
 
                     // shows all the pokémon for the players so as he can pick 6 for their team
                     playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(),
@@ -109,17 +113,22 @@ public class PokemonSelectionActivity extends SelectionActivity {
         }
     }
 
-    /**
-     * Updates the instruction specifying the number of OverallPoints if the strategy mode was
-     * chosen.
-     */
-    protected void updateInstruction() {
-        String instructionString = getString(R.string.choose_pokemon);
-        if (gameMode.equals(getString(R.string.label_strategy_mode))){  // the current OverallPoints are added if game mode
-                                                                        // corresponds to strategy mode
-            instructionString += "\n(remaining overall points : "+currentOverallPoints+")";
-        }
-        instructionTextView.setText(instructionString);
+    private void enableLoading(boolean state) {
+        canLoad = state;
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.app_bar_load, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem itemLoad = menu.findItem(R.id.item_load);
+        itemLoad.setVisible(canLoad);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     /**
@@ -175,7 +184,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
             playerPokemonList.remove(pokemon);
             if (gameMode.equals(getString(R.string.label_strategy_mode))){  // OverallPoints are considered only for strategy mode
                 currentOverallPoints += pokemon.getFOverallPts();
-                updateInstruction();
+                instructionTextView.setText(getString(R.string.remaining_overall_points)+" : "+currentOverallPoints);
             }
         }else{                                              // It is verified if 6 pokémon were already chosen
             if (playerPokemonList.size() >= 6){
@@ -187,7 +196,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
                 playerPokemonList.add(pokemon);
                 if (gameMode.equals(getString(R.string.label_strategy_mode))){  // OverallPoints are considered only for strategy mode
                     currentOverallPoints -= pokemon.getFOverallPts();
-                    updateInstruction();
+                    instructionTextView.setText(getString(R.string.remaining_overall_points)+" : "+currentOverallPoints);
                 }
             }
         }
@@ -224,9 +233,11 @@ public class PokemonSelectionActivity extends SelectionActivity {
                     }
                     saveTeam(getApplicationContext(), getString(R.string.filename_json_player_team), team);
 
+                    setTitle(getString(R.string.summary_title_app_bar));
                     instructionTextView.setVisibility(View.GONE);
                     playerTeamLabel.setVisibility(View.VISIBLE);
                     cpuTeamLabel.setVisibility(View.VISIBLE);
+                    enableLoading(false);
 
                     configureRecyclerView(playerRecyclerView, getString(R.string.filename_json_player_team));
                     configureRecyclerView(cpuRecyclerView, getString(R.string.filename_json_cpu_team));
