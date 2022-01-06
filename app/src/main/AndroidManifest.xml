@@ -14,6 +14,9 @@
         android:theme="@style/Theme.PokemonApp"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activities.game.SaveTeamActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.game.SettingsActivity"
             android:exported="false" />
         <activity
@@ -38,7 +41,7 @@
             android:theme="@style/Theme.PokemonApp.NoActionBar" />
         <activity
             android:name=".activities.game.MovesSelectionActivity"
-            android:exported="true"/>
+            android:exported="true" />
         <activity
             android:name=".activities.ButtonsActivity"
             android:exported="true" />

@@ -50,7 +50,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
 
         if (gameMode.equals(getString(R.string.label_random_mode))){
             setTitle(R.string.summary_title_app_bar);
-            enableLoading(false);
+            enableLoading(false);   // cannot load a team for the random mode since the team must be random
             loadingDialog.show();
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override
@@ -74,7 +74,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
             setTitle(R.string.choose_pokemon);
             playerTeamLabel.setVisibility(View.GONE);
             cpuTeamLabel.setVisibility(View.GONE);
-            enableLoading(true);
+            enableLoading(true);    // before confirming the choice of the 6 pokémon, can load a team
             loadingDialog.show();
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override
@@ -113,6 +113,10 @@ public class PokemonSelectionActivity extends SelectionActivity {
         }
     }
 
+    /**
+     * Shows or hides the loading item on the appbar.
+     * @param state whether the item should be shown or hidden.
+     */
     private void enableLoading(boolean state) {
         canLoad = state;
         invalidateOptionsMenu();
@@ -237,7 +241,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
                     instructionTextView.setVisibility(View.GONE);
                     playerTeamLabel.setVisibility(View.VISIBLE);
                     cpuTeamLabel.setVisibility(View.VISIBLE);
-                    enableLoading(false);
+                    enableLoading(false);   // cannot load a team after choosing the 6 pokémon
 
                     configureRecyclerView(playerRecyclerView, getString(R.string.filename_json_player_team));
                     configureRecyclerView(cpuRecyclerView, getString(R.string.filename_json_cpu_team));

@@ -11,6 +11,6 @@ import java.util.List;
 public interface PokemonAppDAO<E> {
 
     @Insert(onConflict = REPLACE)
-    void save(List<E> moves);
+    void save(List<E> entities);
 
 }

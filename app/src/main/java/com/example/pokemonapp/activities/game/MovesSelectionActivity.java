@@ -6,6 +6,8 @@ import static com.example.pokemonapp.util.Tools.loadTeam;
 import static com.example.pokemonapp.util.Tools.makeSelector;
 import static com.example.pokemonapp.util.Tools.saveTeam;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +29,7 @@ import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.models.InGamePokemon;
 import com.example.pokemonapp.room.PokemonAppDatabase;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +52,7 @@ public class MovesSelectionActivity extends SelectionActivity {
 
         if (gameMode.equals(getString(R.string.label_random_mode))){
             setTitle(R.string.summary_title_app_bar);
-            enableSaving(true);
+            enableSaving(true);     // can save the team for random mode at any moment of this activity
 
             saveRandomMoves(playerRecyclerView,getString(R.string.filename_json_player_team));
             saveRandomMoves(cpuRecyclerView,getString(R.string.filename_json_cpu_team));
@@ -58,12 +61,16 @@ public class MovesSelectionActivity extends SelectionActivity {
             playerTeam = loadTeam(this, getString(R.string.filename_json_player_team));
             playerTeamLabel.setVisibility(View.GONE);
             cpuTeamLabel.setVisibility(View.GONE);
-            enableSaving(false);
+            enableSaving(false);    // cannot save the team before choosing the moves for game modes different from random mode
 
             chooseMovesForCurrentPokemon();
         }
     }
 
+    /**
+     * Shows or hides the saving item on the appbar.
+     * @param state whether the item should be shown or hidden.
+     */
     private void enableSaving(boolean state) {
         canSave = state;
         invalidateOptionsMenu();
@@ -80,6 +87,14 @@ public class MovesSelectionActivity extends SelectionActivity {
         MenuItem itemSave = menu.findItem(R.id.item_save);
         itemSave.setVisible(canSave);
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.item_save){
+            startActivity(new Intent(this, SaveTeamActivity.class));
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void getDAOs() {
@@ -309,7 +324,7 @@ public class MovesSelectionActivity extends SelectionActivity {
                 inGamePokemonList));                                // and show the list of moves of each pokémon
         // the moves of the CPU are chosen lastly, so we are done when the CPU's moves are saved
         if (key.equals(getString(R.string.filename_json_cpu_team))) {
-            enableSaving(true);
+            enableSaving(true);     // after choosing the moves for game modes other than the random one, can save the team
             configureNextActivityButton(getString(R.string.start_battle_button_text));
             dismissDialogWhenViewIsDrawn(cpuRecyclerView, loadingDialog);
         }
