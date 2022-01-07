@@ -80,7 +80,7 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
         }
 
         public void bind(Move move){
-            itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
+            this.itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
             this.moveName.setText(move.getFName());
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override

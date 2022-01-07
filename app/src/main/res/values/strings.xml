@@ -169,4 +169,6 @@
     <string name="name_exists_warning">Name already exists</string>
     <string name="name_empty_warning">You have to input a name</string>
     <string name="name_hint_edit_text">Name</string>
+    <!-- LOAD TEAM -->
+    <string name="select_team">Select a team to use</string>
 </resources>

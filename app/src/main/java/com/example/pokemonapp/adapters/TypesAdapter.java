@@ -70,7 +70,7 @@ public class TypesAdapter extends RecyclerView.Adapter<TypesAdapter.TypeViewHold
         }
 
         public void bind(Type type){
-            itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
+            this.itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
             this.typeNameContainer.setCardBackgroundColor(Color.parseColor("#"+type.getFColorCode()));
             this.typeName.setText(type.getFName());
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {

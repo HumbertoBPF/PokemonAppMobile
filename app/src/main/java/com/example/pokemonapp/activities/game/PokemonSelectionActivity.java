@@ -6,6 +6,7 @@ import static com.example.pokemonapp.util.Tools.loadTeam;
 import static com.example.pokemonapp.util.Tools.makeSelector;
 import static com.example.pokemonapp.util.Tools.saveTeam;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -133,6 +134,14 @@ public class PokemonSelectionActivity extends SelectionActivity {
         MenuItem itemLoad = menu.findItem(R.id.item_load);
         itemLoad.setVisible(canLoad);
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.item_load){
+            startActivity(new Intent(this, LoadTeamActivity.class));
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**

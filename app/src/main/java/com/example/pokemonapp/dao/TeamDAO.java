@@ -13,6 +13,9 @@ import java.util.List;
 @Dao
 public interface TeamDAO extends PokemonAppDAO<Team>{
 
+    @Query("SELECT * FROM Team;")
+    List<Team> getAllTeams();
+
     @Query("SELECT name FROM Team;")
     List<String> getAllTeamNames();
 

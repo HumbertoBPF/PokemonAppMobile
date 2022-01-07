@@ -89,7 +89,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
         }
 
         public void bind(Pokemon pokemon){
-            itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
+            this.itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
             this.pokemonName.setText(pokemon.getFName());
             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                 @Override
