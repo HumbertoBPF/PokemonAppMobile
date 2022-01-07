@@ -3,10 +3,10 @@ package com.example.pokemonapp.activities.game;
 import static com.example.pokemonapp.models.Trainer.Position.BACK;
 import static com.example.pokemonapp.models.Trainer.Position.DEFEATED;
 import static com.example.pokemonapp.models.Trainer.Position.FRONT;
+import static com.example.pokemonapp.util.Tools.dualButtonDialog;
 import static com.example.pokemonapp.util.Tools.getDistinctRandomIntegers;
 import static com.example.pokemonapp.util.Tools.goToNextActivityWithStringExtra;
 import static com.example.pokemonapp.util.Tools.loadTeam;
-import static com.example.pokemonapp.util.Tools.dualButtonDialog;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;

@@ -164,4 +164,9 @@
     <string name="hard_level_text">Elite Four</string>
     <string name="save_settings_button_text">Save settings</string>
     <string name="remaining_overall_points">Remaining overall points</string>
+    <!-- SAVE TEAM -->
+    <string name="save_team_text_button">Save Team</string>
+    <string name="name_exists_warning">Name already exists</string>
+    <string name="name_empty_warning">You have to input a name</string>
+    <string name="name_hint_edit_text">Name</string>
 </resources>

@@ -7,7 +7,6 @@ import static com.example.pokemonapp.util.Tools.makeSelector;
 import static com.example.pokemonapp.util.Tools.saveTeam;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +28,6 @@ import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.models.InGamePokemon;
 import com.example.pokemonapp.room.PokemonAppDatabase;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
