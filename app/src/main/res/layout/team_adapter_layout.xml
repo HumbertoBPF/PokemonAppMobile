@@ -86,9 +86,22 @@
             app:layout_constraintTop_toBottomOf="@id/pokemon_5"
             app:layout_constraintStart_toStartOf="@id/team_name"
             app:layout_constraintEnd_toEndOf="@id/team_name"
+            android:layout_marginTop="5dp"
+            tools:text="Pokémon 6"/>
+
+        <TextView
+            android:id="@+id/team_overall_points"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/pokemon_6"
+            app:layout_constraintStart_toStartOf="@id/team_name"
+            app:layout_constraintEnd_toEndOf="@id/team_name"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginVertical="5dp"
-            tools:text="Pokémon 6"/>
+            tools:text="Overall Points team"/>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -156,7 +156,11 @@ public class PokemonSelectionActivity extends SelectionActivity {
         if (item.getItemId() == R.id.item_load){
             // launches the activity where the team to be loaded is chosen so as to get this team as
             // result
-            startActivityForResult(new Intent(this, LoadTeamActivity.class),LOAD_TEAM);
+            Intent intent = new Intent(this, LoadTeamActivity.class);
+            if (gameMode.equals(getString(R.string.label_strategy_mode))){
+                intent.putExtra("maxOverallPoints",maxOverallPoints);
+            }
+            startActivityForResult(intent,LOAD_TEAM);
         }
         return super.onOptionsItemSelected(item);
     }

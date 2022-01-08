@@ -1,12 +1,12 @@
 package com.example.pokemonapp.activities.game;
 
+import static com.example.pokemonapp.util.Tools.getInGamePokemonFromJSON;
 import static com.example.pokemonapp.util.Tools.saveTeam;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,10 +14,7 @@ import com.example.pokemonapp.R;
 import com.example.pokemonapp.adapters.PokemonMovesAdapter;
 import com.example.pokemonapp.entities.Team;
 import com.example.pokemonapp.models.InGamePokemon;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TeamDetailsActivity extends AppCompatActivity {
@@ -40,18 +37,6 @@ public class TeamDetailsActivity extends AppCompatActivity {
         showSelectedTeamDetails(team, inGamePokemonList);
         configureLoadButton(inGamePokemonList);
 
-    }
-
-    /**
-     * Converts the team attribute of a Team object (it is a JSON String) into a list of pokémon.
-     * @param team concerned Team object.
-     * @return a list of the pokémon corresponding to team attribute of the specified object.
-     */
-    @Nullable
-    private List<InGamePokemon> getInGamePokemonFromJSON(Team team) {
-        Gson gson = new Gson();
-        java.lang.reflect.Type type = new TypeToken<ArrayList<InGamePokemon>>() {}.getType();
-        return gson.fromJson(team.getTeam(), type);
     }
 
     /**

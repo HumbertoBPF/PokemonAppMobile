@@ -172,4 +172,6 @@
     <!-- LOAD TEAM -->
     <string name="select_team">Select a team to use</string>
     <string name="load_team">Load team</string>
+    <string name="max_op_load_team_warning">The selected team is too strong.\nPlease select a team respecting the limit specified on the previous screen</string>
+    <string name="team_overall_points_label">Overall Points</string>
 </resources>

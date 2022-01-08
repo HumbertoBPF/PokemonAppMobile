@@ -17,9 +17,11 @@ import android.text.Spanned;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pokemonapp.R;
+import com.example.pokemonapp.entities.Team;
 import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.models.InGamePokemon;
 import com.google.gson.Gson;
@@ -268,6 +270,26 @@ public class Tools {
         int g = Math.round(Color.green(color) * factor);
         int b = Math.round(Color.blue(color) * factor);
         return Color.argb(a, Math.min(r,255), Math.min(g,255), Math.min(b,255));
+    }
+
+    /**
+     * Converts the team attribute of a Team object (it is a JSON String) into a list of pokémon.
+     * @param team concerned Team object.
+     * @return a list of the pokémon corresponding to team attribute of the specified object.
+     */
+    @Nullable
+    public static List<InGamePokemon> getInGamePokemonFromJSON(Team team) {
+        Gson gson = new Gson();
+        java.lang.reflect.Type type = new TypeToken<ArrayList<InGamePokemon>>() {}.getType();
+        return gson.fromJson(team.getTeam(), type);
+    }
+
+    public static int getOverallPointsOfTeam(Team team) {
+        int teamOverallPoints = 0;
+        for (InGamePokemon inGamePokemon : getInGamePokemonFromJSON(team)){
+            teamOverallPoints += inGamePokemon.getPokemonServer().getFOverallPts();
+        }
+        return teamOverallPoints;
     }
 
 }

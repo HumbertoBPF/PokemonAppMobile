@@ -1,8 +1,11 @@
 package com.example.pokemonapp.activities.game;
 
+import static com.example.pokemonapp.util.Tools.getOverallPointsOfTeam;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -20,7 +23,7 @@ import java.util.List;
 public class LoadTeamActivity extends SelectionActivity {
 
     private TeamDAO teamDAO;
-
+    private int maxOverallPoints;
     private final int CONFIRM_CHOICE = 3;
 
     @Override
@@ -35,6 +38,8 @@ public class LoadTeamActivity extends SelectionActivity {
         nextActivityButton.setVisibility(View.GONE);
 
         teamDAO = PokemonAppDatabase.getInstance(this).getTeamDAO();
+
+        maxOverallPoints = getIntent().getIntExtra("maxOverallPoints",-1);
 
         loadingDialog.show();
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
@@ -53,16 +58,28 @@ public class LoadTeamActivity extends SelectionActivity {
                     @Override
                     public void onClick(Team team) {    // when a team is selected, the details of this team are shown, i.e. the details
                                                         // about the pokémon and their moves
-                        Intent intent = new Intent(getApplicationContext(),TeamDetailsActivity.class);
-                        intent.putExtra("team", team);
-                        // to show the details, an activity for result is launched. It expects the confirmation that the selected team
-                        // will be loaded
-                        startActivityForResult(intent,CONFIRM_CHOICE);
+                        if (maxOverallPoints != -1){
+                            if (getOverallPointsOfTeam(team) <= maxOverallPoints){
+                                showTeamDetails(team);
+                            }else{
+                                Toast.makeText(getApplicationContext(), R.string.max_op_load_team_warning, Toast.LENGTH_SHORT).show();
+                            }
+                        }else{
+                            showTeamDetails(team);
+                        }
                     }
                 }));
             }
         }).execute();
 
+    }
+
+    private void showTeamDetails(Team team) {
+        Intent intent = new Intent(getApplicationContext(),TeamDetailsActivity.class);
+        intent.putExtra("team", team);
+        // to show the details, an activity for result is launched. It expects the confirmation that the selected team
+        // will be loaded
+        startActivityForResult(intent,CONFIRM_CHOICE);
     }
 
     @Override
