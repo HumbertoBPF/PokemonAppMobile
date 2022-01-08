@@ -40,7 +40,7 @@ public class MovesDatabaseActivity extends DatabaseNavigationActivity {
                 new MovesAdapter.OnClickListener() {
                     @Override
                     public void onClick(View view, Move move) {
-                        showDetails(move);
+                        startActivity(showDetails(move));
                     }
                 });
     }

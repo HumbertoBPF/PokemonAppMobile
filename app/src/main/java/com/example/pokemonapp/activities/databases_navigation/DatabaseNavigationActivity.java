@@ -69,10 +69,15 @@ public abstract class DatabaseNavigationActivity extends AppCompatActivity {
 
     protected abstract RecyclerView.Adapter getAdapter(List<Object> objects);
 
-    protected void showDetails(Object resource){
+    /**
+     * @param resource resource whose details are going to be shown.
+     * @return an intent redirecting the user to an activity where the details of the concerned
+     * database resource are shown.
+     */
+    protected Intent showDetails(Object resource){
         Intent intent = new Intent(getApplicationContext(),detailsActivity);
         intent.putExtra(getString(R.string.key_extra_db_resource), (Serializable) resource);
-        startActivity(intent);
+        return intent;
     }
 
 }

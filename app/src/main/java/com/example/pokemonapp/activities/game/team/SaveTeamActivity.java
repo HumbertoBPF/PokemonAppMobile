@@ -1,4 +1,4 @@
-package com.example.pokemonapp.activities.game;
+package com.example.pokemonapp.activities.game.team;
 
 import static com.example.pokemonapp.util.Tools.loadTeam;
 import static com.example.pokemonapp.util.Tools.loadingDialog;

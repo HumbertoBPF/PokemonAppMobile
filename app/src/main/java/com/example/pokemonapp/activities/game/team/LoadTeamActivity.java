@@ -1,4 +1,4 @@
-package com.example.pokemonapp.activities.game;
+package com.example.pokemonapp.activities.game.team;
 
 import static com.example.pokemonapp.util.Tools.getOverallPointsOfTeam;
 
@@ -75,8 +75,8 @@ public class LoadTeamActivity extends SelectionActivity {
     }
 
     private void showTeamDetails(Team team) {
-        Intent intent = new Intent(getApplicationContext(),TeamDetailsActivity.class);
-        intent.putExtra("team", team);
+        Intent intent = new Intent(getApplicationContext(), TeamDetailsActivity.class);
+        intent.putExtra(getString(R.string.key_extra_db_resource), team);
         // to show the details, an activity for result is launched. It expects the confirmation that the selected team
         // will be loaded
         startActivityForResult(intent,CONFIRM_CHOICE);

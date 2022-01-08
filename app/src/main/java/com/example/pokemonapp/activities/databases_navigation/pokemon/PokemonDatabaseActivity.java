@@ -40,7 +40,7 @@ public class PokemonDatabaseActivity extends DatabaseNavigationActivity {
                 new PokemonAdapter.OnClickListener() {
                     @Override
                     public void onClick(View view, Pokemon pokemon) {
-                        showDetails(pokemon);
+                        startActivity(showDetails(pokemon));
                     }
                 });
     }

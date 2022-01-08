@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.game.TeamDetailsActivity">
+    tools:context=".activities.game.team.TeamDetailsActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/team_to_load_recycler_view"

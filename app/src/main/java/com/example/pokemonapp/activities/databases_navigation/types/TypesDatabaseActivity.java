@@ -39,7 +39,7 @@ public class TypesDatabaseActivity extends DatabaseNavigationActivity {
                 new TypesAdapter.OnClickListener() {
                     @Override
                     public void onClick(Type type) {
-                        showDetails(type);
+                        startActivity(showDetails(type));
                     }
                 });
     }

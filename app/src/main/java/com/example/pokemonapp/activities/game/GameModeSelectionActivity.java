@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.ButtonsActivity;
+import com.example.pokemonapp.activities.game.team.TeamDatabaseActivity;
 import com.example.pokemonapp.models.RoundedButton;
 
 public class GameModeSelectionActivity extends ButtonsActivity {
@@ -34,7 +35,8 @@ public class GameModeSelectionActivity extends ButtonsActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.item_info) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.item_info) {
             Dialog infoDialog = singleButtonDialog(GameModeSelectionActivity.this, getString(R.string.dialog_explain_mode_title),
                     Html.fromHtml(getString(R.string.info_game_mode)), getString(R.string.understood_button_text), new DialogInterface.OnClickListener() {
                         @Override
@@ -43,7 +45,9 @@ public class GameModeSelectionActivity extends ButtonsActivity {
                         }
                     });
             infoDialog.show();
-        }else{
+        }else if (itemId == R.id.item_my_teams){
+            startActivity(new Intent(this,TeamDatabaseActivity.class));
+        }else if (itemId == R.id.item_config) {
             startActivity(new Intent(this,SettingsActivity.class));
         }
         return super.onOptionsItemSelected(item);

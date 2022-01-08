@@ -9,10 +9,15 @@
         app:showAsAction="ifRoom"/>
 
     <item
+        android:id="@+id/item_my_teams"
+        android:icon="@drawable/ic_my_teams"
+        android:title="My teams"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/item_config"
         android:icon="@drawable/ic_settings"
         android:title="Settings"
-        app:showAsAction="ifRoom"
-        />
+        app:showAsAction="ifRoom" />
 
 </menu>

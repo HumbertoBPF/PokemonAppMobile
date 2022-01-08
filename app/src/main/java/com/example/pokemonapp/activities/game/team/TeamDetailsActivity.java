@@ -1,8 +1,9 @@
-package com.example.pokemonapp.activities.game;
+package com.example.pokemonapp.activities.game.team;
 
 import static com.example.pokemonapp.util.Tools.getInGamePokemonFromJSON;
 import static com.example.pokemonapp.util.Tools.saveTeam;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -30,13 +31,17 @@ public class TeamDetailsActivity extends AppCompatActivity {
         teamToLoadRecyclerView = findViewById(R.id.team_to_load_recycler_view);
         loadTeamButton = findViewById(R.id.load_team_button);
 
-        Team team = (Team) getIntent().getSerializableExtra("team");
+        Intent intent = getIntent();
+        Team team = (Team) intent.getSerializableExtra(getString(R.string.key_extra_db_resource));
 
         List<InGamePokemon> inGamePokemonList = getInGamePokemonFromJSON(team);
 
         showSelectedTeamDetails(team, inGamePokemonList);
         configureLoadButton(inGamePokemonList);
 
+        if (intent.getBooleanExtra("hideButton",false)){
+            loadTeamButton.setVisibility(View.GONE);
+        }
     }
 
     /**

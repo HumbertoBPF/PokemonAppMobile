@@ -14,13 +14,16 @@
         android:theme="@style/Theme.PokemonApp"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".activities.game.TeamDetailsActivity"
+            android:name=".activities.game.team.TeamDatabaseActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.game.LoadTeamActivity"
+            android:name=".activities.game.team.TeamDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.game.SaveTeamActivity"
+            android:name=".activities.game.team.LoadTeamActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.game.team.SaveTeamActivity"
             android:exported="false" />
         <activity
             android:name=".activities.game.SettingsActivity"

@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.SelectionActivity;
+import com.example.pokemonapp.activities.game.team.LoadTeamActivity;
 import com.example.pokemonapp.adapters.PokemonAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.PokemonDAO;
