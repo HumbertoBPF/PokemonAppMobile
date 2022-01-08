@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -41,6 +42,8 @@ public class PokemonSelectionActivity extends SelectionActivity {
     private int maxOverallPoints;                   // max overall points
     private List<Pokemon> playerPokemonList = new ArrayList<>();
     private boolean canLoad;
+
+    private final int LOAD_TEAM = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,9 +140,23 @@ public class PokemonSelectionActivity extends SelectionActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == LOAD_TEAM && resultCode == RESULT_OK){   // if a team to load was previously requested and if the result
+                                                                    // is OK, the user is redirected to the MovesSelectionActivity
+            Intent intent = new Intent(this, MovesSelectionActivity.class);
+            intent.putExtra("playerTeamReady",true);
+            startActivity(intent);
+            finish();
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.item_load){
-            startActivity(new Intent(this, LoadTeamActivity.class));
+            // launches the activity where the team to be loaded is chosen so as to get this team as
+            // result
+            startActivityForResult(new Intent(this, LoadTeamActivity.class),LOAD_TEAM);
         }
         return super.onOptionsItemSelected(item);
     }

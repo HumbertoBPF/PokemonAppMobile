@@ -1,7 +1,9 @@
 package com.example.pokemonapp.activities.game;
 
 import static com.example.pokemonapp.util.Tools.loadTeam;
+import static com.example.pokemonapp.util.Tools.loadingDialog;
 
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -26,6 +28,9 @@ import java.util.List;
 public class SaveTeamActivity extends AppCompatActivity {
 
     private TeamDAO teamDAO;
+
+    private ProgressDialog loadingDialog;
+
     private EditText nameTeamEditText;
     private RecyclerView teamToSaveRecyclerView;
     private Button saveButton;
@@ -37,6 +42,8 @@ public class SaveTeamActivity extends AppCompatActivity {
         setTitle(R.string.save_team_text_button);
 
         teamDAO = PokemonAppDatabase.getInstance(this).getTeamDAO();
+
+        loadingDialog = loadingDialog(this);
 
         getLayoutElements();
 
@@ -61,6 +68,7 @@ public class SaveTeamActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String nameTeam = nameTeamEditText.getText().toString();    // gets the name input by the user
                 if (!nameTeam.isEmpty()){                                   // if the name is not ""
+                    loadingDialog.show();
                     new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                         @Override
                         public List<Object> doInBackground() {
@@ -81,10 +89,12 @@ public class SaveTeamActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onPostExecute(List<Object> objects) {
+                                        loadingDialog.dismiss();
                                         finish();
                                     }
                                 }).execute();
                             }else{
+                                loadingDialog.dismiss();
                                 Toast.makeText(getApplicationContext(), R.string.name_exists_warning, Toast.LENGTH_LONG).show();
                             }
                         }

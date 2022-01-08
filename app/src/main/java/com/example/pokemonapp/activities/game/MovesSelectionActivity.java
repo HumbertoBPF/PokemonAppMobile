@@ -48,6 +48,21 @@ public class MovesSelectionActivity extends SelectionActivity {
 
         super.onCreate(savedInstanceState);
 
+        boolean playerTeamReady = getIntent().getBooleanExtra("playerTeamReady",false);
+
+        if (playerTeamReady){
+            setTitle(R.string.summary_title_app_bar);
+
+            playerTeam = loadTeam(this, getString(R.string.filename_json_player_team));
+            playerRecyclerView.setAdapter(new PokemonMovesAdapter(this, playerTeam));
+            if (gameLevel.equals(getString(R.string.easy_level)) || gameMode.equals(getString(R.string.label_random_mode))){
+                saveRandomMoves(cpuRecyclerView,getString(R.string.filename_json_cpu_team));
+            }else{
+                saveBestMoves(cpuRecyclerView,getString(R.string.filename_json_cpu_team));
+            }
+            return;
+        }
+
         if (gameMode.equals(getString(R.string.label_random_mode))){
             setTitle(R.string.summary_title_app_bar);
             enableSaving(true);     // can save the team for random mode at any moment of this activity
