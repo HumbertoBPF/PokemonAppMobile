@@ -284,6 +284,10 @@ public class Tools {
         return gson.fromJson(team.getTeam(), type);
     }
 
+    /**
+     * @param team concerned Team object.
+     * @return sum of the Overall Points of the pokémon of the specified team.
+     */
     public static int getOverallPointsOfTeam(Team team) {
         int teamOverallPoints = 0;
         for (InGamePokemon inGamePokemon : getInGamePokemonFromJSON(team)){
