@@ -68,7 +68,7 @@ public class LoadTeamActivity extends SelectionActivity {
                             showTeamDetails(team);
                         }
                     }
-                }));
+                },false));
             }
         }).execute();
 

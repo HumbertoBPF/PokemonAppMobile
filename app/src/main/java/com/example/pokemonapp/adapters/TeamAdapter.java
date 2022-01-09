@@ -7,6 +7,7 @@ import static com.example.pokemonapp.util.Tools.makeSelector;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -19,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
+import com.example.pokemonapp.activities.game.team.SaveTeamActivity;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.TeamDAO;
 import com.example.pokemonapp.entities.Team;
@@ -33,13 +35,15 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
     private Context context;
     private List<Object> teams;
     private OnClickListener onClickListener;
+    private boolean isEditable; // determines if the long click should show the menu with the delete and edit options
     private TeamDAO teamDAO;
     private ProgressDialog loadingDialog;
 
-    public TeamAdapter(Context context, List<Object> teams, OnClickListener onClickListener) {
+    public TeamAdapter(Context context, List<Object> teams, OnClickListener onClickListener, boolean isEditable) {
         this.context = context;
         this.teams = teams;
         this.onClickListener = onClickListener;
+        this.isEditable = isEditable;
         this.teamDAO = PokemonAppDatabase.getInstance(this.context).getTeamDAO();
         this.loadingDialog = loadingDialog(this.context);
     }
@@ -78,7 +82,9 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
             pokemonTextView.add(itemView.findViewById(R.id.pokemon_5));
             pokemonTextView.add(itemView.findViewById(R.id.pokemon_6));
             teamOverallPoints = itemView.findViewById(R.id.team_overall_points);
-            itemView.setOnCreateContextMenuListener(this);
+            if (isEditable){
+                itemView.setOnCreateContextMenuListener(this);
+            }
         }
 
         public void bind(Team team){
@@ -103,8 +109,9 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            // creates a context menu with a delete option triggered by a long click
+            // creates a context menu with a delete and a edit options triggered by a long click
             MenuItem delete = menu.add("Delete");
+            MenuItem edit = menu.add("Edit name");
             delete.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
@@ -127,6 +134,16 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
                             Toast.makeText(context, "Team successfully deleted", Toast.LENGTH_LONG).show();
                         }
                     }).execute();
+                    return false;
+                }
+            });
+            edit.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    Intent intent = new Intent(context, SaveTeamActivity.class);
+                    intent.putExtra(context.getString(R.string.key_extra_db_resource),
+                            (Team) teams.get(TeamViewHolder.this.getBindingAdapterPosition()));
+                    context.startActivity(intent);
                     return false;
                 }
             });

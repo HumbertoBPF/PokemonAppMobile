@@ -1,5 +1,6 @@
 package com.example.pokemonapp.activities.game.team;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -43,7 +44,13 @@ public class TeamDatabaseActivity extends DatabaseNavigationActivity {
                 intent.putExtra("hideButton",true);
                 startActivity(intent);
             }
-        });
+        },true);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    @Override
+    protected void onResume() {
+        super.onResume();
+        configureRecyclerView();    // reconfigure the recycler view since some item may have been edited
+    }
 }

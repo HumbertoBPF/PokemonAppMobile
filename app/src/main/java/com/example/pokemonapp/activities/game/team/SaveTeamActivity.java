@@ -1,6 +1,6 @@
 package com.example.pokemonapp.activities.game.team;
 
-import static com.example.pokemonapp.util.Tools.loadTeam;
+import static com.example.pokemonapp.util.Tools.getInGamePokemonFromJSON;
 import static com.example.pokemonapp.util.Tools.loadingDialog;
 
 import android.app.ProgressDialog;
@@ -29,6 +29,8 @@ public class SaveTeamActivity extends AppCompatActivity {
 
     private TeamDAO teamDAO;
 
+    private Team team;
+
     private ProgressDialog loadingDialog;
 
     private EditText nameTeamEditText;
@@ -45,10 +47,32 @@ public class SaveTeamActivity extends AppCompatActivity {
 
         loadingDialog = loadingDialog(this);
 
+        team = getTeamIfExists();
+
         getLayoutElements();
 
+        nameTeamEditText.setText(team.getName());   // if the team's name has already been defined (edition of existing team), we fill
+                                                    // the EditText
         configureRecyclerView();
         configureSaveButton();
+    }
+
+    /**
+     * Verifies if some team was sent by the intent (we are editing an existing team in such case).
+     * If it is the case, the team sent is the team that will be saved (updated to be more precise).
+     * Otherwise, we are saving a new team, so we create a new instance of Team with the team stored
+     * in Shared Preferences.
+     * @return a new or an existing instance of Team depending on the cases described above.
+     */
+    private Team getTeamIfExists() {
+        Team team = (Team) getIntent().getSerializableExtra(getString(R.string.key_extra_db_resource));
+        if (team == null){
+            SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.name_shared_preferences_file), MODE_PRIVATE);
+            String json = sharedPreferences.getString(getString(R.string.filename_json_player_team), null);
+            team = new Team();
+            team.setTeam(json);
+        }
+        return team;
     }
 
     private void getLayoutElements() {
@@ -58,7 +82,7 @@ public class SaveTeamActivity extends AppCompatActivity {
     }
 
     private void configureRecyclerView() {
-        List<InGamePokemon> teamToSave = loadTeam(this, getString(R.string.filename_json_player_team));
+        List<InGamePokemon> teamToSave = getInGamePokemonFromJSON(team);
         teamToSaveRecyclerView.setAdapter(new PokemonMovesAdapter(this, teamToSave));
     }
 
@@ -83,7 +107,8 @@ public class SaveTeamActivity extends AppCompatActivity {
                                 new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                                     @Override
                                     public List<Object> doInBackground() {
-                                        saveCurrentTeam(nameTeam);
+                                        team.setName(nameTeam);
+                                        teamDAO.save(team);
                                         return null;
                                     }
 
@@ -107,13 +132,4 @@ public class SaveTeamActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Saves the JSON stored in Shared Preferences corresponding to the player's current team.
-     * @param nameTeam name to be used to store when saving the team in the local database.
-     */
-    private void saveCurrentTeam(String nameTeam) {
-        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.name_shared_preferences_file), MODE_PRIVATE);
-        String json = sharedPreferences.getString(getString(R.string.filename_json_player_team), null);
-        teamDAO.save(new Team(nameTeam,json));
-    }
 }
