@@ -36,6 +36,7 @@ import com.example.pokemonapp.dao.TypeNoEffectDAO;
 import com.example.pokemonapp.dao.TypeNotEffectiveDAO;
 import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.Pokemon;
+import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.models.InGamePokemon;
 import com.example.pokemonapp.models.Trainer;
 import com.example.pokemonapp.room.PokemonAppDatabase;
@@ -550,9 +551,120 @@ public class GameActivity extends AppCompatActivity {
                     }
                 }).execute();
             } else {    // else, pick randomly a move among the remaining ones
-                int randomIndex = getDistinctRandomIntegers(0, moves.size() - 1, 1).get(0);
-                cpu.setCurrentMove(moves.get(randomIndex));
-                onChoiceListener.onChoice();
+
+                new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                    @Override
+                    public List<Object> doInBackground() {
+                        // gets the types of the attacking pokémon
+                        List<Type> attackingPokemonTypes = pokemonTypeDAO.getTypesOfPokemon(cpu.getCurrentPokemon().getPokemonServer().getFId());
+                        Type attackingPokemonType1 = attackingPokemonTypes.get(0);
+                        Type attackingPokemonType2 = null;
+                        if (attackingPokemonTypes.size() == 2){ // get type 2 only if it exists
+                            attackingPokemonType2 = attackingPokemonTypes.get(1);
+                        }
+
+                        // gets the types of the defending pokémon
+                        List<Type> defendingPokemonTypes = pokemonTypeDAO.getTypesOfPokemon(player.getCurrentPokemon().getPokemonServer().getFId());
+                        Type defendingPokemonType1 = defendingPokemonTypes.get(0);
+                        Type defendingPokemonType2 = null;
+                        if (defendingPokemonTypes.size() == 2){ // get type 2 only if it exists
+                            defendingPokemonType2 = defendingPokemonTypes.get(1);
+                        }
+
+                        List<Double> qualityFactors = new ArrayList<>();    // number used to define what is the best move
+                        for (Move move : moves){
+                            Log.i(TAG,"===============================Analysing move : "+move.getFName()+"===============================");
+
+                            Type moveType = moveTypeDAO.getTypesOfMove(move.getFId()).get(0);   // get type of the current move
+
+                            // get the types against which this move is effective, not effective and ineffective
+                            List<Long> effectiveTypesIds = typeEffectiveDAO.getEffectiveTypesIds(moveType.getFId());
+                            List<Long> notEffectiveTypesIds = typeNotEffectiveDAO.getNotEffectiveTypesIds(moveType.getFId());
+                            List<Long> noEffectTypesIds = typeNoEffectDAO.getNoEffectTypesIds(moveType.getFId());
+
+                            // verifies stab
+                            double qualityFactor = 1;
+                            if (attackingPokemonType1.getFId().equals(moveType.getFId())){
+                                qualityFactor *= 1.5;
+                            }
+                            if (attackingPokemonType2 != null){
+                                if (attackingPokemonType2.getFId().equals(moveType.getFId())){
+                                    qualityFactor *= 1.5;
+                                }
+                            }
+
+                            // verifies if the primary type of the defending pokémon is weak or resistant against this move
+                            if (effectiveTypesIds.contains(defendingPokemonType1.getFId())){
+                                qualityFactor *= 2;
+                            }
+                            if (notEffectiveTypesIds.contains(defendingPokemonType1.getFId())){
+                                qualityFactor *= 0.5;
+                            }
+                            if (noEffectTypesIds.contains(defendingPokemonType1.getFId())){
+                                qualityFactor *= 0;
+                            }
+
+                            // verifies if the secondary type of the defending pokémon (if it exists)
+                            // is weak or resistant against this move
+                            if (defendingPokemonType2 != null){
+                                if (effectiveTypesIds.contains(defendingPokemonType2.getFId())){
+                                    qualityFactor *= 2;
+                                }
+                                if (notEffectiveTypesIds.contains(defendingPokemonType2.getFId())){
+                                    qualityFactor *= 0.5;
+                                }
+                                if (noEffectTypesIds.contains(defendingPokemonType2.getFId())){
+                                    qualityFactor *= 0;
+                                }
+                            }
+
+                            // avoids to use moves for which the user faints when the HP is not low enough
+                            if (move.getFUserFaints() && cpu.getCurrentPokemon().getPokemonServer().getFHp() > 100){
+                                qualityFactor*=0;
+                            }
+
+                            // reflects the risk of choosing a move with low accuracy (may miss the attack)
+                            if (move.getFAccuracy() < 85){
+                                qualityFactor*=0.75;
+                            }
+
+                            // reflects the fact that to load such moves, we do not attack during one turn
+                            if (move.getFRoundsToLoad() != 0){
+                                qualityFactor*=0.5;
+                            }
+
+                            // takes into account the power of the move
+                            qualityFactor *= move.getFPower();
+                            // takes into account the minimum number of times that a move can hit per turn
+                            qualityFactor *= move.getFMinTimesPerTour();
+
+                            Log.i(TAG,"===============================Quality factor = "+qualityFactor+"===============================");
+
+                            qualityFactors.add(qualityFactor);
+                        }
+
+                        // picks the move whose quality factor is the greatest one
+                        int indexBestMove = 0;
+                        double greatestQualityFactor = qualityFactors.get(0);
+                        for (int i = 0;i<qualityFactors.size();i++){
+                            double currentQualityFactor = qualityFactors.get(i);
+                            if (currentQualityFactor > greatestQualityFactor){
+                                indexBestMove = i;
+                                greatestQualityFactor = currentQualityFactor;
+                            }
+                        }
+
+                        List<Object> objects = new ArrayList<>();
+                        objects.add(moves.get(indexBestMove));
+                        return objects;
+                    }
+
+                    @Override
+                    public void onPostExecute(List<Object> objects) {
+                        cpu.setCurrentMove((Move) objects.get(0));
+                        onChoiceListener.onChoice();
+                    }
+                }).execute();
             }
         }else{  // if pokémon is loading an attack or reloading, skips this step
             onChoiceListener.onChoice();
@@ -808,7 +920,7 @@ public class GameActivity extends AppCompatActivity {
         }else{
             double damage;
             if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
-                damage = player.hitOpponent(defendingPokemon,currentHit,move,stab,typeFactor); // gets the damage
+                damage = player.hitOpponent(currentHit,move,stab,typeFactor); // gets the damage
                 if (damage == -1){ // defending pokémon processes the move received and the UI is updated according to the result
                     gameDescription.setText(R.string.attack_missed_msg);
                 }else{
@@ -816,7 +928,7 @@ public class GameActivity extends AppCompatActivity {
                     cpu.receiveDamage(damage,move);
                 }
             }else{
-                damage = cpu.hitOpponent(defendingPokemon,currentHit,move,stab,typeFactor);
+                damage = cpu.hitOpponent(currentHit,move,stab,typeFactor);
                 if (damage == -1){
                     gameDescription.setText(R.string.attack_missed_msg);
                 }else{

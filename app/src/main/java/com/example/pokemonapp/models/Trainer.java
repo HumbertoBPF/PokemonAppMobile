@@ -164,7 +164,7 @@ public class Trainer {
      *                   if it is not effective or 0 if it has no effect).
      * @return the damage inflicted if the move hits the opponent or -1 if it misses.
      */
-    public double hitOpponent(InGamePokemon defendingPokemon, int currentHit, Move move, double stab, double typeFactor){
+    public double hitOpponent(int currentHit, Move move, double stab, double typeFactor){
         // updates the number of PP when the first hit is processed (because all the moves hit at least once)
         if (currentHit == 1){
             this.getCurrentPokemon().setMoves(updatePPs(this.getCurrentPokemon(), move));
