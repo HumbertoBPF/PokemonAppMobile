@@ -55,6 +55,14 @@
     <string name="understood_button_text">Understood</string>
     <!-- EXPLAIN GAME MODE DIALOG -->
     <string name="dialog_explain_mode_title">Game modes</string>
+    <!-- QUIT GAME DIALOG -->
+    <string name="quit_game_dialog_title">Quit game ?</string>
+    <string name="quit_game_dialog_text">Do you want to quit the game ?</string>
+    <!-- PLAY AGAIN DIALOG -->
+    <string name="play_again_dialog_text">Would you like to play again this mode ?</string>
+    <!-- DELETE TEAM DIALOG -->
+    <string name="delete_team_dialog_title">Delete team</string>
+    <string name="delete_team_dialog_text">Do you really want to delete this team ?\n(This action is irreversible)</string>
     <!-- POKEMON/MOVES CHARACTERISTICS -->
     <string name="label_name">Name</string>
     <string name="label_category">Category</string>
@@ -175,6 +183,10 @@
     <string name="max_op_load_team_warning">The selected team is too strong.\nPlease select a team respecting the limit specified on the previous screen</string>
     <string name="team_overall_points_label">Overall Points</string>
     <string name="no_team_saved">You have not saved any team so far</string>
+    <!-- TEAM MANAGEMENT -->
+    <string name="team_deleted_confirmation">Team successfully deleted</string>
+    <string name="team_delete_option">Delete</string>
+    <string name="team_edit_option">Edit name</string>
     <!-- APPBAR ITEMS -->
     <string name="load_team_item_appbar">Load team</string>
     <string name="save_team_item_appbar">Save team</string>
@@ -182,4 +194,7 @@
     <string name="my_teams_item_appbar">My teams</string>
     <string name="settings_item_appbar">Settings</string>
     <string name="synchro_item_appbar">Synchro</string>
+    <!-- GENERAL PURPOSE STRINGS -->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

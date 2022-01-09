@@ -62,7 +62,7 @@ public class LoadTeamActivity extends SelectionActivity {
                             if (getOverallPointsOfTeam(team) <= maxOverallPoints){
                                 showTeamDetails(team);
                             }else{
-                                Toast.makeText(getApplicationContext(), R.string.max_op_load_team_warning, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), R.string.max_op_load_team_warning, Toast.LENGTH_LONG).show();
                             }
                         }else{
                             showTeamDetails(team);

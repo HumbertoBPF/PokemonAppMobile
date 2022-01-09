@@ -87,7 +87,7 @@ public class GameActivity extends AppCompatActivity {
         mp.setLooping(true);
         mp.start();
 
-        quitGameDialog = dualButtonDialog(this, "Quit game ?", "Do you want to quit the game ?", "Yes", "No",
+        quitGameDialog = dualButtonDialog(this, getString(R.string.quit_game_dialog_title), getString(R.string.quit_game_dialog_text), getString(R.string.yes), getString(R.string.no),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -348,7 +348,7 @@ public class GameActivity extends AppCompatActivity {
         }
         gameDescription.setText(idResultString);
         endGameDialog = dualButtonDialog(this, getString(idResultString),
-                "Would you like to play again this mode ?", "Yes", "No",
+                getString(R.string.play_again_dialog_text), getString(R.string.yes), getString(R.string.no),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
