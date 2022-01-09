@@ -174,4 +174,12 @@
     <string name="load_team">Load team</string>
     <string name="max_op_load_team_warning">The selected team is too strong.\nPlease select a team respecting the limit specified on the previous screen</string>
     <string name="team_overall_points_label">Overall Points</string>
+    <string name="no_team_saved">You have not saved any team so far</string>
+    <!-- APPBAR ITEMS -->
+    <string name="load_team_item_appbar">Load team</string>
+    <string name="save_team_item_appbar">Save team</string>
+    <string name="info_item_appbar">Info</string>
+    <string name="my_teams_item_appbar">My teams</string>
+    <string name="settings_item_appbar">Settings</string>
+    <string name="synchro_item_appbar">Synchro</string>
 </resources>

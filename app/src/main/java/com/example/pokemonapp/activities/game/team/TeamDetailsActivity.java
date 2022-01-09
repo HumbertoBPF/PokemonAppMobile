@@ -8,51 +8,53 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
+import com.example.pokemonapp.activities.databases_navigation.DatabaseDetailsActivity;
 import com.example.pokemonapp.adapters.PokemonMovesAdapter;
 import com.example.pokemonapp.entities.Team;
 import com.example.pokemonapp.models.InGamePokemon;
 
 import java.util.List;
 
-public class TeamDetailsActivity extends AppCompatActivity {
+public class TeamDetailsActivity extends DatabaseDetailsActivity {
 
+    private Team team;
     private RecyclerView teamToLoadRecyclerView;
     private Button loadTeamButton;  // button to confirm that the shown team is indeed the team that the user wants to choose
+    private boolean hideButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_team_details);
-
-        teamToLoadRecyclerView = findViewById(R.id.team_to_load_recycler_view);
-        loadTeamButton = findViewById(R.id.load_team_button);
-
         Intent intent = getIntent();
-        Team team = (Team) intent.getSerializableExtra(getString(R.string.key_extra_db_resource));
+        team = (Team) intent.getSerializableExtra(getString(R.string.key_extra_db_resource));
+        hideButton = intent.getBooleanExtra("hideButton",false);
 
-        List<InGamePokemon> inGamePokemonList = getInGamePokemonFromJSON(team);
+        colorAppbar = getResources().getColor(R.color.pokemon_theme_color);
+        titleAppbar = team.getName();
+        layout = R.layout.activity_team_details;
+        super.onCreate(savedInstanceState);
 
-        showSelectedTeamDetails(team, inGamePokemonList);
-        configureLoadButton(inGamePokemonList);
-
-        if (intent.getBooleanExtra("hideButton",false)){
-            loadTeamButton.setVisibility(View.GONE);
-        }
+        getLayoutElements();
+        bind();
     }
 
-    /**
-     * Show the details of the team previously selected. The details consist of info about the
-     * pokémon of this team and their moves.
-     * @param team concerned Team object.
-     * @param inGamePokemonList list of InGamePokemon of the selected team.
-     */
-    private void showSelectedTeamDetails(Team team, List<InGamePokemon> inGamePokemonList) {
-        setTitle(team.getName());
+    @Override
+    protected void getLayoutElements() {
+        teamToLoadRecyclerView = findViewById(R.id.team_to_load_recycler_view);
+        loadTeamButton = findViewById(R.id.load_team_button);
+    }
+
+    @Override
+    protected void bind() {
+        List<InGamePokemon> inGamePokemonList = getInGamePokemonFromJSON(team);
         teamToLoadRecyclerView.setAdapter(new PokemonMovesAdapter(this, inGamePokemonList));
+        configureLoadButton(inGamePokemonList);
+
+        if (hideButton){
+            loadTeamButton.setVisibility(View.GONE);
+        }
     }
 
     /**

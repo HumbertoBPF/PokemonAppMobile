@@ -24,6 +24,7 @@ public class TeamDatabaseActivity extends DatabaseNavigationActivity {
         detailsActivity = TeamDetailsActivity.class;
         teamDAO = PokemonAppDatabase.getInstance(this).getTeamDAO();
         super.onCreate(savedInstanceState);
+        noDataTextView.setText(R.string.no_team_saved);
     }
 
     @Override

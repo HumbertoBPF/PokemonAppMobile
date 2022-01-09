@@ -6,7 +6,7 @@
     <item
         android:id="@+id/item_sync"
         android:icon="@drawable/ic_sync"
-        android:title="Synchro"
+        android:title="@string/synchro_item_appbar"
         app:showAsAction="ifRoom"/>
 
 </menu>

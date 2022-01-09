@@ -5,19 +5,19 @@
     <item
         android:id="@+id/item_info"
         android:icon="@drawable/ic_info"
-        android:title="Info"
+        android:title="@string/info_item_appbar"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/item_my_teams"
         android:icon="@drawable/ic_my_teams"
-        android:title="My teams"
+        android:title="@string/my_teams_item_appbar"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/item_config"
         android:icon="@drawable/ic_settings"
-        android:title="Settings"
+        android:title="@string/settings_item_appbar"
         app:showAsAction="ifRoom" />
 
 </menu>

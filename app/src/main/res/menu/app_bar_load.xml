@@ -6,7 +6,7 @@
     <item
         android:id="@+id/item_load"
         android:icon="@drawable/ic_load"
-        android:title="Load team"
+        android:title="@string/load_team_item_appbar"
         app:showAsAction="ifRoom"/>
 
 </menu>
