@@ -36,6 +36,7 @@ public class MovesDetailsActivity extends DatabaseDetailsActivity {
     private TextView nbRoundsToLoad;
     private TextView trapsOpponent;
     private TextView flinchingProbability;
+    private TextView recoversHp;
 
     private MoveTypeDAO moveTypeDAO;
 
@@ -68,6 +69,7 @@ public class MovesDetailsActivity extends DatabaseDetailsActivity {
         nbRoundsToLoad = findViewById(R.id.nb_rounds_to_load);
         trapsOpponent = findViewById(R.id.traps_opponent);
         flinchingProbability = findViewById(R.id.flinching_probability);
+        recoversHp = findViewById(R.id.recovers_hp);
     }
 
     protected void bind() {
@@ -97,6 +99,7 @@ public class MovesDetailsActivity extends DatabaseDetailsActivity {
         nbRoundsToLoad.setText(getString(R.string.label_nb_rounds_load)+" : "+move.getFRoundsToLoad());
         trapsOpponent.setText(getString(R.string.label_attack_traps)+" : "+move.getFTrapping());
         flinchingProbability.setText(getString(R.string.label_flinching_prob)+" : "+move.getFFlinchingProbability());
+        recoversHp.setText(getString(R.string.label_recovers_hp)+" : "+move.getFRecoversHp());
     }
 
 }

@@ -156,15 +156,15 @@ public class Trainer {
     /**
      * Determines if the attack hits or misses and, for the first case, determines the damage
      * inflicted.
-     * @param defendingPokemon pokémon that is going to be hit / that will receive the attack.
      * @param currentHit number of times that this move has already hit the opponent so far + 1.
      * @param move move is being used.
      * @param stab stab factor (1.5 if there is stab, 1.0 otherwise).
      * @param typeFactor type factor (greater than 1 if the move is super effective, between 0 and 1.
      *                   if it is not effective or 0 if it has no effect).
+     * @param allPokemon list with all the pokémon from DB.
      * @return the damage inflicted if the move hits the opponent or -1 if it misses.
      */
-    public double hitOpponent(int currentHit, Move move, double stab, double typeFactor){
+    public double hitOpponent(int currentHit, Move move, double stab, double typeFactor, List<Pokemon> allPokemon){
         // updates the number of PP when the first hit is processed (because all the moves hit at least once)
         if (currentHit == 1){
             this.getCurrentPokemon().setMoves(updatePPs(this.getCurrentPokemon(), move));
@@ -198,6 +198,17 @@ public class Trainer {
 
             if (move.getFRoundsToLoad() == -1){ // if move requires reloading, set the pokémon to do it
                 this.setLoading(true);
+            }
+
+            if (move.getFRecoversHp()){ // if the move recovers the HP of the user, half of the damage is added to the HP or it is recovered
+                                        // completely if the original HP is lower then the result of this addition
+                int recoveredHp = this.getCurrentPokemon().getPokemonServer().getFHp() + ((int) damage/2);
+                for (Pokemon pokemon : allPokemon){
+                    if (pokemon.getFId().equals(this.getCurrentPokemon().getPokemonServer().getFId()) && recoveredHp > pokemon.getFHp()){
+                        recoveredHp = pokemon.getFHp();
+                    }
+                }
+                this.getCurrentPokemon().getPokemonServer().setFHp(recoveredHp);
             }
 
             return damage;

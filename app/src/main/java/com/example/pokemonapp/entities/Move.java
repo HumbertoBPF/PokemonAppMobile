@@ -21,6 +21,7 @@ public class Move implements Serializable {
     private Integer fPp;
     private Boolean fTrapping;
     private Integer fFlinchingProbability;
+    private Boolean fRecoversHp;
 
     public Move() {
     }
@@ -35,7 +36,7 @@ public class Move implements Serializable {
 
     public Move(Long fId, String fName, String fCategory, Long fPower, Integer fAccuracy,
                 Integer fMinTimesPerTour, Integer fMaxTimesPerTour, Boolean fUserFaints, Integer fRoundsToLoad, Integer fPp,
-                Boolean fTrapping, Integer fFlinchingProbability) {
+                Boolean fTrapping, Integer fFlinchingProbability, Boolean fRecoversHp) {
         this.fId = fId;
         this.fName = fName;
         this.fCategory = fCategory;
@@ -48,6 +49,7 @@ public class Move implements Serializable {
         this.fPp = fPp;
         this.fTrapping = fTrapping;
         this.fFlinchingProbability = fFlinchingProbability;
+        this.fRecoversHp = fRecoversHp;
     }
 
     public Move(String fName, String fCategory, Long fPower, Integer fAccuracy) {
@@ -59,7 +61,7 @@ public class Move implements Serializable {
 
     public Move(String fName, String fCategory, Long fPower, Integer fAccuracy,
                 Integer fMinTimesPerTour, Integer fMaxTimesPerTour, Boolean fUserFaints, Integer fRoundsToLoad, Integer fPp,
-                Boolean fTrapping, Integer fFlinchingProbability) {
+                Boolean fTrapping, Integer fFlinchingProbability, Boolean fRecoversHp) {
         this.fName = fName;
         this.fCategory = fCategory;
         this.fPower = fPower;
@@ -71,6 +73,7 @@ public class Move implements Serializable {
         this.fPp = fPp;
         this.fTrapping = fTrapping;
         this.fFlinchingProbability = fFlinchingProbability;
+        this.fRecoversHp = fRecoversHp;
     }
 
     public Long getFId() {
@@ -169,4 +172,11 @@ public class Move implements Serializable {
         this.fFlinchingProbability = fFlinchingProbability;
     }
 
+    public Boolean getFRecoversHp() {
+        return fRecoversHp;
+    }
+
+    public void setFRecoversHp(Boolean fRecoversHp) {
+        this.fRecoversHp = fRecoversHp;
+    }
 }

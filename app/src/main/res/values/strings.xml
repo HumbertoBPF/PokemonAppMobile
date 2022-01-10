@@ -91,6 +91,7 @@
     <string name="label_nb_rounds_load">Number of rounds to load the attack</string>
     <string name="label_attack_traps">Attack traps the opponent for 4 or 5 turns</string>
     <string name="label_flinching_prob">Flinching probability</string>
+    <string name="label_recovers_hp">Recovers half of the inflicted HP</string>
     <!-- TYPE DETAILS -->
     <string name="label_effective_against">This type is effective against</string>
     <string name="label_not_effective_agains">This type is not effective against</string>

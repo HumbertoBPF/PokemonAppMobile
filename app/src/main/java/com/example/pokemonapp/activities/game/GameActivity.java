@@ -633,6 +633,11 @@ public class GameActivity extends AppCompatActivity {
                                 qualityFactor*=0.5;
                             }
 
+                            // reflects the fact that the Hp is incremented with half of the damage for some moves
+                            if (move.getFRecoversHp()){
+                                qualityFactor+=1.5;
+                            }
+
                             // takes into account the power of the move
                             qualityFactor *= move.getFPower();
                             // takes into account the minimum number of times that a move can hit per turn
@@ -920,7 +925,7 @@ public class GameActivity extends AppCompatActivity {
         }else{
             double damage;
             if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
-                damage = player.hitOpponent(currentHit,move,stab,typeFactor); // gets the damage
+                damage = player.hitOpponent(currentHit,move,stab,typeFactor,allPokemon); // gets the damage
                 if (damage == -1){ // defending pokémon processes the move received and the UI is updated according to the result
                     gameDescription.setText(R.string.attack_missed_msg);
                 }else{
@@ -928,7 +933,7 @@ public class GameActivity extends AppCompatActivity {
                     cpu.receiveDamage(damage,move);
                 }
             }else{
-                damage = cpu.hitOpponent(currentHit,move,stab,typeFactor);
+                damage = cpu.hitOpponent(currentHit,move,stab,typeFactor,allPokemon);
                 if (damage == -1){
                     gameDescription.setText(R.string.attack_missed_msg);
                 }else{
