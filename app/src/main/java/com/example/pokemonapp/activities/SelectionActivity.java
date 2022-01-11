@@ -42,9 +42,8 @@ public abstract class SelectionActivity extends AppCompatActivity {
         getLayoutElements();
 
         SharedPreferences sh = getSharedPreferences(getResources().getString(R.string.name_shared_preferences_file), MODE_PRIVATE);
-        gameMode = sh.getString(getString(R.string.key_game_mode),null); // getting game mode if it has
-                                                                                                // already been defined
-        gameLevel = sh.getString(getString(R.string.key_game_level),getString(R.string.easy_level));// getting difficult level
+        gameMode = sh.getString(getString(R.string.key_game_mode),null); // getting game mode if it has already been defined
+        gameLevel = sh.getString(getString(R.string.key_game_level),getString(R.string.easy_level));    // getting difficult level
     }
 
     protected void getLayoutElements() {

@@ -5,6 +5,7 @@ import static com.example.pokemonapp.models.Trainer.Position.DEFEATED;
 import static com.example.pokemonapp.models.Trainer.Position.FRONT;
 import static com.example.pokemonapp.util.Tools.dualButtonDialog;
 import static com.example.pokemonapp.util.Tools.getDistinctRandomIntegers;
+import static com.example.pokemonapp.util.Tools.getOverallPointsOfTeam;
 import static com.example.pokemonapp.util.Tools.goToNextActivityWithStringExtra;
 import static com.example.pokemonapp.util.Tools.loadTeam;
 
@@ -31,17 +32,22 @@ import com.example.pokemonapp.dao.MoveDAO;
 import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.dao.PokemonDAO;
 import com.example.pokemonapp.dao.PokemonTypeDAO;
+import com.example.pokemonapp.dao.ScoreDAO;
 import com.example.pokemonapp.dao.TypeEffectiveDAO;
 import com.example.pokemonapp.dao.TypeNoEffectDAO;
 import com.example.pokemonapp.dao.TypeNotEffectiveDAO;
 import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.Pokemon;
+import com.example.pokemonapp.entities.Score;
 import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.models.InGamePokemon;
 import com.example.pokemonapp.models.Trainer;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class GameActivity extends AppCompatActivity {
@@ -65,6 +71,7 @@ public class GameActivity extends AppCompatActivity {
     private TypeEffectiveDAO typeEffectiveDAO;
     private TypeNotEffectiveDAO typeNotEffectiveDAO;
     private TypeNoEffectDAO typeNoEffectDAO;
+    private ScoreDAO scoreDAO;
 
     private List<Pokemon> allPokemon;
     private List<Integer> pokemonChosenByCPU;   // indexes of the pokémon to be chosen by CPU everytime it is necessary
@@ -73,6 +80,8 @@ public class GameActivity extends AppCompatActivity {
     private final Trainer cpu = new Trainer();
 
     private MediaPlayer mp;
+    private long battleDuration = 0;
+    private long gameResumedLastTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,6 +178,7 @@ public class GameActivity extends AppCompatActivity {
         typeEffectiveDAO = PokemonAppDatabase.getInstance(this).getTypeEffectiveDAO();
         typeNotEffectiveDAO = PokemonAppDatabase.getInstance(this).getTypeNotEffectiveDAO();
         typeNoEffectDAO = PokemonAppDatabase.getInstance(this).getTypeNoEffectDAO();
+        scoreDAO = PokemonAppDatabase.getInstance(this).getScoreDAO();
     }
 
     private void battle() {
@@ -345,6 +355,7 @@ public class GameActivity extends AppCompatActivity {
         if (playerWon){
             idResultString = R.string.player_win_msg;
             idResultAudio = R.raw.success;
+            saveScore();
         }else{
             idResultString = R.string.cpu_win_msg;
             idResultAudio = R.raw.fail;
@@ -1102,12 +1113,64 @@ public class GameActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mp.start();
+        gameResumedLastTime = Calendar.getInstance().getTimeInMillis();
+        Log.i(TAG,"TimeManagement gameResumedLastTime : "+gameResumedLastTime);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mp.pause();
+        incrementBattleDuration();
+    }
+
+    private void saveScore(){
+        incrementBattleDuration();
+        long overallPointsPlayer = getOverallPointsOfTeam(loadTeam(this,getString(R.string.filename_json_player_team)));
+        long overallPointsCpu = getOverallPointsOfTeam(loadTeam(this,getString(R.string.filename_json_cpu_team)));
+        int nbRemainingPokemon = getNbOfRemainingPokemon(player);
+        double bonusGameMode = 1.0;
+        double bonusGameLevel = 1.0;
+        if (gameMode.equals(getString(R.string.label_random_mode))){
+            bonusGameMode = 0.75;
+        }
+        if (gameLevel.equals(getString(R.string.easy_level))){
+            bonusGameLevel = 0.75;
+        }
+
+        double overallPointsRatio = (double) overallPointsCpu/overallPointsPlayer;
+        double battleDurationSec = (double) battleDuration/1000;
+        double scoreValue =
+                bonusGameMode*bonusGameLevel*nbRemainingPokemon*(overallPointsRatio)*Math.max(60*60 - battleDurationSec,0);
+
+        SharedPreferences sh = getSharedPreferences(getString(R.string.name_shared_preferences_file), MODE_PRIVATE);
+        String playerTeam = sh.getString(getString(R.string.filename_json_player_team),"");
+        String cpuTeam = sh.getString(getString(R.string.filename_json_cpu_team),"");
+
+        String date = DateFormat.getInstance().format(new Date());
+
+        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+            @Override
+            public List<Object> doInBackground() {
+                scoreDAO.save(new Score(scoreValue, battleDuration, nbRemainingPokemon, overallPointsPlayer,
+                        overallPointsCpu, gameMode, gameLevel, playerTeam, cpuTeam, date));
+                return null;
+            }
+
+            @Override
+            public void onPostExecute(List<Object> objects) {
+
+            }
+        }).execute();
+    }
+
+    private void incrementBattleDuration() {
+        long pauseTime = Calendar.getInstance().getTimeInMillis();
+        Log.i(TAG,"TimeManagement pauseTime : "+pauseTime);
+        if (pauseTime > gameResumedLastTime){
+            battleDuration += pauseTime - gameResumedLastTime;
+            Log.i(TAG,"TimeManagement battleDuration so far : "+battleDuration);
+        }
     }
 
     @Override

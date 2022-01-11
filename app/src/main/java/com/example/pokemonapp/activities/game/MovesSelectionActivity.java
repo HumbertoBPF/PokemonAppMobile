@@ -286,7 +286,7 @@ public class MovesSelectionActivity extends SelectionActivity {
                         // if there are any remaining move of the primary type, add the strongest one to the final list
                         if (objects.size() < 2){
                             if (!movesStabType1.isEmpty()){
-                                objects.add(movesStabType1.get(0));
+                                objects.add(movesStabType1.remove(0));
                             }
                         }
 
@@ -297,7 +297,7 @@ public class MovesSelectionActivity extends SelectionActivity {
                     // we add a second stab move of the type 2(hence, we will have both stab moves of type2)
                     if (objects.size() < 2){
                         if (!movesStabType2.isEmpty()){
-                            objects.add(movesStabType2.get(0));
+                            objects.add(movesStabType2.remove(0));
                         }
                     }
 
@@ -310,6 +310,20 @@ public class MovesSelectionActivity extends SelectionActivity {
                                 Math.min(4-objects.size(),movesNoStab.size()));
                         for (Integer i : indexes){
                             objects.add(movesNoStab.get(i));
+                        }
+                    }
+
+                    // creates a list with all the remaining stab moves and if necessary completes the list
+                    // of moves with them
+                    List<Move> remainingStabMoves = new ArrayList<>();
+                    remainingStabMoves.addAll(movesStabType1);
+                    remainingStabMoves.addAll(movesStabType2);
+
+                    if (!remainingStabMoves.isEmpty() && (4-objects.size() > 0)){
+                        indexes = getDistinctRandomIntegers(0,remainingStabMoves.size()-1,
+                                Math.min(4-objects.size(),remainingStabMoves.size()));
+                        for (Integer i : indexes){
+                            objects.add(remainingStabMoves.get(i));
                         }
                     }
 

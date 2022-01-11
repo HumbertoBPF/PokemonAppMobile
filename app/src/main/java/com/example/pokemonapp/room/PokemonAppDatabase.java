@@ -11,6 +11,7 @@ import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.dao.PokemonDAO;
 import com.example.pokemonapp.dao.PokemonMoveDAO;
 import com.example.pokemonapp.dao.PokemonTypeDAO;
+import com.example.pokemonapp.dao.ScoreDAO;
 import com.example.pokemonapp.dao.TeamDAO;
 import com.example.pokemonapp.dao.TypeDAO;
 import com.example.pokemonapp.dao.TypeEffectiveDAO;
@@ -21,6 +22,7 @@ import com.example.pokemonapp.entities.MoveType;
 import com.example.pokemonapp.entities.Pokemon;
 import com.example.pokemonapp.entities.PokemonMove;
 import com.example.pokemonapp.entities.PokemonType;
+import com.example.pokemonapp.entities.Score;
 import com.example.pokemonapp.entities.Team;
 import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.entities.TypeEffective;
@@ -28,7 +30,7 @@ import com.example.pokemonapp.entities.TypeNoEffect;
 import com.example.pokemonapp.entities.TypeNotEffective;
 
 @Database(entities = {Pokemon.class, Move.class, Type.class, MoveType.class, PokemonType.class,
-        TypeEffective.class, TypeNotEffective.class, TypeNoEffect.class, PokemonMove.class, Team.class},
+        TypeEffective.class, TypeNotEffective.class, TypeNoEffect.class, PokemonMove.class, Team.class, Score.class},
         version = 1,exportSchema = false)
 public abstract class PokemonAppDatabase extends RoomDatabase {
 
@@ -44,6 +46,7 @@ public abstract class PokemonAppDatabase extends RoomDatabase {
     public abstract TypeNotEffectiveDAO getTypeNotEffectiveDAO();
     public abstract TypeNoEffectDAO getTypeNoEffectDAO();
     public abstract TeamDAO getTeamDAO();
+    public abstract ScoreDAO getScoreDAO();
 
     public static PokemonAppDatabase getInstance(Context context){
         return Room

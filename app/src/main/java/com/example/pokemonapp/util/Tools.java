@@ -296,4 +296,16 @@ public class Tools {
         return teamOverallPoints;
     }
 
+    /**
+     * @param inGamePokemonList list of pokémon (InGamePokemon objects).
+     * @return sum of the Overall Points of the pokémon of the specified team.
+     */
+    public static int getOverallPointsOfTeam(List<InGamePokemon> inGamePokemonList) {
+        int teamOverallPoints = 0;
+        for (InGamePokemon inGamePokemon : inGamePokemonList){
+            teamOverallPoints += inGamePokemon.getPokemonServer().getFOverallPts();
+        }
+        return teamOverallPoints;
+    }
+
 }
