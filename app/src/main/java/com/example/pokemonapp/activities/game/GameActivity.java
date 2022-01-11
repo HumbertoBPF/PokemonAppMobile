@@ -355,7 +355,7 @@ public class GameActivity extends AppCompatActivity {
         if (playerWon){
             idResultString = R.string.player_win_msg;
             idResultAudio = R.raw.success;
-            saveScore();
+            saveScore();    // saves score only when the player wins
         }else{
             idResultString = R.string.cpu_win_msg;
             idResultAudio = R.raw.fail;
@@ -1124,31 +1124,46 @@ public class GameActivity extends AppCompatActivity {
         incrementBattleDuration();
     }
 
+    /**
+     * Saves the score and all the information associated.
+     */
     private void saveScore(){
-        incrementBattleDuration();
+        incrementBattleDuration();  // increments the class battleDuration for the last time
+
+        // gets the overall points of player's team and of the cpu's team
         long overallPointsPlayer = getOverallPointsOfTeam(loadTeam(this,getString(R.string.filename_json_player_team)));
         long overallPointsCpu = getOverallPointsOfTeam(loadTeam(this,getString(R.string.filename_json_cpu_team)));
-        int nbRemainingPokemon = getNbOfRemainingPokemon(player);
+        int nbRemainingPokemon = getNbOfRemainingPokemon(player);   // gets number of remaining player's pokémon
+
+        // bonus due to gameMode, it is reduced to 0.75 when gameMode is random mode to penalize randomness
         double bonusGameMode = 1.0;
-        double bonusGameLevel = 1.0;
         if (gameMode.equals(getString(R.string.label_random_mode))){
             bonusGameMode = 0.75;
         }
+
+        // bonus due to gameLevel, it is reduced to 0.75 when gameLevel is easy to penalize the absence of AI
+        double bonusGameLevel = 1.0;
         if (gameLevel.equals(getString(R.string.easy_level))){
             bonusGameLevel = 0.75;
         }
 
+        // computes the ratio between the force of the teams
         double overallPointsRatio = (double) overallPointsCpu/overallPointsPlayer;
+        // converts the battle duration to seconds
         double battleDurationSec = (double) battleDuration/1000;
+        // computes the score value
         double scoreValue =
                 bonusGameMode*bonusGameLevel*nbRemainingPokemon*(overallPointsRatio)*Math.max(60*60 - battleDurationSec,0);
 
+        // gets the JSON corresponding to player's and cpu's team
         SharedPreferences sh = getSharedPreferences(getString(R.string.name_shared_preferences_file), MODE_PRIVATE);
         String playerTeam = sh.getString(getString(R.string.filename_json_player_team),"");
         String cpuTeam = sh.getString(getString(R.string.filename_json_cpu_team),"");
 
+        // gets the current date string (time, day, month and year)
         String date = DateFormat.getInstance().format(new Date());
 
+        // async task to store the score entity in the local DB
         new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
             @Override
             public List<Object> doInBackground() {
@@ -1164,6 +1179,10 @@ public class GameActivity extends AppCompatActivity {
         }).execute();
     }
 
+    /**
+     * When the game is paused or ended, it increment the class variable <b>battleDuration</b> with
+     * the time between this pause and the last time that the game was started.
+     */
     private void incrementBattleDuration() {
         long pauseTime = Calendar.getInstance().getTimeInMillis();
         Log.i(TAG,"TimeManagement pauseTime : "+pauseTime);
