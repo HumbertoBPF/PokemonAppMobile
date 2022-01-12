@@ -33,7 +33,7 @@ public class ScoreDetailsActivity extends DatabaseDetailsActivity {
         score = (Score) intent.getSerializableExtra(getString(R.string.key_extra_db_resource));
         layout = R.layout.activity_score_details;
         colorAppbar = getResources().getColor(R.color.pokemon_theme_color);
-        titleAppbar = "Battle details";
+        titleAppbar = getString(R.string.score_details_appbar_title);
         super.onCreate(savedInstanceState);
 
         getLayoutElements();
@@ -55,11 +55,31 @@ public class ScoreDetailsActivity extends DatabaseDetailsActivity {
 
     @Override
     protected void bind() {
+        String gameModeMnemo = score.getGameMode();
+        String gameModeString = "";
+        if (gameModeMnemo.equals(getString(R.string.label_favorite_team_mode))){
+            gameModeString = getString(R.string.favorite_team_mode_button_text);
+        }else if (gameModeMnemo.equals(getString(R.string.label_strategy_mode))){
+            gameModeString = getString(R.string.strategy_mode_button_text);
+        }else if (gameModeMnemo.equals(getString(R.string.label_random_mode))){
+            gameModeString = getString(R.string.random_mode_button_text);
+        }
+
+        String gameLevelMnemo = score.getGameLevel();
+        String gameLevelString = "";
+        if (gameLevelMnemo.equals(getString(R.string.easy_level))){
+            gameLevelString = getString(R.string.easy_level_text);
+        }else if (gameLevelMnemo.equals(getString(R.string.intermediate_level))){
+            gameLevelString = getString(R.string.intermediate_level_text);
+        }else if (gameLevelMnemo.equals(getString(R.string.hard_level))){
+            gameLevelString = getString(R.string.hard_level_text);
+        }
+
         scoreDate.setText(score.getDate());
         scoreValue.setText(getString(R.string.score_label)+" : " + score.getScoreValue().toString() + " " + getString(R.string.points));
         scoreBattleDuration.setText(getString(R.string.duration_label)+" : " + score.getBattleDuration().toString() + " " + getString(R.string.seconds));
         scoreNbRemainingPokemon.setText(score.getNbPlayerRemainingPokemon().toString() + " " + getString(R.string.remaining_player_pokemon));
-        scoreGameInfo.setText(score.getGameMode() + " - " + score.getGameLevel());
+        scoreGameInfo.setText(gameModeString + " - " + gameLevelString);
         scorePlayerTeamForce.setText(getString(R.string.player_team_force_label) + " : " + score.getPlayerTeamOverallPoints() +
                 " "+ getString(R.string.overall_points_label));
         scoreCpuTeamForce.setText(getString(R.string.cpu_team_force_label) + " : " + score.getCpuTeamOverallPoints() +

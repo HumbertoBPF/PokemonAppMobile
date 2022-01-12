@@ -24,12 +24,24 @@
             tools:text="Date"/>
 
         <TextView
+            android:id="@+id/score_game_info"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/score_date"
+            app:layout_constraintStart_toStartOf="@id/score_date"
+            app:layout_constraintEnd_toEndOf="@id/score_date"
+            tools:text="Game info"/>
+
+        <TextView
             android:id="@+id/score_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/score_date"
+            app:layout_constraintTop_toBottomOf="@id/score_game_info"
             app:layout_constraintStart_toStartOf="@id/score_date"
             app:layout_constraintEnd_toEndOf="@id/score_date"
             tools:text="Score value"/>
@@ -57,23 +69,12 @@
             tools:text="Number remaining pokémon"/>
 
         <TextView
-            android:id="@+id/score_game_info"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/score_nb_remaining_pokemon"
-            app:layout_constraintStart_toStartOf="@id/score_date"
-            app:layout_constraintEnd_toEndOf="@id/score_date"
-            tools:text="Game info"/>
-
-        <TextView
             android:id="@+id/score_player_team_force"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/score_game_info"
+            app:layout_constraintTop_toBottomOf="@id/score_nb_remaining_pokemon"
             app:layout_constraintStart_toStartOf="@id/score_date"
             app:layout_constraintEnd_toEndOf="@id/score_date"
             tools:text="Player's team force"/>

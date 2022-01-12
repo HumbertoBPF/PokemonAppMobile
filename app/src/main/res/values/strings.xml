@@ -12,6 +12,7 @@
     <string name="moves_button_text">Moves</string>
     <string name="types_button_text">Types</string>
     <string name="summary_title_app_bar">Summary</string>
+    <string name="score_details_appbar_title">Battle details</string>
     <!-- DOWNLOAD RESOURCE -->
     <string name="success_pokemon_download">Pokémon database downloaded</string>
     <string name="success_move_download">Move database downloaded</string>

@@ -66,7 +66,7 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ScoreViewHol
 
         private TextView scoreDate;
         private TextView scoreValue;
-        private TextView scoreGameMode;
+        private TextView scoreGameInfo;
         private List<TextView> scorePlayerTeamPokemon = new ArrayList<>();
         private List<TextView> scoreCpuTeamPokemon = new ArrayList<>();
 
@@ -74,7 +74,7 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ScoreViewHol
             super(itemView);
             scoreDate = itemView.findViewById(R.id.score_date);
             scoreValue = itemView.findViewById(R.id.score_value);
-            scoreGameMode = itemView.findViewById(R.id.score_game_mode);
+            scoreGameInfo = itemView.findViewById(R.id.score_game_info);
             scorePlayerTeamPokemon.add(itemView.findViewById(R.id.player_pokemon_1));
             scorePlayerTeamPokemon.add(itemView.findViewById(R.id.player_pokemon_2));
             scorePlayerTeamPokemon.add(itemView.findViewById(R.id.player_pokemon_3));
@@ -94,7 +94,28 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ScoreViewHol
             this.itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
             this.scoreDate.setText(score.getDate());
             this.scoreValue.setText(context.getString(R.string.score_label)+" : "+score.getScoreValue().toString());
-            this.scoreGameMode.setText(score.getGameMode()+" - "+score.getGameLevel());
+
+            String gameModeMnemo = score.getGameMode();
+            String gameModeString = "";
+            if (gameModeMnemo.equals(context.getString(R.string.label_favorite_team_mode))){
+                gameModeString = context.getString(R.string.favorite_team_mode_button_text);
+            }else if (gameModeMnemo.equals(context.getString(R.string.label_strategy_mode))){
+                gameModeString = context.getString(R.string.strategy_mode_button_text);
+            }else if (gameModeMnemo.equals(context.getString(R.string.label_random_mode))){
+                gameModeString = context.getString(R.string.random_mode_button_text);
+            }
+
+            String gameLevelMnemo = score.getGameLevel();
+            String gameLevelString = "";
+            if (gameLevelMnemo.equals(context.getString(R.string.easy_level))){
+                gameLevelString = context.getString(R.string.easy_level_text);
+            }else if (gameLevelMnemo.equals(context.getString(R.string.intermediate_level))){
+                gameLevelString = context.getString(R.string.intermediate_level_text);
+            }else if (gameLevelMnemo.equals(context.getString(R.string.hard_level))){
+                gameLevelString = context.getString(R.string.hard_level_text);
+            }
+
+            this.scoreGameInfo.setText(gameModeString+" - "+gameLevelString);
             List<InGamePokemon> playerTeam = getInGamePokemonFromJSON(score.getPlayerTeam());
             for (int i=0;i<scorePlayerTeamPokemon.size();i++){
                 if (playerTeam != null) {
