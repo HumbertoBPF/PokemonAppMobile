@@ -1,6 +1,8 @@
 package com.example.pokemonapp.adapters;
 
 import static com.example.pokemonapp.util.Tools.dualButtonDialog;
+import static com.example.pokemonapp.util.Tools.getGameLevelStringFromMnemonic;
+import static com.example.pokemonapp.util.Tools.getGameModeStringFromMnemonic;
 import static com.example.pokemonapp.util.Tools.getInGamePokemonFromJSON;
 import static com.example.pokemonapp.util.Tools.loadingDialog;
 import static com.example.pokemonapp.util.Tools.makeSelector;
@@ -95,25 +97,8 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ScoreViewHol
             this.scoreDate.setText(score.getDate());
             this.scoreValue.setText(context.getString(R.string.score_label)+" : "+score.getScoreValue().toString());
 
-            String gameModeMnemo = score.getGameMode();
-            String gameModeString = "";
-            if (gameModeMnemo.equals(context.getString(R.string.label_favorite_team_mode))){
-                gameModeString = context.getString(R.string.favorite_team_mode_button_text);
-            }else if (gameModeMnemo.equals(context.getString(R.string.label_strategy_mode))){
-                gameModeString = context.getString(R.string.strategy_mode_button_text);
-            }else if (gameModeMnemo.equals(context.getString(R.string.label_random_mode))){
-                gameModeString = context.getString(R.string.random_mode_button_text);
-            }
-
-            String gameLevelMnemo = score.getGameLevel();
-            String gameLevelString = "";
-            if (gameLevelMnemo.equals(context.getString(R.string.easy_level))){
-                gameLevelString = context.getString(R.string.easy_level_text);
-            }else if (gameLevelMnemo.equals(context.getString(R.string.intermediate_level))){
-                gameLevelString = context.getString(R.string.intermediate_level_text);
-            }else if (gameLevelMnemo.equals(context.getString(R.string.hard_level))){
-                gameLevelString = context.getString(R.string.hard_level_text);
-            }
+            String gameModeString = getGameModeStringFromMnemonic(context,score.getGameMode());
+            String gameLevelString = getGameLevelStringFromMnemonic(context,score.getGameLevel());
 
             this.scoreGameInfo.setText(gameModeString+" - "+gameLevelString);
             List<InGamePokemon> playerTeam = getInGamePokemonFromJSON(score.getPlayerTeam());

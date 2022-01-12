@@ -320,4 +320,38 @@ public class Tools {
         return gson.fromJson(JSONString, type);
     }
 
+    /**
+     * Converts the mnemonic representing a game mode into a more readable string.
+     * @param context context of the activity calling the method.
+     * @param gameModeMnemo mnemonic used to represent a game mode.
+     * @return the String more readable representing the game mode.
+     */
+    public static String getGameModeStringFromMnemonic(Context context, String gameModeMnemo) {
+        if (gameModeMnemo.equals(context.getString(R.string.label_favorite_team_mode))) {
+            return context.getString(R.string.favorite_team_mode_button_text);
+        } else if (gameModeMnemo.equals(context.getString(R.string.label_strategy_mode))) {
+            return context.getString(R.string.strategy_mode_button_text);
+        } else if (gameModeMnemo.equals(context.getString(R.string.label_random_mode))) {
+            return context.getString(R.string.random_mode_button_text);
+        }
+        return "";
+    }
+
+    /**
+     * Converts the mnemonic representing a game level into a more readable string.
+     * @param context context of the activity calling the method.
+     * @param gameLevelMnemo mnemonic used to represent a game level.
+     * @return the String more readable representing the game level.
+     */
+    public static String getGameLevelStringFromMnemonic(Context context, String gameLevelMnemo) {
+        if (gameLevelMnemo.equals(context.getString(R.string.easy_level))){
+            return context.getString(R.string.easy_level_text);
+        }else if (gameLevelMnemo.equals(context.getString(R.string.intermediate_level))){
+            return context.getString(R.string.intermediate_level_text);
+        }else if (gameLevelMnemo.equals(context.getString(R.string.hard_level))){
+            return context.getString(R.string.hard_level_text);
+        }
+        return "";
+    }
+
 }

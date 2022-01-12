@@ -1,5 +1,7 @@
 package com.example.pokemonapp.activities.game.score;
 
+import static com.example.pokemonapp.util.Tools.getGameLevelStringFromMnemonic;
+import static com.example.pokemonapp.util.Tools.getGameModeStringFromMnemonic;
 import static com.example.pokemonapp.util.Tools.getInGamePokemonFromJSON;
 
 import android.content.Intent;
@@ -55,25 +57,8 @@ public class ScoreDetailsActivity extends DatabaseDetailsActivity {
 
     @Override
     protected void bind() {
-        String gameModeMnemo = score.getGameMode();
-        String gameModeString = "";
-        if (gameModeMnemo.equals(getString(R.string.label_favorite_team_mode))){
-            gameModeString = getString(R.string.favorite_team_mode_button_text);
-        }else if (gameModeMnemo.equals(getString(R.string.label_strategy_mode))){
-            gameModeString = getString(R.string.strategy_mode_button_text);
-        }else if (gameModeMnemo.equals(getString(R.string.label_random_mode))){
-            gameModeString = getString(R.string.random_mode_button_text);
-        }
-
-        String gameLevelMnemo = score.getGameLevel();
-        String gameLevelString = "";
-        if (gameLevelMnemo.equals(getString(R.string.easy_level))){
-            gameLevelString = getString(R.string.easy_level_text);
-        }else if (gameLevelMnemo.equals(getString(R.string.intermediate_level))){
-            gameLevelString = getString(R.string.intermediate_level_text);
-        }else if (gameLevelMnemo.equals(getString(R.string.hard_level))){
-            gameLevelString = getString(R.string.hard_level_text);
-        }
+        String gameModeString = getGameModeStringFromMnemonic(this,score.getGameMode());
+        String gameLevelString = getGameLevelStringFromMnemonic(this,score.getGameLevel());
 
         scoreDate.setText(score.getDate());
         scoreValue.setText(getString(R.string.score_label)+" : " + score.getScoreValue().toString() + " " + getString(R.string.points));
