@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.ButtonsActivity;
-import com.example.pokemonapp.activities.game.team.TeamDatabaseActivity;
 import com.example.pokemonapp.models.RoundedButton;
 
 public class GameModeSelectionActivity extends ButtonsActivity {
@@ -46,7 +45,7 @@ public class GameModeSelectionActivity extends ButtonsActivity {
                     });
             infoDialog.show();
         }else if (itemId == R.id.item_my_teams){
-            startActivity(new Intent(this,TeamDatabaseActivity.class));
+            startActivity(new Intent(this,LocalDatabasesActivity.class));
         }else if (itemId == R.id.item_config) {
             startActivity(new Intent(this,SettingsActivity.class));
         }

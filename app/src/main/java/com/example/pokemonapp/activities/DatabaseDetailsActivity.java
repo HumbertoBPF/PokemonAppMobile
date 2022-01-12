@@ -1,4 +1,4 @@
-package com.example.pokemonapp.activities.databases_navigation;
+package com.example.pokemonapp.activities;
 
 import static com.example.pokemonapp.util.Tools.setAppbarColor;
 

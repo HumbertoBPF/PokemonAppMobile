@@ -1,6 +1,6 @@
 package com.example.pokemonapp.activities.game.team;
 
-import static com.example.pokemonapp.util.Tools.getInGamePokemonFromJSON;
+import static com.example.pokemonapp.util.Tools.getInGamePokemonFromTeam;
 import static com.example.pokemonapp.util.Tools.loadingDialog;
 
 import android.app.ProgressDialog;
@@ -82,7 +82,7 @@ public class SaveTeamActivity extends AppCompatActivity {
     }
 
     private void configureRecyclerView() {
-        List<InGamePokemon> teamToSave = getInGamePokemonFromJSON(team);
+        List<InGamePokemon> teamToSave = getInGamePokemonFromTeam(team);
         teamToSaveRecyclerView.setAdapter(new PokemonMovesAdapter(this, teamToSave));
     }
 

@@ -11,7 +11,11 @@ import com.example.pokemonapp.activities.databases_navigation.pokemon.PokemonDat
 import com.example.pokemonapp.activities.databases_navigation.types.TypesDatabaseActivity;
 import com.example.pokemonapp.models.RoundedButton;
 
-public class DatabasesActivity extends ButtonsActivity {
+/**
+ * Activity allowing to select a remote entity (i.e. retrieved from the server) in order to see the
+ * list of elements stored on the local the database.
+ */
+public class RemoteDatabasesActivity extends ButtonsActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

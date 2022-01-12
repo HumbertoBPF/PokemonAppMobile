@@ -278,7 +278,7 @@ public class Tools {
      * @return a list of the pokémon corresponding to team attribute of the specified object.
      */
     @Nullable
-    public static List<InGamePokemon> getInGamePokemonFromJSON(Team team) {
+    public static List<InGamePokemon> getInGamePokemonFromTeam(Team team) {
         Gson gson = new Gson();
         java.lang.reflect.Type type = new TypeToken<ArrayList<InGamePokemon>>() {}.getType();
         return gson.fromJson(team.getTeam(), type);
@@ -290,7 +290,7 @@ public class Tools {
      */
     public static int getOverallPointsOfTeam(Team team) {
         int teamOverallPoints = 0;
-        for (InGamePokemon inGamePokemon : getInGamePokemonFromJSON(team)){
+        for (InGamePokemon inGamePokemon : getInGamePokemonFromTeam(team)){
             teamOverallPoints += inGamePokemon.getPokemonServer().getFOverallPts();
         }
         return teamOverallPoints;
@@ -306,6 +306,18 @@ public class Tools {
             teamOverallPoints += inGamePokemon.getPokemonServer().getFOverallPts();
         }
         return teamOverallPoints;
+    }
+
+    /**
+     * Gets a list of InGamePokemon object from a JSON String.
+     * @param JSONString JSON String corresponding to a InGamePokemon.
+     * @return the correspondent InGamePokemon object.
+     */
+    @Nullable
+    public static List<InGamePokemon> getInGamePokemonFromJSON(String JSONString) {
+        Gson gson = new Gson();
+        java.lang.reflect.Type type = new TypeToken<ArrayList<InGamePokemon>>() {}.getType();
+        return gson.fromJson(JSONString, type);
     }
 
 }

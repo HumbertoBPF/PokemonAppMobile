@@ -11,7 +11,7 @@
     <item
         android:id="@+id/item_my_teams"
         android:icon="@drawable/ic_my_teams"
-        android:title="@string/my_teams_item_appbar"
+        android:title="@string/local_data"
         app:showAsAction="ifRoom"/>
 
     <item

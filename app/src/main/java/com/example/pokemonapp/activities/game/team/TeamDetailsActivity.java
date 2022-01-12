@@ -1,6 +1,6 @@
 package com.example.pokemonapp.activities.game.team;
 
-import static com.example.pokemonapp.util.Tools.getInGamePokemonFromJSON;
+import static com.example.pokemonapp.util.Tools.getInGamePokemonFromTeam;
 import static com.example.pokemonapp.util.Tools.saveTeam;
 
 import android.content.Intent;
@@ -11,7 +11,7 @@ import android.widget.Button;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
-import com.example.pokemonapp.activities.databases_navigation.DatabaseDetailsActivity;
+import com.example.pokemonapp.activities.DatabaseDetailsActivity;
 import com.example.pokemonapp.adapters.PokemonMovesAdapter;
 import com.example.pokemonapp.entities.Team;
 import com.example.pokemonapp.models.InGamePokemon;
@@ -48,7 +48,7 @@ public class TeamDetailsActivity extends DatabaseDetailsActivity {
 
     @Override
     protected void bind() {
-        List<InGamePokemon> inGamePokemonList = getInGamePokemonFromJSON(team);
+        List<InGamePokemon> inGamePokemonList = getInGamePokemonFromTeam(team);
         teamToLoadRecyclerView.setAdapter(new PokemonMovesAdapter(this, inGamePokemonList));
         configureLoadButton(inGamePokemonList);
 

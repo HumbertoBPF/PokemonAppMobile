@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.pokemonapp.R;
-import com.example.pokemonapp.activities.databases_navigation.DatabaseNavigationActivity;
+import com.example.pokemonapp.activities.DatabaseNavigationActivity;
 import com.example.pokemonapp.adapters.TeamAdapter;
 import com.example.pokemonapp.dao.TeamDAO;
 import com.example.pokemonapp.entities.Team;
@@ -21,7 +21,7 @@ public class TeamDatabaseActivity extends DatabaseNavigationActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         colorAppbar = getResources().getColor(R.color.pokemon_theme_color);
-        titleAppbar = "My teams";
+        titleAppbar = getString(R.string.title_appbar_my_teams);
         detailsActivity = TeamDetailsActivity.class;
         teamDAO = PokemonAppDatabase.getInstance(this).getTeamDAO();
         super.onCreate(savedInstanceState);

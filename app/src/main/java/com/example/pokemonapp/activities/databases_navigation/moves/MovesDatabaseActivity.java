@@ -6,7 +6,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import com.example.pokemonapp.R;
-import com.example.pokemonapp.activities.databases_navigation.DatabaseNavigationActivity;
+import com.example.pokemonapp.activities.DatabaseNavigationActivity;
 import com.example.pokemonapp.adapters.MovesAdapter;
 import com.example.pokemonapp.dao.MoveDAO;
 import com.example.pokemonapp.entities.Move;

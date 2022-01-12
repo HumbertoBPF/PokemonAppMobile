@@ -3,12 +3,14 @@ package com.example.pokemonapp.entities;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
 @Entity
-public class Score {
+public class Score implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private Long id;
-    private Double scoreValue;
+    private Long scoreValue;
     private Long battleDuration;
     private Integer nbPlayerRemainingPokemon;
     private Long playerTeamOverallPoints;
@@ -48,7 +50,7 @@ public class Score {
      * @param date String corresponding to the date object specifying the time, day, month and year
      *             when the battle happened.
      */
-    public Score(Double scoreValue, Long battleDuration, Integer nbPlayerRemainingPokemon, Long playerTeamOverallPoints,
+    public Score(Long scoreValue, Long battleDuration, Integer nbPlayerRemainingPokemon, Long playerTeamOverallPoints,
                  Long cpuTeamOverallPoints, String gameMode, String gameLevel, String playerTeam, String cpuTeam, String date) {
         this.scoreValue = scoreValue;
         this.battleDuration = battleDuration;
@@ -70,11 +72,11 @@ public class Score {
         this.id = id;
     }
 
-    public Double getScoreValue() {
+    public Long getScoreValue() {
         return scoreValue;
     }
 
-    public void setScoreValue(Double scoreValue) {
+    public void setScoreValue(Long scoreValue) {
         this.scoreValue = scoreValue;
     }
 

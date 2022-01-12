@@ -1152,8 +1152,8 @@ public class GameActivity extends AppCompatActivity {
         // converts the battle duration to seconds
         double battleDurationSec = (double) battleDuration/1000;
         // computes the score value
-        double scoreValue =
-                bonusGameMode*bonusGameLevel*nbRemainingPokemon*(overallPointsRatio)*Math.max(60*60 - battleDurationSec,0);
+        long scoreValue =
+                (long) (bonusGameMode*bonusGameLevel*nbRemainingPokemon*(overallPointsRatio)*Math.max(60*60 - battleDurationSec,0));
 
         // gets the JSON corresponding to player's and cpu's team
         SharedPreferences sh = getSharedPreferences(getString(R.string.name_shared_preferences_file), MODE_PRIVATE);

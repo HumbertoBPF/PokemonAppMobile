@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp"
+    tools:context=".activities.game.score.ScoreDetailsActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/score_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Date"/>
+
+        <TextView
+            android:id="@+id/score_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/score_date"
+            app:layout_constraintStart_toStartOf="@id/score_date"
+            app:layout_constraintEnd_toEndOf="@id/score_date"
+            tools:text="Score value"/>
+
+        <TextView
+            android:id="@+id/score_battle_duration"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/score_value"
+            app:layout_constraintStart_toStartOf="@id/score_date"
+            app:layout_constraintEnd_toEndOf="@id/score_date"
+            tools:text="Battle duration"/>
+
+        <TextView
+            android:id="@+id/score_nb_remaining_pokemon"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/score_battle_duration"
+            app:layout_constraintStart_toStartOf="@id/score_date"
+            app:layout_constraintEnd_toEndOf="@id/score_date"
+            tools:text="Number remaining pokémon"/>
+
+        <TextView
+            android:id="@+id/score_game_info"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/score_nb_remaining_pokemon"
+            app:layout_constraintStart_toStartOf="@id/score_date"
+            app:layout_constraintEnd_toEndOf="@id/score_date"
+            tools:text="Game info"/>
+
+        <TextView
+            android:id="@+id/score_player_team_force"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/score_game_info"
+            app:layout_constraintStart_toStartOf="@id/score_date"
+            app:layout_constraintEnd_toEndOf="@id/score_date"
+            tools:text="Player's team force"/>
+
+        <TextView
+            android:id="@+id/score_cpu_team_force"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/score_player_team_force"
+            app:layout_constraintStart_toStartOf="@id/score_date"
+            app:layout_constraintEnd_toEndOf="@id/score_date"
+            tools:text="CPU's team force"/>
+
+        <TextView
+            android:id="@+id/player_team_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/score_cpu_team_force"
+            app:layout_constraintStart_toStartOf="@id/score_date"
+            app:layout_constraintEnd_toEndOf="@id/score_date"
+            android:text="@string/player_team_label"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/player_team_recycler_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:nestedScrollingEnabled="false"
+            app:layout_constraintTop_toBottomOf="@id/player_team_label"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+        <TextView
+            android:id="@+id/player_cpu_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/player_team_recycler_view"
+            app:layout_constraintStart_toStartOf="@id/score_date"
+            app:layout_constraintEnd_toEndOf="@id/score_date"
+            android:text="@string/cpu_team_label"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/cpu_team_recycler_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:nestedScrollingEnabled="false"
+            app:layout_constraintTop_toBottomOf="@id/player_cpu_label"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

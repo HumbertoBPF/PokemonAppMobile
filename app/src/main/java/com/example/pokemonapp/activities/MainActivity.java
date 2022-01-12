@@ -19,7 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.example.pokemonapp.R;
-import com.example.pokemonapp.activities.databases_navigation.DatabasesActivity;
+import com.example.pokemonapp.activities.databases_navigation.RemoteDatabasesActivity;
 import com.example.pokemonapp.activities.game.GameModeSelectionActivity;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.MoveDAO;
@@ -115,7 +115,7 @@ public class MainActivity extends ButtonsActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        startActivity(new Intent(getApplicationContext(), DatabasesActivity.class));
+                        startActivity(new Intent(getApplicationContext(), RemoteDatabasesActivity.class));
                     }
                 });
         buttons.add(gameButton);

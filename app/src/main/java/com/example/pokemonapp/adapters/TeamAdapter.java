@@ -1,7 +1,7 @@
 package com.example.pokemonapp.adapters;
 
 import static com.example.pokemonapp.util.Tools.dualButtonDialog;
-import static com.example.pokemonapp.util.Tools.getInGamePokemonFromJSON;
+import static com.example.pokemonapp.util.Tools.getInGamePokemonFromTeam;
 import static com.example.pokemonapp.util.Tools.getOverallPointsOfTeam;
 import static com.example.pokemonapp.util.Tools.loadingDialog;
 import static com.example.pokemonapp.util.Tools.makeSelector;
@@ -92,7 +92,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
             this.itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
             this.teamName.setText(team.getName());
 
-            List<InGamePokemon> inGamePokemonList = getInGamePokemonFromJSON(team);
+            List<InGamePokemon> inGamePokemonList = getInGamePokemonFromTeam(team);
 
             for (int i=0;i<inGamePokemonList.size();i++){
                 pokemonTextView.get(i).setText(inGamePokemonList.get(i).getPokemonServer().getFName());

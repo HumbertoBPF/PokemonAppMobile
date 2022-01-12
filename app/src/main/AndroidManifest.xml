@@ -14,6 +14,12 @@
         android:theme="@style/Theme.PokemonApp"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activities.game.score.ScoreDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.game.score.ScoreHistoryDatabaseActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.game.team.TeamDatabaseActivity"
             android:exported="false" />
         <activity
@@ -58,7 +64,7 @@
             android:name=".activities.databases_navigation.types.TypesDetailsActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.databases_navigation.DatabaseDetailsActivity"
+            android:name=".activities.DatabaseDetailsActivity"
             android:exported="true" />
         <activity
             android:name=".activities.databases_navigation.moves.MovesDetailsActivity"
@@ -67,7 +73,7 @@
             android:name=".activities.databases_navigation.pokemon.PokemonDetailsActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.databases_navigation.DatabaseNavigationActivity"
+            android:name=".activities.DatabaseNavigationActivity"
             android:exported="true" />
         <activity
             android:name=".activities.databases_navigation.types.TypesDatabaseActivity"
@@ -82,10 +88,13 @@
             android:name=".activities.game.GameModeSelectionActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.databases_navigation.DatabasesActivity"
+            android:name=".activities.databases_navigation.RemoteDatabasesActivity"
             android:exported="true" />
         <activity
             android:name=".activities.MainActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.game.LocalDatabasesActivity"
             android:exported="true" />
     </application>
 

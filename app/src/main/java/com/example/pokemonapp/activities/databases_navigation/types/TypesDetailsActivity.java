@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 
 import com.example.pokemonapp.R;
-import com.example.pokemonapp.activities.databases_navigation.DatabaseDetailsActivity;
+import com.example.pokemonapp.activities.DatabaseDetailsActivity;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.dao.PokemonTypeDAO;
