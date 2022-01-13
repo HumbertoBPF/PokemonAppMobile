@@ -350,39 +350,68 @@ public class GameActivity extends AppCompatActivity {
      * @param playerWon boolean indicating if player won the battle
      */
     private void endGame(boolean playerWon) {
-        int idResultString;
-        int idResultAudio;
-        if (playerWon){
-            idResultString = R.string.player_win_msg;
-            idResultAudio = R.raw.success;
-            saveScore();    // saves score only when the player wins
-        }else{
-            idResultString = R.string.cpu_win_msg;
-            idResultAudio = R.raw.fail;
-        }
-        gameDescription.setText(idResultString);
-        endGameDialog = dualButtonDialog(this, getString(idResultString),
-                getString(R.string.play_again_dialog_text), getString(R.string.yes), getString(R.string.no),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        endGameDialog.dismiss();
-                        goToNextActivityWithStringExtra(GameActivity.this,getString(R.string.key_game_mode),
-                                gameMode,PokemonSelectionActivity.class);
-                        finish();
+        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+            @Override
+            public List<Object> doInBackground() {  // an async task is called to get the greatest score from local DB
+                List<Object> objects = new ArrayList<>();
+                objects.add(scoreDAO.getMaxScore());
+                return objects;
+            }
+
+            @Override
+            public void onPostExecute(List<Object> objects) {
+                int idResultString;
+                int idResultAudio;
+                long scoreValue = -1;
+                if (playerWon){
+                    idResultString = R.string.player_win_msg;
+                    idResultAudio = R.raw.success;
+                    scoreValue = saveScore();    // saves score only when the player wins
+                }else{
+                    idResultString = R.string.cpu_win_msg;
+                    idResultAudio = R.raw.fail;
+                }
+                gameDescription.setText(idResultString);
+                Long maxScoreValue = (Long) objects.get(0);
+                String scoreMessage = "";
+                if (scoreValue != -1){  // score text is shown only when the score is computed and saved
+                    Log.i(TAG,"maxScoreValue = "+maxScoreValue);
+                    if (maxScoreValue != null) {
+                        if (scoreValue > maxScoreValue) {   // if the new score is greater than the current max, it is a record
+                            scoreMessage = "New record! You scored " + scoreValue + " points! ";
+                        }else{  // else, show only the score without the message 'new record'
+                            scoreMessage = "You scored "+scoreValue+".";
+                        }
+                    }else{  // if maxScoreValue is null, then there is no score register in the DB at all, so the new score
+                            // is the first one and as a consequence it is a record
+                        scoreMessage = "New record! You scored " + scoreValue + " points! ";
                     }
-                }, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        endGameDialog.dismiss();
-                        finish();
-                    }
-                });
-        endGameDialog.setCancelable(false);
-        mp.stop();
-        mp = MediaPlayer.create(this, idResultAudio);
-        mp.start();
-        endGameDialog.show();
+                }
+                // show endgame dialog
+                endGameDialog = dualButtonDialog(GameActivity.this, getString(idResultString),
+                        scoreMessage+getString(R.string.play_again_dialog_text), getString(R.string.yes), getString(R.string.no),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                endGameDialog.dismiss();
+                                goToNextActivityWithStringExtra(GameActivity.this,getString(R.string.key_game_mode),
+                                        gameMode,PokemonSelectionActivity.class);
+                                finish();
+                            }
+                        }, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                endGameDialog.dismiss();
+                                finish();
+                            }
+                        });
+                endGameDialog.setCancelable(false);
+                mp.stop();
+                mp = MediaPlayer.create(getApplicationContext(), idResultAudio);
+                mp.start();
+                endGameDialog.show();
+            }
+        }).execute();
     }
 
     /**
@@ -1126,8 +1155,9 @@ public class GameActivity extends AppCompatActivity {
 
     /**
      * Saves the score and all the information associated.
+     * @return the score value that was stored.
      */
-    private void saveScore(){
+    private long saveScore(){
         incrementBattleDuration();  // increments the class battleDuration for the last time
 
         // gets the overall points of player's team and of the cpu's team
@@ -1177,6 +1207,8 @@ public class GameActivity extends AppCompatActivity {
 
             }
         }).execute();
+
+        return scoreValue;
     }
 
     /**

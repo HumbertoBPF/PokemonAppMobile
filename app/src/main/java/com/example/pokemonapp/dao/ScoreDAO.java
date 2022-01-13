@@ -23,4 +23,7 @@ public interface ScoreDAO extends PokemonAppDAO<Score>{
     @Delete
     void delete(Score score);
 
+    @Query("SELECT max(scoreValue) FROM Score")
+    Long getMaxScore();
+
 }
