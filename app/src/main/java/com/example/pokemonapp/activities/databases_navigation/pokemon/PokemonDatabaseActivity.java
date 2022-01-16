@@ -7,9 +7,9 @@ import androidx.annotation.NonNull;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.DatabaseNavigationActivity;
+import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.PokemonAdapter;
 import com.example.pokemonapp.dao.PokemonDAO;
-import com.example.pokemonapp.entities.Pokemon;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
@@ -37,10 +37,10 @@ public class PokemonDatabaseActivity extends DatabaseNavigationActivity {
     @NonNull
     protected PokemonAdapter getAdapter(List<Object> objects) {
         return new PokemonAdapter(getApplicationContext(), objects,
-                new PokemonAdapter.OnClickListener() {
+                new OnItemAdapterClickListener() {
                     @Override
-                    public void onClick(View view, Pokemon pokemon) {
-                        startActivity(showDetails(pokemon));
+                    public void onClick(View view, Object object) {
+                        startActivity(showDetails(object));
                     }
                 });
     }

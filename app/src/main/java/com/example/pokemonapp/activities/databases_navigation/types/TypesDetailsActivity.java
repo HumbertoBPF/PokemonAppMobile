@@ -45,18 +45,17 @@ public class TypesDetailsActivity extends DatabaseDetailsActivity {
         colorAppbar = getResources().getColor(R.color.types_theme_color);
         titleAppbar = getString(R.string.title_appbar_types_db);
         layout = R.layout.activity_types_details;
-        super.onCreate(savedInstanceState);
-
         type = (Type) getIntent().getSerializableExtra(getString(R.string.key_extra_db_resource));
+        getDAOs();
+        super.onCreate(savedInstanceState);
+    }
 
+    private void getDAOs() {
         pokemonTypeDAO = PokemonAppDatabase.getInstance(this).getPokemonTypeDAO();
         moveTypeDAO = PokemonAppDatabase.getInstance(this).getMoveTypeDAO();
         typeEffectiveDAO = PokemonAppDatabase.getInstance(this).getTypeEffectiveDAO();
         typeNotEffectiveDAO = PokemonAppDatabase.getInstance(this).getTypeNotEffectiveDAO();
         typeNoEffectDAO = PokemonAppDatabase.getInstance(this).getTypeNoEffectDAO();
-
-        getLayoutElements();
-        bind();
     }
 
     @Override

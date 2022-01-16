@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.SelectionActivity;
+import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.TeamAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.TeamDAO;
@@ -54,18 +55,18 @@ public class LoadTeamActivity extends SelectionActivity {
             public void onPostExecute(List<Object> objects) {
                 loadingDialog.dismiss();
                 // shows all the teams previously saved
-                playerRecyclerView.setAdapter(new TeamAdapter(getApplicationContext(), objects, new TeamAdapter.OnClickListener() {
+                playerRecyclerView.setAdapter(new TeamAdapter(getApplicationContext(), objects, new OnItemAdapterClickListener() {
                     @Override
-                    public void onClick(Team team) {    // when a team is selected, the details of this team are shown, i.e. the details
-                                                        // about the pokémon and their moves
+                    public void onClick(View view, Object object) { // when a team is selected, the details of this team are shown,
+                                                                    // i.e. the details about the pokémon and their moves
                         if (maxOverallPoints != -1){
-                            if (getOverallPointsOfTeam(team) <= maxOverallPoints){
-                                showTeamDetails(team);
+                            if (getOverallPointsOfTeam((Team) object) <= maxOverallPoints){
+                                showTeamDetails((Team) object);
                             }else{
                                 Toast.makeText(getApplicationContext(), R.string.max_op_load_team_warning, Toast.LENGTH_LONG).show();
                             }
                         }else{
-                            showTeamDetails(team);
+                            showTeamDetails((Team) object);
                         }
                     }
                 },false));

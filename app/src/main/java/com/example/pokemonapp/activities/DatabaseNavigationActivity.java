@@ -26,7 +26,7 @@ public abstract class DatabaseNavigationActivity extends AppCompatActivity {
     protected int colorAppbar;
     protected String titleAppbar;
     protected Class detailsActivity;
-    protected ProgressDialog loadingDialog;
+    private ProgressDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

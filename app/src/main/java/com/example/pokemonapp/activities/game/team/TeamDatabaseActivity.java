@@ -3,12 +3,13 @@ package com.example.pokemonapp.activities.game.team;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.DatabaseNavigationActivity;
+import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.TeamAdapter;
 import com.example.pokemonapp.dao.TeamDAO;
-import com.example.pokemonapp.entities.Team;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
@@ -37,10 +38,10 @@ public class TeamDatabaseActivity extends DatabaseNavigationActivity {
 
     @Override
     protected TeamAdapter getAdapter(List<Object> objects) {
-        return new TeamAdapter(this, objects, new TeamAdapter.OnClickListener() {
+        return new TeamAdapter(this, objects, new OnItemAdapterClickListener() {
             @Override
-            public void onClick(Team team) {
-                Intent intent = showDetails(team);
+            public void onClick(View view, Object object) {
+                Intent intent = showDetails(object);
                 intent.putExtra("hideButton",true);
                 startActivity(intent);
             }

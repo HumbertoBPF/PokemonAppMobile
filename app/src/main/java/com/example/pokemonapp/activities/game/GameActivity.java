@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.adapters.MovesAdapter;
+import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.PokemonAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.MoveDAO;
@@ -439,12 +440,12 @@ public class GameActivity extends AppCompatActivity {
         playerChoicesRecyclerView.setVisibility(View.VISIBLE);
 
         playerChoicesRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(), getAlivePokemonPlayer(),
-            new PokemonAdapter.OnClickListener() {
+            new OnItemAdapterClickListener() {
                 @Override
-                public void onClick(View view, Pokemon pokemon) {
+                public void onClick(View view, Object object) {
                     // selects the InGamePokémon corresponding to the selected pokémon (same id)
                     for (InGamePokemon inGamePokemon : player.getTeam()){
-                        if (inGamePokemon.getPokemonServer().getFId().equals(pokemon.getFId())){
+                        if (inGamePokemon.getPokemonServer().getFId().equals(((Pokemon) object).getFId())){
                             player.setCurrentPokemon(inGamePokemon);
                             playerChoicesRecyclerView.setVisibility(View.GONE);
                         }
@@ -540,10 +541,10 @@ public class GameActivity extends AppCompatActivity {
                 playerChoicesRecyclerView.setVisibility(View.VISIBLE);
                 List<Object> moveObjects = new ArrayList<>();
                 moveObjects.addAll(moves);
-                playerChoicesRecyclerView.setAdapter(new MovesAdapter(this, moveObjects, new MovesAdapter.OnClickListener() {
+                playerChoicesRecyclerView.setAdapter(new MovesAdapter(this, moveObjects, new OnItemAdapterClickListener() {
                     @Override
-                    public void onClick(View view, Move move) {
-                        player.setCurrentMove(move);
+                    public void onClick(View view, Object object) {
+                        player.setCurrentMove((Move) object);
                         playerChoicesRecyclerView.setVisibility(View.GONE);
                         onChoiceListener.onChoice();
                     }

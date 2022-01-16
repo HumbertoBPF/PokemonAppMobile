@@ -20,6 +20,7 @@ import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.SelectionActivity;
 import com.example.pokemonapp.activities.game.team.SaveTeamActivity;
 import com.example.pokemonapp.adapters.MovesAdapter;
+import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.PokemonMovesAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.MoveTypeDAO;
@@ -129,18 +130,18 @@ public class MovesSelectionActivity extends SelectionActivity {
 
             @Override
             public void onPostExecute(List<Object> objects) {   // show the moves in a RecyclerView so as the user can choose at most 4
-                playerRecyclerView.setAdapter(new MovesAdapter(getApplicationContext(), objects, new MovesAdapter.OnClickListener() {
+                playerRecyclerView.setAdapter(new MovesAdapter(getApplicationContext(), objects, new OnItemAdapterClickListener() {
                     @Override
-                    public void onClick(View view, Move move) {
-                        if (playerTeam.get(currentPokemonIndex).getMoves().contains(move)){
+                    public void onClick(View view, Object object) {
+                        if (playerTeam.get(currentPokemonIndex).getMoves().contains((Move) object)){
                             view.setBackground(makeSelector(getResources().getColor(R.color.white),0.8f));
-                            playerTeam.get(currentPokemonIndex).removeMove(move);
+                            playerTeam.get(currentPokemonIndex).removeMove((Move) object);
                         }else{
                             if (playerTeam.get(currentPokemonIndex).getMoves().size() >= 4){
                                 Toast.makeText(getApplicationContext(), R.string.max_moves_warning,Toast.LENGTH_LONG).show();
                             }else{
                                 view.setBackground(makeSelector(getResources().getColor(R.color.selection_gray),1.0f));
-                                playerTeam.get(currentPokemonIndex).addMove(move);
+                                playerTeam.get(currentPokemonIndex).addMove((Move) object);
                             }
                         }
                     }

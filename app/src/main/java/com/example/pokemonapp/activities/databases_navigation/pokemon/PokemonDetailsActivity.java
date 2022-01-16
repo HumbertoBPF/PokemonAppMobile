@@ -50,14 +50,9 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
         colorAppbar = getResources().getColor(R.color.pokemon_theme_color);
         titleAppbar = getString(R.string.title_appbar_pokemon_db);
         layout = R.layout.activity_pokemon_details;
-        super.onCreate(savedInstanceState);
-
         pokemonTypeDAO = PokemonAppDatabase.getInstance(this).getPokemonTypeDAO();
-
         pokemon = (Pokemon) getIntent().getSerializableExtra("databaseElement");
-
-        getLayoutElements();
-        bind();
+        super.onCreate(savedInstanceState);
     }
 
     protected void getLayoutElements() {

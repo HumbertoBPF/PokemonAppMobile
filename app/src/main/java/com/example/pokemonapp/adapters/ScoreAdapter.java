@@ -36,13 +36,13 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ScoreViewHol
 
     private Context context;
     private List<Object> scores;
-    private OnClickListener onClickListener;
+    private OnItemAdapterClickListener onItemAdapterClickListener;
     private ScoreDAO scoreDAO;
 
-    public ScoreAdapter(Context context, List<Object> scores, OnClickListener onClickListener) {
+    public ScoreAdapter(Context context, List<Object> scores, OnItemAdapterClickListener onItemAdapterClickListener) {
         this.context = context;
         this.scores = scores;
-        this.onClickListener = onClickListener;
+        this.onItemAdapterClickListener = onItemAdapterClickListener;
         this.scoreDAO = PokemonAppDatabase.getInstance(this.context).getScoreDAO();
     }
 
@@ -117,7 +117,7 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ScoreViewHol
             this.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onClickListener.onClick(score);
+                    onItemAdapterClickListener.onClick(v, score);
                 }
             });
         }
@@ -167,10 +167,6 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ScoreViewHol
                 }
             });
         }
-    }
-
-    public interface OnClickListener{
-        void onClick(Score score);
     }
 
 }

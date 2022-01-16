@@ -27,13 +27,13 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
     private Context context;
     private List<Object> pokemons;
-    private OnClickListener onClickListener;
+    private OnItemAdapterClickListener onItemAdapterClickListener;
     private PokemonTypeDAO pokemonTypeDAO;
 
-    public PokemonAdapter(Context context, List<Object> pokemons, OnClickListener onClickListener){
+    public PokemonAdapter(Context context, List<Object> pokemons, OnItemAdapterClickListener onItemAdapterClickListener){
         this.context = context;
         this.pokemons = pokemons;
-        this.onClickListener = onClickListener;
+        this.onItemAdapterClickListener = onItemAdapterClickListener;
         this.pokemonTypeDAO = PokemonAppDatabase.getInstance(this.context).getPokemonTypeDAO();
     }
 
@@ -131,15 +131,11 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
             this.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    onClickListener.onClick(view, pokemon);
+                    onItemAdapterClickListener.onClick(view, pokemon);
                 }
             });
         }
 
-    }
-
-    public interface OnClickListener{
-        void onClick(View view, Pokemon pokemon);
     }
 
 }

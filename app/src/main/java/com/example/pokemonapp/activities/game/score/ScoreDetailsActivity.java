@@ -37,9 +37,6 @@ public class ScoreDetailsActivity extends DatabaseDetailsActivity {
         colorAppbar = getResources().getColor(R.color.pokemon_theme_color);
         titleAppbar = getString(R.string.score_details_appbar_title);
         super.onCreate(savedInstanceState);
-
-        getLayoutElements();
-        bind();
     }
 
     @Override

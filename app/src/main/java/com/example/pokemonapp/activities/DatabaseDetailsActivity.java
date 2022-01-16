@@ -17,6 +17,8 @@ public abstract class DatabaseDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(layout);
         configureAppbar();
+        getLayoutElements();
+        bind();
     }
 
     private void configureAppbar() {

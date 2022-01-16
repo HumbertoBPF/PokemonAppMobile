@@ -28,13 +28,13 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
 
     private Context context;
     private List<Object> moves;
-    private OnClickListener onClickListener;
+    private OnItemAdapterClickListener onItemAdapterClickListener;
     private MoveTypeDAO moveTypeDAO;
 
-    public MovesAdapter(Context context, List<Object> moves, OnClickListener onClickListener){
+    public MovesAdapter(Context context, List<Object> moves, OnItemAdapterClickListener onItemAdapterClickListener){
         this.context = context;
         this.moves = moves;
-        this.onClickListener = onClickListener;
+        this.onItemAdapterClickListener = onItemAdapterClickListener;
         this.moveTypeDAO = PokemonAppDatabase.getInstance(this.context).getMoveTypeDAO();
     }
 
@@ -104,15 +104,11 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
             this.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    onClickListener.onClick(view, move);
+                    onItemAdapterClickListener.onClick(view, move);
                 }
             });
         }
 
-    }
-
-    public interface OnClickListener{
-        void onClick(View view, Move move);
     }
 
 }

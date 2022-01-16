@@ -37,14 +37,14 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 
     private Context context;
     private List<Object> teams;
-    private OnClickListener onClickListener;
+    private OnItemAdapterClickListener onItemAdapterClickListener;
     private boolean isEditable; // determines if the long click should show the menu with the delete and edit options
     private TeamDAO teamDAO;
 
-    public TeamAdapter(Context context, List<Object> teams, OnClickListener onClickListener, boolean isEditable) {
+    public TeamAdapter(Context context, List<Object> teams, OnItemAdapterClickListener onItemAdapterClickListener, boolean isEditable) {
         this.context = context;
         this.teams = teams;
-        this.onClickListener = onClickListener;
+        this.onItemAdapterClickListener = onItemAdapterClickListener;
         this.isEditable = isEditable;
         this.teamDAO = PokemonAppDatabase.getInstance(this.context).getTeamDAO();
     }
@@ -103,7 +103,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
             this.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onClickListener.onClick(team);
+                    onItemAdapterClickListener.onClick(v, team);
                 }
             });
         }
@@ -164,10 +164,6 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
                 }
             });
         }
-    }
-
-    public interface OnClickListener{
-        void onClick(Team team);
     }
 
 }

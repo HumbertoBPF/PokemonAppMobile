@@ -45,14 +45,9 @@ public class MovesDetailsActivity extends DatabaseDetailsActivity {
         colorAppbar = getResources().getColor(R.color.moves_theme_color);
         titleAppbar = getString(R.string.title_appbar_moves_db);
         layout = R.layout.activity_moves_details;
-        super.onCreate(savedInstanceState);
-
         moveTypeDAO = PokemonAppDatabase.getInstance(this).getMoveTypeDAO();
-
         move = (Move) getIntent().getSerializableExtra(getString(R.string.key_extra_db_resource));
-
-        getLayoutElements();
-        bind();
+        super.onCreate(savedInstanceState);
     }
 
     protected void getLayoutElements() {

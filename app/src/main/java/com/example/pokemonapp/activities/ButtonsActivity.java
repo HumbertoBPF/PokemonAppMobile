@@ -20,7 +20,7 @@ import java.util.List;
 public abstract class ButtonsActivity extends AppCompatActivity {
 
     private RecyclerView buttonsRecyclerView;
-    protected List<RoundedButton> buttons = new ArrayList<>();
+    protected List<RoundedButton> buttons = new ArrayList<>();  // list of buttons to be shown in the activity layout
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

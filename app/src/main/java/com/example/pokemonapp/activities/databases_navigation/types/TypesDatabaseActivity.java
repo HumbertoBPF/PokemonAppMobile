@@ -1,14 +1,15 @@
 package com.example.pokemonapp.activities.databases_navigation.types;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.DatabaseNavigationActivity;
+import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.TypesAdapter;
 import com.example.pokemonapp.dao.TypeDAO;
-import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
@@ -36,10 +37,10 @@ public class TypesDatabaseActivity extends DatabaseNavigationActivity {
     @NonNull
     protected TypesAdapter getAdapter(List<Object> objects) {
         return new TypesAdapter(getApplicationContext(), objects,
-                new TypesAdapter.OnClickListener() {
+                new OnItemAdapterClickListener() {
                     @Override
-                    public void onClick(Type type) {
-                        startActivity(showDetails(type));
+                    public void onClick(View view, Object object) {
+                        startActivity(showDetails(object));
                     }
                 });
     }

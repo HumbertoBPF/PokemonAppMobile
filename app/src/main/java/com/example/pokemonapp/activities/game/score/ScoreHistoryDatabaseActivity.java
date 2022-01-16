@@ -1,12 +1,13 @@
 package com.example.pokemonapp.activities.game.score;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.DatabaseNavigationActivity;
+import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.ScoreAdapter;
 import com.example.pokemonapp.dao.ScoreDAO;
-import com.example.pokemonapp.entities.Score;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
@@ -35,10 +36,10 @@ public class ScoreHistoryDatabaseActivity extends DatabaseNavigationActivity {
 
     @Override
     protected ScoreAdapter getAdapter(List<Object> objects) {
-        return new ScoreAdapter(this, objects, new ScoreAdapter.OnClickListener() {
+        return new ScoreAdapter(this, objects, new OnItemAdapterClickListener() {
             @Override
-            public void onClick(Score score) {
-                startActivity(showDetails(score));
+            public void onClick(View view, Object object) {
+                startActivity(showDetails(object));
             }
         });
     }

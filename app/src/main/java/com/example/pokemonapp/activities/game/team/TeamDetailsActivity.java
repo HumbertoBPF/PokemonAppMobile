@@ -30,14 +30,10 @@ public class TeamDetailsActivity extends DatabaseDetailsActivity {
         Intent intent = getIntent();
         team = (Team) intent.getSerializableExtra(getString(R.string.key_extra_db_resource));
         hideButton = intent.getBooleanExtra("hideButton",false);
-
         colorAppbar = getResources().getColor(R.color.pokemon_theme_color);
         titleAppbar = team.getName();
         layout = R.layout.activity_team_details;
         super.onCreate(savedInstanceState);
-
-        getLayoutElements();
-        bind();
     }
 
     @Override

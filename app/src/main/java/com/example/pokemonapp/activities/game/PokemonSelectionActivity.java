@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.SelectionActivity;
 import com.example.pokemonapp.activities.game.team.LoadTeamActivity;
+import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.PokemonAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.dao.PokemonDAO;
@@ -104,10 +105,10 @@ public class PokemonSelectionActivity extends SelectionActivity {
                     // shows all the pokémon for the players so as he can pick 6 for their team
                     playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(),
                             objects,
-                            new PokemonAdapter.OnClickListener() {
+                            new OnItemAdapterClickListener() {
                                 @Override
-                                public void onClick(View view, Pokemon pokemon) {
-                                    selectItemRecyclerView((CardView) view, pokemon);
+                                public void onClick(View view, Object object) {
+                                    selectItemRecyclerView((CardView) view, (Pokemon) object);
                                     updateConfirmButtonColor();
                                 }
                             }));
@@ -299,9 +300,9 @@ public class PokemonSelectionActivity extends SelectionActivity {
         // loads this list into the RecyclerView
         recyclerView.setAdapter(new PokemonAdapter(getApplicationContext(),
                 pokemonList,
-                new PokemonAdapter.OnClickListener() {
+                new OnItemAdapterClickListener() {
                     @Override
-                    public void onClick(View view, Pokemon pokemon) {
+                    public void onClick(View view, Object object) {
 
                     }
         }));
