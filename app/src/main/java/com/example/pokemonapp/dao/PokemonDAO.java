@@ -8,15 +8,16 @@ import com.example.pokemonapp.entities.Pokemon;
 import java.util.List;
 
 @Dao
-public interface PokemonDAO extends PokemonAppDAO<Pokemon>{
+public abstract class PokemonDAO extends RemoteDAO<Pokemon>{
 
-    @Query("SELECT * FROM Pokemon")
-    List<Pokemon> getPokemonFromLocal();
+    public PokemonDAO() {
+        super("Pokemon");
+    }
 
     @Query("SELECT * FROM Pokemon ORDER BY pokemon.fOverallPts DESC")
-    List<Pokemon> getPokemonGreatestOverallPoints();
+    public abstract List<Pokemon> getPokemonGreatestOverallPoints();
 
     @Query("SELECT COUNT(*) FROM Pokemon;")
-    Long getNbOfElements();
+    public abstract Long getNbOfElements();
 
 }

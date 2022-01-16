@@ -5,18 +5,17 @@ import androidx.room.Query;
 
 import com.example.pokemonapp.entities.Move;
 
-import java.util.List;
-
 @Dao
-public interface MoveDAO extends PokemonAppDAO<Move>{
+public abstract class MoveDAO extends RemoteDAO<Move>{
 
-    @Query("SELECT * FROM Move")
-    List<Move> getAllMovesFromLocal();
+    public MoveDAO() {
+        super("Move");
+    }
 
     @Query("SELECT * FROM Move WHERE fName = :name LIMIT 1")
-    Move getMoveByName(String name);
+    public abstract Move getMoveByName(String name);
 
     @Query("SELECT COUNT(*) FROM Move;")
-    Long getNbOfElements();
+    public abstract Long getNbOfElements();
 
 }

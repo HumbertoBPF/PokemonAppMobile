@@ -9,18 +9,19 @@ import com.example.pokemonapp.entities.Type;
 import java.util.List;
 
 @Dao
-public interface MoveTypeDAO extends PokemonAppDAO<MoveType> {
+public abstract class MoveTypeDAO extends RemoteDAO<MoveType> {
 
-    @Query("SELECT * FROM move_type")
-    List<MoveType> getAllMoveTypeRelationshipsFromLocal();
+    public MoveTypeDAO() {
+        super("move_type");
+    }
 
     @Query("SELECT * FROM type INNER JOIN move_type ON type.fId = move_type.typeId WHERE move_type.moveId = :moveId")
-    List<Type> getTypesOfMove(long moveId);
+    public abstract List<Type> getTypesOfMove(long moveId);
 
     @Query("SELECT COUNT(*) FROM move_type;")
-    Long getNbOfElements();
+    public abstract Long getNbOfElements();
 
     @Query("SELECT COUNT(*) FROM move_type WHERE move_type.typeId = :typeId")
-    Integer getNbMovesWithThisType(long typeId);
+    public abstract Integer getNbMovesWithThisType(long typeId);
 
 }

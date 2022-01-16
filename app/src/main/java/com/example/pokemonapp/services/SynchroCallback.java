@@ -5,7 +5,7 @@ import android.content.Context;
 import android.os.Handler;
 
 import com.example.pokemonapp.async_task.BaseAsyncTask;
-import com.example.pokemonapp.dao.PokemonAppDAO;
+import com.example.pokemonapp.dao.RemoteDAO;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class SynchroCallback<E> {
     private Context context;
     private Handler handler = new Handler();
     private ProgressDialog loadingDialog;
-    private PokemonAppDAO<E> pokemonAppDAO;
+    private RemoteDAO<E> pokemonAppDAO;
     private CallbackSetup callbackSetup;
     private final Class<E> aClass;
 
@@ -33,16 +33,16 @@ public class SynchroCallback<E> {
      * @param context context of the activity that called the callback (it is required to get string
      *                resources).
      * @param loadingDialog dialog showing the progress of the synchronization.
-     * @param pokemonAppDAO DAO allowing to communicate with the local database.
+     * @param remoteDAO DAO concerning an entity also available on remote.
      * @param aClass class which models the entity of the SQLite tables of the resources being
      *               synchronized.
      * @param callbackSetup interface to configure the callback.
      */
     public SynchroCallback(Context context, ProgressDialog loadingDialog,
-                           PokemonAppDAO pokemonAppDAO, Class<E> aClass, CallbackSetup<E> callbackSetup) {
+                           RemoteDAO remoteDAO, Class<E> aClass, CallbackSetup<E> callbackSetup) {
         this.context = context;
         this.loadingDialog = loadingDialog;
-        this.pokemonAppDAO = pokemonAppDAO;
+        this.pokemonAppDAO = remoteDAO;
         this.aClass = aClass;
         this.callbackSetup = callbackSetup;
     }

@@ -5,15 +5,14 @@ import androidx.room.Query;
 
 import com.example.pokemonapp.entities.Type;
 
-import java.util.List;
-
 @Dao
-public interface TypeDAO extends PokemonAppDAO<Type>{
+public abstract class TypeDAO extends RemoteDAO<Type>{
 
-    @Query("SELECT * FROM Type")
-    List<Type> getAllTypesFromLocal();
+    public TypeDAO() {
+        super("Type");
+    }
 
     @Query("SELECT COUNT(*) FROM Type;")
-    Long getNbOfElements();
+    public abstract Long getNbOfElements();
 
 }

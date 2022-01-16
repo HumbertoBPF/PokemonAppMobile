@@ -47,7 +47,7 @@ public class LoadTeamActivity extends SelectionActivity {
             @Override
             public List<Object> doInBackground() {
                 List<Object> objects = new ArrayList<>();
-                objects.addAll(teamDAO.getAllTeams());
+                objects.addAll(teamDAO.getAllRecords());
                 return objects;
             }
 

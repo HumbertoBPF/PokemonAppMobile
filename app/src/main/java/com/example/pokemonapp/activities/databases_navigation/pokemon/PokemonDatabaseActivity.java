@@ -3,39 +3,33 @@ package com.example.pokemonapp.activities.databases_navigation.pokemon;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.DatabaseNavigationActivity;
 import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.PokemonAdapter;
-import com.example.pokemonapp.dao.PokemonDAO;
+import com.example.pokemonapp.entities.Pokemon;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PokemonDatabaseActivity extends DatabaseNavigationActivity {
-
-    private PokemonDAO pokemonDAO;
+public class PokemonDatabaseActivity extends DatabaseNavigationActivity<Pokemon> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         colorAppbar = getResources().getColor(R.color.pokemon_theme_color);
         titleAppbar = getString(R.string.title_appbar_pokemon_db);
         detailsActivity = PokemonDetailsActivity.class;
-        pokemonDAO = PokemonAppDatabase.getInstance(this).getPokemonDAO();
+        baseDAO = PokemonAppDatabase.getInstance(this).getPokemonDAO();
         super.onCreate(savedInstanceState);
     }
 
-    protected List<Object> getResourcesFromLocal() {
+    @Override
+    protected RecyclerView.Adapter getAdapter(List<Pokemon> pokemon) {
         List<Object> objects = new ArrayList<>();
-        objects.addAll(pokemonDAO.getPokemonFromLocal());
-        return objects;
-    }
-
-    @NonNull
-    protected PokemonAdapter getAdapter(List<Object> objects) {
+        objects.addAll(pokemon);
         return new PokemonAdapter(getApplicationContext(), objects,
                 new OnItemAdapterClickListener() {
                     @Override

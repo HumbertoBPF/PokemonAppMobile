@@ -3,39 +3,33 @@ package com.example.pokemonapp.activities.databases_navigation.types;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.DatabaseNavigationActivity;
 import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.TypesAdapter;
-import com.example.pokemonapp.dao.TypeDAO;
+import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TypesDatabaseActivity extends DatabaseNavigationActivity {
-
-    private TypeDAO typeDAO;
+public class TypesDatabaseActivity extends DatabaseNavigationActivity<Type> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         colorAppbar = getResources().getColor(R.color.types_theme_color);
         titleAppbar = getString(R.string.title_appbar_types_db);
         detailsActivity = TypesDetailsActivity.class;
-        typeDAO = PokemonAppDatabase.getInstance(this).getTypeDAO();
+        baseDAO = PokemonAppDatabase.getInstance(this).getTypeDAO();
         super.onCreate(savedInstanceState);
     }
 
-    protected List<Object> getResourcesFromLocal() {
+    @Override
+    protected RecyclerView.Adapter getAdapter(List<Type> types) {
         List<Object> objects = new ArrayList<>();
-        objects.addAll(typeDAO.getAllTypesFromLocal());
-        return objects;
-    }
-
-    @NonNull
-    protected TypesAdapter getAdapter(List<Object> objects) {
+        objects.addAll(types);
         return new TypesAdapter(getApplicationContext(), objects,
                 new OnItemAdapterClickListener() {
                     @Override

@@ -123,7 +123,7 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public List<Object> doInBackground() {
                 List<Object> objects = new ArrayList<>();
-                allPokemon = pokemonDAO.getPokemonFromLocal();
+                allPokemon = pokemonDAO.getAllRecords();
                 objects.addAll(allPokemon);
                 return objects;
             }

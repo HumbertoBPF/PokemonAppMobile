@@ -174,7 +174,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
     @NonNull
     private List<Object> getAllPokemon() {
         List<Object> objects = new ArrayList<>();
-        objects.addAll(pokemonDAO.getPokemonFromLocal());
+        objects.addAll(pokemonDAO.getAllRecords());
         return objects;
     }
 

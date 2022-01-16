@@ -9,17 +9,21 @@ import com.example.pokemonapp.entities.TypeNoEffect;
 import java.util.List;
 
 @Dao
-public interface TypeNoEffectDAO extends PokemonAppDAO<TypeNoEffect>{
+public abstract class TypeNoEffectDAO extends RemoteDAO<TypeNoEffect>{
+
+    public TypeNoEffectDAO() {
+        super("type_no_effect");
+    }
 
     @Query("SELECT * FROM type INNER JOIN type_no_effect ON type.fId = type_no_effect.noEffectId " +
             "WHERE type_no_effect.typeId = :typeId")
-    List<Type> getNoEffectTypes(long typeId);
+    public abstract List<Type> getNoEffectTypes(long typeId);
 
     @Query("SELECT type.fId FROM type INNER JOIN type_no_effect ON type.fId = type_no_effect.noEffectId " +
             "WHERE type_no_effect.typeId = :typeId")
-    List<Long> getNoEffectTypesIds(long typeId);
+    public abstract List<Long> getNoEffectTypesIds(long typeId);
 
     @Query("SELECT COUNT(*) FROM move_type;")
-    Long getNbOfElements();
+    public abstract Long getNbOfElements();
 
 }

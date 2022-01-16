@@ -5,39 +5,34 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.DatabaseNavigationActivity;
 import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.TeamAdapter;
-import com.example.pokemonapp.dao.TeamDAO;
+import com.example.pokemonapp.entities.Team;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TeamDatabaseActivity extends DatabaseNavigationActivity {
-
-    private TeamDAO teamDAO;
+public class TeamDatabaseActivity extends DatabaseNavigationActivity<Team> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         colorAppbar = getResources().getColor(R.color.pokemon_theme_color);
         titleAppbar = getString(R.string.title_appbar_my_teams);
         detailsActivity = TeamDetailsActivity.class;
-        teamDAO = PokemonAppDatabase.getInstance(this).getTeamDAO();
+        baseDAO = PokemonAppDatabase.getInstance(this).getTeamDAO();
         super.onCreate(savedInstanceState);
         noDataTextView.setText(R.string.no_team_saved);
     }
 
     @Override
-    protected List<Object> getResourcesFromLocal() {
+    protected RecyclerView.Adapter getAdapter(List<Team> teams) {
         List<Object> objects = new ArrayList<>();
-        objects.addAll(teamDAO.getAllTeams());
-        return objects;
-    }
-
-    @Override
-    protected TeamAdapter getAdapter(List<Object> objects) {
+        objects.addAll(teams);
         return new TeamAdapter(this, objects, new OnItemAdapterClickListener() {
             @Override
             public void onClick(View view, Object object) {

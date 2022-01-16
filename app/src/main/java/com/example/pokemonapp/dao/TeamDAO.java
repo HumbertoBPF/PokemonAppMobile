@@ -1,10 +1,6 @@
 package com.example.pokemonapp.dao;
 
-import static androidx.room.OnConflictStrategy.REPLACE;
-
 import androidx.room.Dao;
-import androidx.room.Delete;
-import androidx.room.Insert;
 import androidx.room.Query;
 
 import com.example.pokemonapp.entities.Team;
@@ -12,18 +8,13 @@ import com.example.pokemonapp.entities.Team;
 import java.util.List;
 
 @Dao
-public interface TeamDAO extends PokemonAppDAO<Team>{
+public abstract class TeamDAO extends LocalDAO<Team>{
 
-    @Query("SELECT * FROM Team;")
-    List<Team> getAllTeams();
+    public TeamDAO() {
+        super("Team");
+    }
 
     @Query("SELECT name FROM Team;")
-    List<String> getAllTeamNames();
-
-    @Insert(onConflict = REPLACE)
-    void save(Team entity);
-
-    @Delete
-    void delete(Team team);
+    public abstract List<String> getAllTeamNames();
 
 }

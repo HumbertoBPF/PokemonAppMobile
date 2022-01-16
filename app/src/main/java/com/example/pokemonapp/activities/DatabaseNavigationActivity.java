@@ -14,19 +14,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
-import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.async_task.DatabaseNavigationTask;
+import com.example.pokemonapp.dao.BaseDAO;
 
 import java.io.Serializable;
 import java.util.List;
 
-public abstract class DatabaseNavigationActivity extends AppCompatActivity {
+/**
+ * Activity for screens of the app that show all the records concerning an entity <b>E</b>.
+ * @param <E> entity concerned by the activity.
+ */
+public abstract class DatabaseNavigationActivity<E> extends AppCompatActivity implements DatabaseNavigationTask.DatabaseNavigationInterface<E>{
 
-    protected RecyclerView recyclerView;
-    protected TextView noDataTextView;
-    protected int colorAppbar;
-    protected String titleAppbar;
-    protected Class detailsActivity;
+    protected BaseDAO<E> baseDAO;   // DAO allowing to communicate with the database containing the entity E
+    protected RecyclerView recyclerView;        // RecyclerView to present the data
+    protected TextView noDataTextView;          // message shown when there is no data to be shown
+    protected Class detailsActivity;            // activity responsible for showing the details of a selected record
     private ProgressDialog loadingDialog;
+
+    protected int colorAppbar;                  // customization of the appbar
+    protected String titleAppbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,26 +55,15 @@ public abstract class DatabaseNavigationActivity extends AppCompatActivity {
 
     protected void configureRecyclerView() {
         loadingDialog.show();
-        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
-            @Override
-            public List<Object> doInBackground() {
-                return getResourcesFromLocal();
-            }
-
-            @Override
-            public void onPostExecute(List<Object> objects) {
-                if (objects.size() == 0){
-                    noDataTextView.setVisibility(View.VISIBLE);
-                }
-                recyclerView.setAdapter(getAdapter(objects));
-                dismissDialogWhenViewIsDrawn(recyclerView, loadingDialog);
-            }
-        }).execute();
+        new DatabaseNavigationTask<>(baseDAO, this).execute();
     }
 
-    protected abstract List<Object> getResourcesFromLocal();
-
-    protected abstract RecyclerView.Adapter getAdapter(List<Object> objects);
+    /**
+     * Method allowing to specify the adapter to be set in the RecyclerView.
+     * @param records list of the records that are going to populate the RecyclerView.
+     * @return an adapter to be set in the RecyclerView.
+     */
+    protected abstract RecyclerView.Adapter getAdapter(List<E> records);
 
     /**
      * @param resource resource whose details are going to be shown.
@@ -80,4 +76,12 @@ public abstract class DatabaseNavigationActivity extends AppCompatActivity {
         return intent;
     }
 
+    @Override
+    public void onPostExecute(List<E> records) {
+        if (records.size() == 0){
+            noDataTextView.setVisibility(View.VISIBLE);
+        }
+        recyclerView.setAdapter(getAdapter(records));
+        dismissDialogWhenViewIsDrawn(recyclerView, loadingDialog);
+    }
 }
