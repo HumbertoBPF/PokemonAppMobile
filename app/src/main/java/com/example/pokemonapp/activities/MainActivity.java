@@ -4,11 +4,8 @@ import static com.example.pokemonapp.util.Tools.loadingDialog;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -22,6 +19,7 @@ import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.databases_navigation.RemoteDatabasesActivity;
 import com.example.pokemonapp.activities.game.GameModeSelectionActivity;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.async_task.ConnexionVerificationTask;
 import com.example.pokemonapp.dao.MoveDAO;
 import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.dao.PokemonDAO;
@@ -47,15 +45,12 @@ import com.example.pokemonapp.services.PokemonDbService;
 import com.example.pokemonapp.services.SynchroCallback;
 import com.example.pokemonapp.util.Tools;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
 
-public class MainActivity extends ButtonsActivity {
+public class MainActivity extends ButtonsActivity implements ConnexionVerificationTask.OnInternetVerifiedListener{
 
     private final String TAG = "MainActivity";
     // progress dialog to inform the current step of the synchro
@@ -72,6 +67,8 @@ public class MainActivity extends ButtonsActivity {
     private TypeNoEffectDAO typeNoEffectDAO;
     // service that is used to communicate with the remote DB
     private PokemonDbService pokemonDbService;
+    // Handler to execute code delayed
+    private final Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,58 +147,12 @@ public class MainActivity extends ButtonsActivity {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             loadingDialog = loadingDialog(MainActivity.this);
+                            loadingDialog.setMessage(getString(R.string.verifying_internet));
                             loadingDialog.show();
-                            Handler handler = new Handler();
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
-                                        @Override
-                                        public List<Object> doInBackground() {
-                                            loadingDialog.setMessage(getString(R.string.verifying_internet));
-                                            List<Object> objects = new ArrayList<>();
-                                            objects.add(hasInternetAccess());
-                                            return objects;
-                                        }
-
-                                        @Override
-                                        public void onPostExecute(List<Object> objects) {
-                                            if ((Boolean) objects.get(0)){
-                                                handler.postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        callbackPokemon();
-                                                    }
-                                                },2000);
-                                            }else{
-                                                handler.postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        loadingDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                                            @Override
-                                                            public void onDismiss(DialogInterface dialog) {
-                                                                Dialog noInternetDialog = Tools.singleButtonDialog(
-                                                                        MainActivity.this,
-                                                                        getString(R.string.no_internet_dialog_title),
-                                                                        getString(R.string.no_internet_dialog_text),
-                                                                        getString(R.string.understood_button_text),
-                                                                        new DialogInterface.OnClickListener() {
-                                                                            @Override
-                                                                            public void onClick(DialogInterface dialog, int which) {
-                                                                                dialog.dismiss();
-                                                                            }
-                                                                        }
-                                                                );
-                                                                noInternetDialog.setCancelable(false);
-                                                                noInternetDialog.show();
-                                                            }
-                                                        });
-                                                        loadingDialog.dismiss();
-                                                    }
-                                                },2000);
-                                            }
-                                        }
-                                    }).execute();
+                                    new ConnexionVerificationTask(MainActivity.this, MainActivity.this).execute();
                                 }
                             },2000);
                         }
@@ -212,10 +163,49 @@ public class MainActivity extends ButtonsActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onDeviceConnected() {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                callbackPokemon();
+            }
+        }, 2000);
+    }
+
+    @Override
+    public void onDeviceOffline() {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadingDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        Dialog noInternetDialog = Tools.singleButtonDialog(
+                                MainActivity.this,
+                                getString(R.string.no_internet_dialog_title),
+                                getString(R.string.no_internet_dialog_text),
+                                getString(R.string.understood_button_text),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                }
+                        );
+                        noInternetDialog.setCancelable(false);
+                        noInternetDialog.show();
+                    }
+                });
+                loadingDialog.dismiss();
+            }
+        },2000);
+    }
+
     //================================callback to get the pokemon DB================================
 
     private void callbackPokemon() {
-        SynchroCallback<Pokemon> pokemonCallback = new SynchroCallback<Pokemon>(
+        SynchroCallback<Pokemon> pokemonCallback = new SynchroCallback<>(
                 this, loadingDialog, pokemonDAO, Pokemon.class,
                 new SynchroCallback.CallbackSetup<Pokemon>() {
                     @Override
@@ -234,7 +224,7 @@ public class MainActivity extends ButtonsActivity {
     //================================callback to get the move DB===================================
 
     private void callbackMove() {
-        SynchroCallback<Move> moveCallback = new SynchroCallback<Move>(
+        SynchroCallback<Move> moveCallback = new SynchroCallback<>(
                 this, loadingDialog, moveDAO, Move.class,
                 new SynchroCallback.CallbackSetup<Move>() {
                     @Override
@@ -254,7 +244,7 @@ public class MainActivity extends ButtonsActivity {
     //================================callback to get the type DB===================================
 
     private void callbackType() {
-        SynchroCallback<Type> typeCallback = new SynchroCallback<Type>(
+        SynchroCallback<Type> typeCallback = new SynchroCallback<>(
                 this, loadingDialog, typeDAO, Type.class,
                 new SynchroCallback.CallbackSetup<Type>() {
                     @Override
@@ -274,7 +264,7 @@ public class MainActivity extends ButtonsActivity {
     //==============================callback to get the move_type DB================================
 
     private void callbackMoveType(){
-        SynchroCallback<MoveType> moveTypeCallback = new SynchroCallback<MoveType>(
+        SynchroCallback<MoveType> moveTypeCallback = new SynchroCallback<>(
                 this, loadingDialog, moveTypeDAO, MoveType.class,
                 new SynchroCallback.CallbackSetup<MoveType>() {
                     @Override
@@ -294,7 +284,7 @@ public class MainActivity extends ButtonsActivity {
     //=============================callback to get the pokemon_type DB==============================
 
     private void callbackPokemonType(){
-        SynchroCallback<PokemonType> pokemonTypeCallback = new SynchroCallback<PokemonType>(
+        SynchroCallback<PokemonType> pokemonTypeCallback = new SynchroCallback<>(
                 this, loadingDialog, pokemonTypeDAO, PokemonType.class,
                 new SynchroCallback.CallbackSetup<PokemonType>() {
                     @Override
@@ -314,7 +304,7 @@ public class MainActivity extends ButtonsActivity {
     //==============================callback to get the pokemon_move DB=============================
 
     private void callbackPokemonMove(){
-        SynchroCallback<PokemonMove> pokemonMoveCallback = new SynchroCallback<PokemonMove>(
+        SynchroCallback<PokemonMove> pokemonMoveCallback = new SynchroCallback<>(
                 this, loadingDialog, pokemonMoveDAO, PokemonMove.class,
                 new SynchroCallback.CallbackSetup<PokemonMove>() {
                     @Override
@@ -334,7 +324,7 @@ public class MainActivity extends ButtonsActivity {
     //=========================callback to get the type_typeEffective DB============================
 
     private void callbackTypeEffective(){
-        SynchroCallback<TypeEffective> typeEffectiveCallback = new SynchroCallback<TypeEffective>(
+        SynchroCallback<TypeEffective> typeEffectiveCallback = new SynchroCallback<>(
                 this, loadingDialog, typeEffectiveDAO, TypeEffective.class,
                 new SynchroCallback.CallbackSetup<TypeEffective>() {
                     @Override
@@ -354,7 +344,7 @@ public class MainActivity extends ButtonsActivity {
     //=========================callback to get the type_typeNotEffective DB=========================
 
     private void callbackTypeNotEffective(){
-        SynchroCallback<TypeNotEffective> typeNotEffectiveCallback = new SynchroCallback<TypeNotEffective>(
+        SynchroCallback<TypeNotEffective> typeNotEffectiveCallback = new SynchroCallback<>(
                 this, loadingDialog, typeNotEffectiveDAO, TypeNotEffective.class,
                 new SynchroCallback.CallbackSetup<TypeNotEffective>() {
                     @Override
@@ -374,7 +364,7 @@ public class MainActivity extends ButtonsActivity {
     //===========================callback to get the type_typeNoEffect DB===========================
 
     private void callbackTypeNoEffect(){
-        SynchroCallback<TypeNoEffect> typeNoEffectCallback = new SynchroCallback<TypeNoEffect>(
+        SynchroCallback<TypeNoEffect> typeNoEffectCallback = new SynchroCallback<>(
                 this, loadingDialog, typeNoEffectDAO, TypeNoEffect.class,
                 new SynchroCallback.CallbackSetup<TypeNoEffect>() {
                     @Override
@@ -389,30 +379,6 @@ public class MainActivity extends ButtonsActivity {
                 }
         );
         typeNoEffectCallback.run();
-    }
-
-    public boolean hasInternetAccess() {
-        if (isNetworkAvailable()) {
-            try {
-                HttpURLConnection url = (HttpURLConnection)
-                        (new URL("http://clients3.google.com/generate_204").openConnection());
-                url.setRequestProperty("User-Agent", "Android");
-                url.setRequestProperty("Connection", "close");
-                url.setConnectTimeout(1500);
-                url.connect();
-                return (url.getResponseCode() == 204 && url.getContentLength() == 0);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null;
     }
 
 }

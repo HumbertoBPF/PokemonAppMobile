@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
-import com.example.pokemonapp.async_task.DatabaseNavigationTask;
+import com.example.pokemonapp.async_task.DatabaseRecordsTask;
 import com.example.pokemonapp.dao.BaseDAO;
 
 import java.io.Serializable;
@@ -24,7 +24,7 @@ import java.util.List;
  * Activity for screens of the app that show all the records concerning an entity <b>E</b>.
  * @param <E> entity concerned by the activity.
  */
-public abstract class DatabaseNavigationActivity<E> extends AppCompatActivity implements DatabaseNavigationTask.DatabaseNavigationInterface<E>{
+public abstract class DatabaseNavigationActivity<E> extends AppCompatActivity implements DatabaseRecordsTask.DatabaseNavigationInterface<E>{
 
     protected BaseDAO<E> baseDAO;   // DAO allowing to communicate with the database containing the entity E
     protected RecyclerView recyclerView;        // RecyclerView to present the data
@@ -55,7 +55,7 @@ public abstract class DatabaseNavigationActivity<E> extends AppCompatActivity im
 
     protected void configureRecyclerView() {
         loadingDialog.show();
-        new DatabaseNavigationTask<>(baseDAO, this).execute();
+        new DatabaseRecordsTask<>(baseDAO, this).execute();
     }
 
     /**
