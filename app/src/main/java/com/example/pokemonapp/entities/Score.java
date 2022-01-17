@@ -1,7 +1,11 @@
 package com.example.pokemonapp.entities;
 
+import android.content.Context;
+
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import com.example.pokemonapp.R;
 
 import java.io.Serializable;
 
@@ -38,7 +42,7 @@ public class Score implements Serializable {
      * Besides, some information about the battle are stored with the score value. Such information concerns
      * the criteria mentioned above and other related information such as the JSON corresponding to player's
      * and cpu's team and the date string (containing time, day, month and year) of the battle.
-     * @param scoreValue score value.
+     * @param context context of the activity where Score is instantiated.
      * @param battleDuration duration of the battle.
      * @param nbPlayerRemainingPokemon number of pokémon that have not fainted at the end of a battle.
      * @param playerTeamOverallPoints sum of the overall points of all the pokémon of player's team.
@@ -50,9 +54,8 @@ public class Score implements Serializable {
      * @param date String corresponding to the date object specifying the time, day, month and year
      *             when the battle happened.
      */
-    public Score(Long scoreValue, Long battleDuration, Integer nbPlayerRemainingPokemon, Long playerTeamOverallPoints,
+    public Score(Context context, Long battleDuration, Integer nbPlayerRemainingPokemon, Long playerTeamOverallPoints,
                  Long cpuTeamOverallPoints, String gameMode, String gameLevel, String playerTeam, String cpuTeam, String date) {
-        this.scoreValue = scoreValue;
         this.battleDuration = battleDuration;
         this.nbPlayerRemainingPokemon = nbPlayerRemainingPokemon;
         this.playerTeamOverallPoints = playerTeamOverallPoints;
@@ -62,6 +65,26 @@ public class Score implements Serializable {
         this.playerTeam = playerTeam;
         this.cpuTeam = cpuTeam;
         this.date = date;
+
+        // bonus due to gameMode, it is reduced to 0.75 when gameMode is random mode to penalize randomness
+        double bonusGameMode = 1.0;
+        if (gameMode.equals(context.getString(R.string.label_random_mode))){
+            bonusGameMode = 0.75;
+        }
+
+        // bonus due to gameLevel, it is reduced to 0.75 when gameLevel is easy to penalize the absence of AI
+        double bonusGameLevel = 1.0;
+        if (gameLevel.equals(context.getString(R.string.easy_level))){
+            bonusGameLevel = 0.75;
+        }
+
+        // computes the ratio between the force of the teams
+        double overallPointsRatio = (double) cpuTeamOverallPoints/playerTeamOverallPoints;
+        // converts the battle duration to seconds
+        double battleDurationSec = (double) battleDuration/1000;
+        // computes the score value
+        this.scoreValue =
+                (long) (bonusGameMode*bonusGameLevel*nbPlayerRemainingPokemon*(overallPointsRatio)*Math.max(60*60 - battleDurationSec,0));
     }
 
     public Long getId() {

@@ -10,6 +10,10 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * Async task to verify the internet connexion. According to the result of the test of connexion,
+ * one of the two methods of <b>OnInternetVerifiedListener</b> is called.
+ */
 public class ConnexionVerificationTask extends AsyncTask<Void,Void,Boolean> {
 
     private final Activity activity;
@@ -60,6 +64,10 @@ public class ConnexionVerificationTask extends AsyncTask<Void,Void,Boolean> {
         return activeNetworkInfo != null;
     }
 
+    /**
+     * Interface containing <b>onDeviceConnected()</b>(called if there is internet connexion) and
+     * <b>onDeviceOffline()</b>(called when no internet connexion is detected).
+     */
     public interface OnInternetVerifiedListener{
         void onDeviceConnected();
         void onDeviceOffline();

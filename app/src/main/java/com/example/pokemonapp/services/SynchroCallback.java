@@ -24,7 +24,7 @@ public class SynchroCallback<E> {
     private Context context;
     private Handler handler = new Handler();
     private ProgressDialog loadingDialog;
-    private RemoteDAO<E> pokemonAppDAO;
+    private RemoteDAO<E> remoteDAO;
     private CallbackSetup callbackSetup;
     private final Class<E> aClass;
 
@@ -42,7 +42,7 @@ public class SynchroCallback<E> {
                            RemoteDAO remoteDAO, Class<E> aClass, CallbackSetup<E> callbackSetup) {
         this.context = context;
         this.loadingDialog = loadingDialog;
-        this.pokemonAppDAO = remoteDAO;
+        this.remoteDAO = remoteDAO;
         this.aClass = aClass;
         this.callbackSetup = callbackSetup;
     }
@@ -65,7 +65,7 @@ public class SynchroCallback<E> {
                             new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
                                 @Override
                                 public List<Object> doInBackground() {
-                                    pokemonAppDAO.save(resources);
+                                    remoteDAO.save(resources);
                                     return null;
                                 }
 
