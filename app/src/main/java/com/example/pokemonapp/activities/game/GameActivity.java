@@ -30,6 +30,7 @@ import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.PokemonAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.async_task.CpuMoveSelectionTask;
+import com.example.pokemonapp.async_task.DatabaseRecordsTask;
 import com.example.pokemonapp.async_task.StruggleMoveTask;
 import com.example.pokemonapp.dao.MoveDAO;
 import com.example.pokemonapp.dao.MoveTypeDAO;
@@ -120,17 +121,10 @@ public class GameActivity extends AppCompatActivity {
         cpu.setTeam(loadTeam(this,getString(R.string.filename_json_cpu_team)));
         pokemonChosenByCPU = getDistinctRandomIntegers(0,player.getTeam().size()-1,cpu.getTeam().size());
 
-        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+        new DatabaseRecordsTask<>(pokemonDAO, new DatabaseRecordsTask.DatabaseNavigationInterface<Pokemon>() {
             @Override
-            public List<Object> doInBackground() {
-                List<Object> objects = new ArrayList<>();
-                allPokemon = pokemonDAO.getAllRecords();
-                objects.addAll(allPokemon);
-                return objects;
-            }
-
-            @Override
-            public void onPostExecute(List<Object> objects) {
+            public void onPostExecute(List<Pokemon> records) {
+                allPokemon = records;
                 pickPokemonForCPU();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -142,7 +136,7 @@ public class GameActivity extends AppCompatActivity {
                             }
                         });
                     }
-                },6000);
+                }, 6000);
             }
         }).execute();
     }

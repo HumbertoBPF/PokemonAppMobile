@@ -24,7 +24,8 @@ import com.example.pokemonapp.activities.SelectionActivity;
 import com.example.pokemonapp.activities.game.team.LoadTeamActivity;
 import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.PokemonAdapter;
-import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.async_task.DatabaseRecordsTask;
+import com.example.pokemonapp.async_task.PokemonOrderedByForceTask;
 import com.example.pokemonapp.dao.PokemonDAO;
 import com.example.pokemonapp.entities.Pokemon;
 import com.example.pokemonapp.models.InGamePokemon;
@@ -58,14 +59,11 @@ public class PokemonSelectionActivity extends SelectionActivity {
             setTitle(R.string.summary_title_app_bar);
             enableLoading(false);   // cannot load a team for the random mode since the team must be random
             loadingDialog.show();
-            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+            new PokemonOrderedByForceTask(pokemonDAO, new DatabaseRecordsTask.DatabaseNavigationInterface<Pokemon>() {
                 @Override
-                public List<Object> doInBackground() {
-                    return getAllPokemonOrderedByOverallPoints();
-                }
-
-                @Override
-                public void onPostExecute(List<Object> objects) {
+                public void onPostExecute(List<Pokemon> records) {
+                    allPokemonRanked = records;                                     // get pokémon ordered by OverallPoints
+                    indexWeakestPokemon = getIndexWeakestPokemon();                 // defines the top pokémon to be considered by the CPU
                     saveTeamAutomatically(getString(R.string.filename_json_player_team));
                     saveTeamAutomatically(getString(R.string.filename_json_cpu_team));
                     configureRecyclerView(playerRecyclerView, getString(R.string.filename_json_player_team));
@@ -82,38 +80,41 @@ public class PokemonSelectionActivity extends SelectionActivity {
             cpuTeamLabel.setVisibility(View.GONE);
             enableLoading(true);    // before confirming the choice of the 6 pokémon, can load a team
             loadingDialog.show();
-            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+            new PokemonOrderedByForceTask(pokemonDAO, new DatabaseRecordsTask.DatabaseNavigationInterface<Pokemon>() {
                 @Override
-                public List<Object> doInBackground() {
-                    getAllPokemonOrderedByOverallPoints();  // gets list of the pokémon ordered by overall power to be used in the
-                                                            // random choice of pokémon for the CPU
-                    return getAllPokemon();                 // gets list unordered to be shown to the user in the order of pokédex
-                }
+                public void onPostExecute(List<Pokemon> records) {
+                    allPokemonRanked = records;                     // get pokémon ordered by OverallPoints
+                    indexWeakestPokemon = getIndexWeakestPokemon(); // defines the top pokémon to be considered by the CPU
+                    new DatabaseRecordsTask<>(pokemonDAO, new DatabaseRecordsTask.DatabaseNavigationInterface<Pokemon>() {
+                        @Override
+                        public void onPostExecute(List<Pokemon> records) {
+                            saveTeamAutomatically(getString(R.string.filename_json_cpu_team));  // save a random team for the CPU
 
-                @Override
-                public void onPostExecute(List<Object> objects) {
-                    saveTeamAutomatically(getString(R.string.filename_json_cpu_team));  // save a random team for the CPU
+                            if (gameMode.equals(getString(R.string.label_strategy_mode))){
+                                // at the beginning the current number of Overall Points corresponds to the maximum
+                                currentOverallPoints = maxOverallPoints;
+                                // show the number of remaining points on the top of the screen
+                                instructionTextView.setVisibility(View.VISIBLE);
+                                instructionTextView.setText(getString(R.string.remaining_overall_points)+" : "+currentOverallPoints);
+                            }
 
-                    if (gameMode.equals(getString(R.string.label_strategy_mode))){
-                        // at the beginning the current number of Overall Points corresponds to the maximum
-                        currentOverallPoints = maxOverallPoints;
-                        // show the number of remaining points on the top of the screen
-                        instructionTextView.setVisibility(View.VISIBLE);
-                        instructionTextView.setText(getString(R.string.remaining_overall_points)+" : "+currentOverallPoints);
-                    }
-
-                    // shows all the pokémon for the players so as he can pick 6 for their team
-                    playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(),
-                            objects,
-                            new OnItemAdapterClickListener() {
-                                @Override
-                                public void onClick(View view, Object object) {
-                                    selectItemRecyclerView((CardView) view, (Pokemon) object);
-                                    updateConfirmButtonColor();
-                                }
-                            }));
-                    configureConfirmChoiceButton();
-                    dismissDialogWhenViewIsDrawn(playerRecyclerView, loadingDialog);    // when all has been set up, dismiss loading dialog
+                            List<Object> objects = new ArrayList<>();
+                            objects.addAll(records);
+                            // shows all the pokémon for the players so as he can pick 6 for their team
+                            playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(),
+                                    objects,
+                                    new OnItemAdapterClickListener() {
+                                        @Override
+                                        public void onClick(View view, Object object) {
+                                            selectItemRecyclerView((CardView) view, (Pokemon) object);
+                                            updateConfirmButtonColor();
+                                        }
+                                    }));
+                            configureConfirmChoiceButton();
+                            dismissDialogWhenViewIsDrawn(playerRecyclerView, loadingDialog);    // when all has been set up, dismiss
+                                                                                                // loading dialog
+                        }
+                    }).execute();
                 }
             }).execute();
         }
@@ -165,33 +166,6 @@ public class PokemonSelectionActivity extends SelectionActivity {
             startActivityForResult(intent,LOAD_TEAM);
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * @return List&lt;Object&gt; with all the pokémon(the pokémon are in the order that they appear
-     *          in the pokédex)
-     */
-    @NonNull
-    private List<Object> getAllPokemon() {
-        List<Object> objects = new ArrayList<>();
-        objects.addAll(pokemonDAO.getAllRecords());
-        return objects;
-    }
-
-    /**
-     * Gets a sorted List&lt;Object&gt; of all the pokémon according to their OverallPoints. This
-     * list is returned by the method, but it is also stored as a List&lt;Pokemon&gt; in the
-     * attribute <b>allPokemonList</b>.
-     * @return List&lt;Object&gt; with all the pokémon sorted in the descendent order according to
-     * their OverallPoints.
-     */
-    @NonNull
-    private List<Object> getAllPokemonOrderedByOverallPoints() {
-        allPokemonRanked = pokemonDAO.getPokemonGreatestOverallPoints();  // get pokémon ordered by OverallPoints
-        indexWeakestPokemon = getIndexWeakestPokemon();                 // defines the top pokémon to be considered by the CPU
-        List<Object> objects = new ArrayList<>();
-        objects.addAll(allPokemonRanked);
-        return objects;
     }
 
     /**

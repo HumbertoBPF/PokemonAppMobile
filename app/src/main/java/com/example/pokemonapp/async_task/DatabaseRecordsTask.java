@@ -13,8 +13,8 @@ import java.util.List;
  */
 public class DatabaseRecordsTask<E> extends AsyncTask<Void,Void,List<E>> {
 
-    private BaseDAO<E> baseDAO;
-    private DatabaseNavigationInterface<E> databaseNavigationInterface;
+    protected BaseDAO<E> baseDAO;
+    protected DatabaseNavigationInterface<E> databaseNavigationInterface;
 
     /**
      * @param baseDAO DAO allowing to communicate with the database containing the entity <b>E</b>.
