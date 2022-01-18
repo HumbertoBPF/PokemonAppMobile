@@ -13,7 +13,7 @@ import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.SelectionActivity;
 import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.TeamAdapter;
-import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.async_task.DatabaseRecordsTask;
 import com.example.pokemonapp.dao.TeamDAO;
 import com.example.pokemonapp.entities.Team;
 import com.example.pokemonapp.room.PokemonAppDatabase;
@@ -43,22 +43,17 @@ public class LoadTeamActivity extends SelectionActivity {
         maxOverallPoints = getIntent().getIntExtra("maxOverallPoints",-1);
 
         loadingDialog.show();
-        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+        new DatabaseRecordsTask<>(teamDAO, new DatabaseRecordsTask.DatabaseNavigationInterface<Team>() {
             @Override
-            public List<Object> doInBackground() {
+            public void onPostExecute(List<Team> records) {
                 List<Object> objects = new ArrayList<>();
-                objects.addAll(teamDAO.getAllRecords());
-                return objects;
-            }
-
-            @Override
-            public void onPostExecute(List<Object> objects) {
+                objects.addAll(records);
                 loadingDialog.dismiss();
                 // shows all the teams previously saved
                 playerRecyclerView.setAdapter(new TeamAdapter(getApplicationContext(), objects, new OnItemAdapterClickListener() {
                     @Override
                     public void onClick(View view, Object object) { // when a team is selected, the details of this team are shown,
-                                                                    // i.e. the details about the pokémon and their moves
+                        // i.e. the details about the pokémon and their moves
                         if (maxOverallPoints != -1){
                             if (getOverallPointsOfTeam((Team) object) <= maxOverallPoints){
                                 showTeamDetails((Team) object);
