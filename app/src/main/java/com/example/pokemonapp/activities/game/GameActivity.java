@@ -31,6 +31,7 @@ import com.example.pokemonapp.adapters.PokemonAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.async_task.CpuMoveSelectionTask;
 import com.example.pokemonapp.async_task.DatabaseRecordsTask;
+import com.example.pokemonapp.async_task.SaveLocalResourceTask;
 import com.example.pokemonapp.async_task.StruggleMoveTask;
 import com.example.pokemonapp.dao.MoveDAO;
 import com.example.pokemonapp.dao.MoveTypeDAO;
@@ -1040,15 +1041,9 @@ public class GameActivity extends AppCompatActivity {
                 overallPointsCpu, gameMode, gameLevel, playerTeam, cpuTeam, date);
 
         // async task to store the score entity in the local DB
-        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+        new SaveLocalResourceTask<>(scoreDAO, score, new SaveLocalResourceTask.OnSavingListener() {
             @Override
-            public List<Object> doInBackground() {
-                scoreDAO.save(score);
-                return null;
-            }
-
-            @Override
-            public void onPostExecute(List<Object> objects) {
+            public void onSave() {
 
             }
         }).execute();
