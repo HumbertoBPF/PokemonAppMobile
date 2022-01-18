@@ -34,7 +34,7 @@ import com.example.pokemonapp.room.PokemonAppDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovesSelectionActivity extends SelectionActivity {
+public class MoveSetSelectionActivity extends SelectionActivity {
 
     private PokemonMoveDAO pokemonMoveDAO;
     private PokemonTypeDAO pokemonTypeDAO;

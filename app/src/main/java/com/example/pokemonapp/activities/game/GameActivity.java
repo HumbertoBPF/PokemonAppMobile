@@ -29,6 +29,8 @@ import com.example.pokemonapp.adapters.MovesAdapter;
 import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.PokemonAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.async_task.CpuMoveSelectionTask;
+import com.example.pokemonapp.async_task.StruggleMoveTask;
 import com.example.pokemonapp.dao.MoveDAO;
 import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.dao.PokemonDAO;
@@ -40,7 +42,6 @@ import com.example.pokemonapp.dao.TypeNotEffectiveDAO;
 import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.Pokemon;
 import com.example.pokemonapp.entities.Score;
-import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.models.InGamePokemon;
 import com.example.pokemonapp.models.Trainer;
 import com.example.pokemonapp.room.PokemonAppDatabase;
@@ -521,18 +522,10 @@ public class GameActivity extends AppCompatActivity {
         if (!player.isLoading()){
             List<Move> moves = getRemainingMoves(player.getCurrentPokemon());
             if (moves.isEmpty()){   // if there is no move remaining, use struggle
-                new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                new StruggleMoveTask(this, new StruggleMoveTask.OnMoveSelectionListener() {
                     @Override
-                    public List<Object> doInBackground() {
-                        Move move = moveDAO.getMoveByName("Struggle");
-                        List<Object> objects = new ArrayList<>();
-                        objects.add(move);
-                        return objects;
-                    }
-
-                    @Override
-                    public void onPostExecute(List<Object> objects) {
-                        player.setCurrentMove((Move) objects.get(0));
+                    public void onMoveSelection(Move move) {
+                        player.setCurrentMove(move);
                         onChoiceListener.onChoice();
                     }
                 }).execute();
@@ -577,145 +570,20 @@ public class GameActivity extends AppCompatActivity {
     private void pickMoveForCpu(OnChoiceListener onChoiceListener){
         if (!cpu.isLoading()) {
             List<Move> moves = getRemainingMoves(cpu.getCurrentPokemon());
-            if (moves.isEmpty()) {  // if there is no move remaining, use struggle
-                new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+            if (moves.isEmpty()){   // if there is no move remaining, use struggle
+                new StruggleMoveTask(this, new StruggleMoveTask.OnMoveSelectionListener() {
                     @Override
-                    public List<Object> doInBackground() {
-                        Move move = moveDAO.getMoveByName("Struggle");
-                        List<Object> objects = new ArrayList<>();
-                        objects.add(move);
-                        return objects;
-                    }
-
-                    @Override
-                    public void onPostExecute(List<Object> objects) {
-                        cpu.setCurrentMove((Move) objects.get(0));
+                    public void onMoveSelection(Move move) {
+                        cpu.setCurrentMove(move);
                         onChoiceListener.onChoice();
                     }
                 }).execute();
-            } else {    // else, pick randomly a move among the remaining ones
-
-                new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+            }else{                  // else, pick a move in the list of available moves
+                new CpuMoveSelectionTask(this, moves, player.getCurrentPokemon().getPokemonServer(),
+                        cpu.getCurrentPokemon().getPokemonServer(), gameLevel, new CpuMoveSelectionTask.OnMoveSelectionListener() {
                     @Override
-                    public List<Object> doInBackground() {
-
-                        int indexChosenMove = 0;
-
-                        if (!gameLevel.equals(getString(R.string.easy_level))){ // artificial intelligence for game levels different from easy
-                            // gets the types of the attacking pokémon
-                            List<Type> attackingPokemonTypes = pokemonTypeDAO.getTypesOfPokemon(cpu.getCurrentPokemon().getPokemonServer().getFId());
-                            Type attackingPokemonType1 = attackingPokemonTypes.get(0);
-                            Type attackingPokemonType2 = null;
-                            if (attackingPokemonTypes.size() == 2){ // get type 2 only if it exists
-                                attackingPokemonType2 = attackingPokemonTypes.get(1);
-                            }
-
-                            // gets the types of the defending pokémon
-                            List<Type> defendingPokemonTypes = pokemonTypeDAO.getTypesOfPokemon(player.getCurrentPokemon().getPokemonServer().getFId());
-                            Type defendingPokemonType1 = defendingPokemonTypes.get(0);
-                            Type defendingPokemonType2 = null;
-                            if (defendingPokemonTypes.size() == 2){ // get type 2 only if it exists
-                                defendingPokemonType2 = defendingPokemonTypes.get(1);
-                            }
-
-                            List<Double> qualityFactors = new ArrayList<>();    // number used to define what is the best move
-                            for (Move move : moves){
-                                Log.i(TAG,"===============================Analysing move : "+move.getFName()+"===============================");
-
-                                Type moveType = moveTypeDAO.getTypesOfMove(move.getFId()).get(0);   // get type of the current move
-
-                                // get the types against which this move is effective, not effective and ineffective
-                                List<Long> effectiveTypesIds = typeEffectiveDAO.getEffectiveTypesIds(moveType.getFId());
-                                List<Long> notEffectiveTypesIds = typeNotEffectiveDAO.getNotEffectiveTypesIds(moveType.getFId());
-                                List<Long> noEffectTypesIds = typeNoEffectDAO.getNoEffectTypesIds(moveType.getFId());
-
-                                // verifies stab
-                                double qualityFactor = 1;
-                                if (attackingPokemonType1.getFId().equals(moveType.getFId())){
-                                    qualityFactor *= 1.5;
-                                }
-                                if (attackingPokemonType2 != null){
-                                    if (attackingPokemonType2.getFId().equals(moveType.getFId())){
-                                        qualityFactor *= 1.5;
-                                    }
-                                }
-
-                                // verifies if the primary type of the defending pokémon is weak or resistant against this move
-                                if (effectiveTypesIds.contains(defendingPokemonType1.getFId())){
-                                    qualityFactor *= 2;
-                                }
-                                if (notEffectiveTypesIds.contains(defendingPokemonType1.getFId())){
-                                    qualityFactor *= 0.5;
-                                }
-                                if (noEffectTypesIds.contains(defendingPokemonType1.getFId())){
-                                    qualityFactor *= 0;
-                                }
-
-                                // verifies if the secondary type of the defending pokémon (if it exists)
-                                // is weak or resistant against this move
-                                if (defendingPokemonType2 != null){
-                                    if (effectiveTypesIds.contains(defendingPokemonType2.getFId())){
-                                        qualityFactor *= 2;
-                                    }
-                                    if (notEffectiveTypesIds.contains(defendingPokemonType2.getFId())){
-                                        qualityFactor *= 0.5;
-                                    }
-                                    if (noEffectTypesIds.contains(defendingPokemonType2.getFId())){
-                                        qualityFactor *= 0;
-                                    }
-                                }
-
-                                // avoids to use moves for which the user faints when the HP is not low enough
-                                if (move.getFUserFaints() && cpu.getCurrentPokemon().getPokemonServer().getFHp() > 100){
-                                    qualityFactor*=0;
-                                }
-
-                                // reflects the risk of choosing a move with low accuracy (may miss the attack)
-                                if (move.getFAccuracy() < 85){
-                                    qualityFactor*=0.75;
-                                }
-
-                                // reflects the fact that to load such moves, we do not attack during one turn
-                                if (move.getFRoundsToLoad() != 0){
-                                    qualityFactor*=0.5;
-                                }
-
-                                // reflects the fact that the Hp is incremented with half of the damage for some moves
-                                if (move.getFRecoversHp()){
-                                    qualityFactor*=1.5;
-                                }
-
-                                // takes into account the power of the move
-                                qualityFactor *= move.getFPower();
-                                // takes into account the minimum number of times that a move can hit per turn
-                                qualityFactor *= move.getFMinTimesPerTour();
-
-                                Log.i(TAG,"===============================Quality factor = "+qualityFactor+"===============================");
-
-                                qualityFactors.add(qualityFactor);
-                            }
-
-                            // picks the move whose quality factor is the greatest one
-                            double greatestQualityFactor = qualityFactors.get(0);
-                            for (int i = 0;i<qualityFactors.size();i++){
-                                double currentQualityFactor = qualityFactors.get(i);
-                                if (currentQualityFactor > greatestQualityFactor){
-                                    indexChosenMove = i;
-                                    greatestQualityFactor = currentQualityFactor;
-                                }
-                            }
-                        }else{  // for the easy level, the choice of the moves is random
-                            indexChosenMove = getDistinctRandomIntegers(0, moves.size() - 1, 1).get(0);
-                        }
-
-                        List<Object> objects = new ArrayList<>();
-                        objects.add(moves.get(indexChosenMove));
-                        return objects;
-                    }
-
-                    @Override
-                    public void onPostExecute(List<Object> objects) {
-                        cpu.setCurrentMove((Move) objects.get(0));
+                    public void onMoveSelection(Move move) {
+                        cpu.setCurrentMove(move);
                         onChoiceListener.onChoice();
                     }
                 }).execute();

@@ -50,7 +50,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         pokemonDAO = PokemonAppDatabase.getInstance(this).getPokemonDAO();
-        nextActivity = MovesSelectionActivity.class;
+        nextActivity = MoveSetSelectionActivity.class;
 
         super.onCreate(savedInstanceState);
 
@@ -145,8 +145,8 @@ public class PokemonSelectionActivity extends SelectionActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == LOAD_TEAM && resultCode == RESULT_OK){   // if a team to load was previously requested and if the result
-                                                                    // is OK, the user is redirected to the MovesSelectionActivity
-            Intent intent = new Intent(this, MovesSelectionActivity.class);
+                                                                    // is OK, the user is redirected to the MoveSetSelectionActivity
+            Intent intent = new Intent(this, MoveSetSelectionActivity.class);
             intent.putExtra("playerTeamReady",true);
             startActivity(intent);
             finish();
