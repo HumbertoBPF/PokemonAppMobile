@@ -33,14 +33,9 @@ import com.example.pokemonapp.async_task.CpuMoveSelectionTask;
 import com.example.pokemonapp.async_task.DatabaseRecordsTask;
 import com.example.pokemonapp.async_task.SaveLocalResourceTask;
 import com.example.pokemonapp.async_task.StruggleMoveTask;
-import com.example.pokemonapp.dao.MoveDAO;
-import com.example.pokemonapp.dao.MoveTypeDAO;
+import com.example.pokemonapp.async_task.TypeBonusTask;
 import com.example.pokemonapp.dao.PokemonDAO;
-import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.dao.ScoreDAO;
-import com.example.pokemonapp.dao.TypeEffectiveDAO;
-import com.example.pokemonapp.dao.TypeNoEffectDAO;
-import com.example.pokemonapp.dao.TypeNotEffectiveDAO;
 import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.Pokemon;
 import com.example.pokemonapp.entities.Score;
@@ -69,12 +64,6 @@ public class GameActivity extends AppCompatActivity {
     private String gameLevel;
 
     private PokemonDAO pokemonDAO;
-    private MoveDAO moveDAO;
-    private MoveTypeDAO moveTypeDAO;
-    private PokemonTypeDAO pokemonTypeDAO;
-    private TypeEffectiveDAO typeEffectiveDAO;
-    private TypeNotEffectiveDAO typeNotEffectiveDAO;
-    private TypeNoEffectDAO typeNoEffectDAO;
     private ScoreDAO scoreDAO;
 
     private List<Pokemon> allPokemon;
@@ -169,12 +158,6 @@ public class GameActivity extends AppCompatActivity {
 
     private void getDAOs() {
         pokemonDAO = PokemonAppDatabase.getInstance(this).getPokemonDAO();
-        moveDAO = PokemonAppDatabase.getInstance(this).getMoveDAO();
-        moveTypeDAO = PokemonAppDatabase.getInstance(this).getMoveTypeDAO();
-        pokemonTypeDAO = PokemonAppDatabase.getInstance(this).getPokemonTypeDAO();
-        typeEffectiveDAO = PokemonAppDatabase.getInstance(this).getTypeEffectiveDAO();
-        typeNotEffectiveDAO = PokemonAppDatabase.getInstance(this).getTypeNotEffectiveDAO();
-        typeNoEffectDAO = PokemonAppDatabase.getInstance(this).getTypeNoEffectDAO();
         scoreDAO = PokemonAppDatabase.getInstance(this).getScoreDAO();
     }
 
@@ -589,89 +572,45 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void attack(InGamePokemon attackingPokemon, InGamePokemon defendingPokemon, Move move, OnChoiceListener onChoiceListener){
-        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
-            @Override
-            public List<Object> doInBackground() {
-
-                // get the attacking and defending pokémon as well as their types (the types from local DB)
-                Pokemon attackingPokemonServer = attackingPokemon.getPokemonServer();
-                Pokemon defendingPokemonServer = defendingPokemon.getPokemonServer();
-
-                Long moveType = moveTypeDAO.getTypesOfMove(move.getFId()).get(0).getFId();
-                List<Long> attackingPokemonTypes = pokemonTypeDAO.getTypesOfPokemonIds(attackingPokemonServer.getFId());
-                List<Long> defendingPokemonTypes = pokemonTypeDAO.getTypesOfPokemonIds(defendingPokemonServer.getFId());
-
-                Log.i(TAG,"Move type : "+moveType);
-                Log.i(TAG,"Attacking pokémon types : "+attackingPokemonTypes.toString());
-                Log.i(TAG,"Defending pokémon types : "+defendingPokemonTypes.toString());
-
-                // get the types against which the type of the attack is effective, not effective and not effective at all
-                // from local DB
-                List<Long> effectiveTypes = typeEffectiveDAO.getEffectiveTypesIds(moveType);
-                List<Long> notEffectiveTypes = typeNotEffectiveDAO.getNotEffectiveTypesIds(moveType);
-                List<Long> noEffectType = typeNoEffectDAO.getNoEffectTypesIds(moveType);
-
-                Log.i(TAG,"Effective types : "+effectiveTypes.toString());
-                Log.i(TAG,"Not effective types : "+notEffectiveTypes.toString());
-                Log.i(TAG,"No effect types : "+noEffectType.toString());
-
-                List<Object> objects = new ArrayList<>();
-                objects.add(moveType);
-                objects.add(attackingPokemonTypes);
-                objects.add(defendingPokemonTypes);
-                objects.add(effectiveTypes);
-                objects.add(notEffectiveTypes);
-                objects.add(noEffectType);
-
-                return objects;
-            }
-
-            @Override
-            public void onPostExecute(List<Object> objects) {
-                Long moveType = (Long) objects.get(0);
-                List<Long> attackingPokemonTypes = (List<Long>) objects.get(1);
-                List<Long> defendingPokemonTypes = (List<Long>) objects.get(2);
-                List<Long> effectiveTypes = (List<Long>) objects.get(3);
-                List<Long> notEffectiveTypes = (List<Long>) objects.get(4);
-                List<Long> noEffectType = (List<Long>) objects.get(5);
-
-                // if the attacking pokémon has the same type of the move that is inflicted, the move
-                // get a damage bonus of 50%
-                double stab = attackingPokemonTypes.contains(moveType) ? 1.5 : 1.0;
-                // factor due to the effectiveness of the type of the move against the ones of the defending pokémon
-                double typeFactor = computeTypeFactor(defendingPokemonTypes, effectiveTypes, notEffectiveTypes, noEffectType);
-                // message to be shown as a feedback about the typeFactor
-                String messageEffectiveness = getMessageEffectiveness(typeFactor);
-
-                int minHits = move.getFMinTimesPerTour();
-                int maxHits = move.getFMaxTimesPerTour();
-
-                int nbOfHits = getDistinctRandomIntegers(minHits,maxHits,1).get(0);
-
-                // skip the turn, if the move needs to be loaded or if the attacking pokémon is reloading or flinched
-                if (isLoading(attackingPokemon, defendingPokemon, move, onChoiceListener) ||
-                        isReloading(attackingPokemon, defendingPokemon, move, onChoiceListener) ||
-                        isFlinched(attackingPokemon, defendingPokemon, onChoiceListener)){
-                    return;
-                }
-
-                // shows to the player the move that is going to be used
-                if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())) {
-                    gameDescription.setText(getString(R.string.player_possessive) + player.getCurrentPokemon().getPokemonServer().getFName() +
-                            getString(R.string.used) + player.getCurrentMove().getFName());
-                }else{
-                    gameDescription.setText(getString(R.string.foe_possessive) + cpu.getCurrentPokemon().getPokemonServer().getFName() +
-                            getString(R.string.used) + cpu.getCurrentMove().getFName());
-                }
-
-                handler.postDelayed(new Runnable() {
+        new TypeBonusTask(this, attackingPokemon.getPokemonServer(), defendingPokemon.getPokemonServer(), move,
+                new TypeBonusTask.OnTypeBonusListener() {
                     @Override
-                    public void run() {
-                        hit(defendingPokemon, move, stab, typeFactor, messageEffectiveness,1, nbOfHits, onChoiceListener);
+                    public void onPostExecute(List<Double> typeBonus) {
+                        double stab = typeBonus.get(0);
+                        double typeFactor = typeBonus.get(1);
+
+                        // message to be shown as a feedback about the typeFactor
+                        String messageEffectiveness = getMessageEffectiveness(typeFactor);
+
+                        int minHits = move.getFMinTimesPerTour();
+                        int maxHits = move.getFMaxTimesPerTour();
+
+                        int nbOfHits = getDistinctRandomIntegers(minHits,maxHits,1).get(0);
+
+                        // skip the turn, if the move needs to be loaded or if the attacking pokémon is reloading or flinched
+                        if (isLoading(attackingPokemon, defendingPokemon, move, onChoiceListener) ||
+                                isReloading(attackingPokemon, defendingPokemon, move, onChoiceListener) ||
+                                isFlinched(attackingPokemon, defendingPokemon, onChoiceListener)){
+                            return;
+                        }
+
+                        // shows to the player the move that is going to be used
+                        if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())) {
+                            gameDescription.setText(getString(R.string.player_possessive) + player.getCurrentPokemon().getPokemonServer().getFName() +
+                                    getString(R.string.used) + player.getCurrentMove().getFName());
+                        }else{
+                            gameDescription.setText(getString(R.string.foe_possessive) + cpu.getCurrentPokemon().getPokemonServer().getFName() +
+                                    getString(R.string.used) + cpu.getCurrentMove().getFName());
+                        }
+
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                hit(defendingPokemon, move, stab, typeFactor, messageEffectiveness,1, nbOfHits, onChoiceListener);
+                            }
+                        }, 3000);
                     }
-                }, 3000);
-            }
-        }).execute();
+                }).execute();
     }
 
     /**
