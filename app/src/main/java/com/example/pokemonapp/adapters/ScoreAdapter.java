@@ -35,11 +35,11 @@ import java.util.List;
 public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ScoreViewHolder> {
 
     private Context context;
-    private List<Object> scores;
+    private List<Score> scores;
     private OnItemAdapterClickListener onItemAdapterClickListener;
     private ScoreDAO scoreDAO;
 
-    public ScoreAdapter(Context context, List<Object> scores, OnItemAdapterClickListener onItemAdapterClickListener) {
+    public ScoreAdapter(Context context, List<Score> scores, OnItemAdapterClickListener onItemAdapterClickListener) {
         this.context = context;
         this.scores = scores;
         this.onItemAdapterClickListener = onItemAdapterClickListener;
@@ -56,7 +56,7 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ScoreViewHol
 
     @Override
     public void onBindViewHolder(@NonNull ScoreAdapter.ScoreViewHolder holder, int position) {
-        holder.bind((Score) scores.get(position));
+        holder.bind(scores.get(position));
     }
 
     @Override

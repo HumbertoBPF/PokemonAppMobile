@@ -18,7 +18,6 @@ import com.example.pokemonapp.dao.TeamDAO;
 import com.example.pokemonapp.entities.Team;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LoadTeamActivity extends SelectionActivity {
@@ -46,11 +45,9 @@ public class LoadTeamActivity extends SelectionActivity {
         teamDAO.getAllRecordsTask(new OnResultListener<List<Team>>() {
             @Override
             public void onResult(List<Team> result) {
-                List<Object> objects = new ArrayList<>();
-                objects.addAll(result);
                 loadingDialog.dismiss();
                 // shows all the teams previously saved
-                playerRecyclerView.setAdapter(new TeamAdapter(getApplicationContext(), objects, new OnItemAdapterClickListener() {
+                playerRecyclerView.setAdapter(new TeamAdapter(getApplicationContext(), result, new OnItemAdapterClickListener() {
                     @Override
                     public void onClick(View view, Object object) { // when a team is selected, the details of this team are shown,
                                                                     // i.e. the details about the pokémon and their moves

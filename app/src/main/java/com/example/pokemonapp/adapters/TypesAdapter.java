@@ -24,11 +24,11 @@ import java.util.List;
 public class TypesAdapter extends RecyclerView.Adapter<TypesAdapter.TypeViewHolder> {
 
     private Context context;
-    private List<Object> types;
+    private List<Type> types;
     private PokemonTypeDAO pokemonTypeDAO;
     private OnItemAdapterClickListener onItemAdapterClickListener;
 
-    public TypesAdapter(Context context, List<Object> types, OnItemAdapterClickListener onItemAdapterClickListener){
+    public TypesAdapter(Context context, List<Type> types, OnItemAdapterClickListener onItemAdapterClickListener){
         this.context = context;
         this.types = types;
         this.pokemonTypeDAO = PokemonAppDatabase.getInstance(this.context).getPokemonTypeDAO();
@@ -45,7 +45,7 @@ public class TypesAdapter extends RecyclerView.Adapter<TypesAdapter.TypeViewHold
 
     @Override
     public void onBindViewHolder(@NonNull TypesAdapter.TypeViewHolder holder, int position) {
-        holder.bind((Type) types.get(position));
+        holder.bind(types.get(position));
     }
 
     @Override

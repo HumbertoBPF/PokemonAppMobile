@@ -12,7 +12,6 @@ import com.example.pokemonapp.adapters.TypesAdapter;
 import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TypesDatabaseActivity extends DatabaseNavigationActivity<Type> {
@@ -28,9 +27,7 @@ public class TypesDatabaseActivity extends DatabaseNavigationActivity<Type> {
 
     @Override
     protected RecyclerView.Adapter getAdapter(List<Type> types) {
-        List<Object> objects = new ArrayList<>();
-        objects.addAll(types);
-        return new TypesAdapter(getApplicationContext(), objects,
+        return new TypesAdapter(getApplicationContext(), types,
                 new OnItemAdapterClickListener() {
                     @Override
                     public void onClick(View view, Object object) {

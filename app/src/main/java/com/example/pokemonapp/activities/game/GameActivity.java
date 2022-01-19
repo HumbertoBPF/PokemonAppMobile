@@ -449,8 +449,8 @@ public class GameActivity extends AppCompatActivity {
      * Returns the list of player's pokémon that are still alive (whose HP is greater than 0).
      */
     @NonNull
-    private List<Object> getAlivePokemonPlayer() {
-        List<Object> pokemonList = new ArrayList<>();
+    private List<Pokemon> getAlivePokemonPlayer() {
+        List<Pokemon> pokemonList = new ArrayList<>();
         for (InGamePokemon inGamePokemon : player.getTeam()){
             Pokemon pokemon = inGamePokemon.getPokemonServer();
             if (pokemon.getFHp() > 0){
@@ -503,9 +503,7 @@ public class GameActivity extends AppCompatActivity {
             }else{  // else, ask the player to choose a mode by presenting the moves in a RecyclerView
                 gameDescription.setText(R.string.choose_move_msg);
                 playerChoicesRecyclerView.setVisibility(View.VISIBLE);
-                List<Object> moveObjects = new ArrayList<>();
-                moveObjects.addAll(moves);
-                playerChoicesRecyclerView.setAdapter(new MovesAdapter(this, moveObjects, new OnItemAdapterClickListener() {
+                playerChoicesRecyclerView.setAdapter(new MovesAdapter(this, moves, new OnItemAdapterClickListener() {
                     @Override
                     public void onClick(View view, Object object) {
                         player.setCurrentMove((Move) object);

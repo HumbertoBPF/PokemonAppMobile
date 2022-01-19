@@ -97,11 +97,8 @@ public class PokemonSelectionActivity extends SelectionActivity {
                                 instructionTextView.setText(getString(R.string.remaining_overall_points)+" : "+currentOverallPoints);
                             }
 
-                            List<Object> objects = new ArrayList<>();
-                            objects.addAll(result);
                             // shows all the pokémon for the players so as he can pick 6 for their team
-                            playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(),
-                                    objects,
+                            playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(), result,
                                     new OnItemAdapterClickListener() {
                                         @Override
                                         public void onClick(View view, Object object) {
@@ -266,7 +263,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
      */
     private void configureRecyclerView(RecyclerView recyclerView, String key) {
         // get list of pokémon from Shared Preferences
-        List<Object> pokemonList = new ArrayList<>();
+        List<Pokemon> pokemonList = new ArrayList<>();
         for (InGamePokemon inGamePokemon : loadTeam(getApplicationContext(), key)){
             pokemonList.add(inGamePokemon.getPokemonServer());
         }

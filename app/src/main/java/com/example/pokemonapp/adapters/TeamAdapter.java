@@ -36,12 +36,12 @@ import java.util.List;
 public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder> {
 
     private Context context;
-    private List<Object> teams;
+    private List<Team> teams;
     private OnItemAdapterClickListener onItemAdapterClickListener;
     private boolean isEditable; // determines if the long click should show the menu with the delete and edit options
     private TeamDAO teamDAO;
 
-    public TeamAdapter(Context context, List<Object> teams, OnItemAdapterClickListener onItemAdapterClickListener, boolean isEditable) {
+    public TeamAdapter(Context context, List<Team> teams, OnItemAdapterClickListener onItemAdapterClickListener, boolean isEditable) {
         this.context = context;
         this.teams = teams;
         this.onItemAdapterClickListener = onItemAdapterClickListener;
@@ -59,7 +59,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull TeamAdapter.TeamViewHolder holder, int position) {
-        holder.bind((Team) teams.get(position));
+        holder.bind(teams.get(position));
     }
 
     @Override

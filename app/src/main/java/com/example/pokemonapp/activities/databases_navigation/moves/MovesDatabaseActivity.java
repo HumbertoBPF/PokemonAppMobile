@@ -12,7 +12,6 @@ import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MovesDatabaseActivity extends DatabaseNavigationActivity<Move> {
@@ -28,9 +27,7 @@ public class MovesDatabaseActivity extends DatabaseNavigationActivity<Move> {
 
     @Override
     protected RecyclerView.Adapter getAdapter(List<Move> moves) {
-        List<Object> objects = new ArrayList<>();
-        objects.addAll(moves);
-        return new MovesAdapter(getApplicationContext(), objects,
+        return new MovesAdapter(getApplicationContext(), moves,
                 new OnItemAdapterClickListener() {
                     @Override
                     public void onClick(View view, Object object) {

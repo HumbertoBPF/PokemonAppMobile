@@ -12,7 +12,6 @@ import com.example.pokemonapp.adapters.ScoreAdapter;
 import com.example.pokemonapp.entities.Score;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ScoreHistoryDatabaseActivity extends DatabaseNavigationActivity<Score> {
@@ -29,9 +28,7 @@ public class ScoreHistoryDatabaseActivity extends DatabaseNavigationActivity<Sco
 
     @Override
     protected RecyclerView.Adapter getAdapter(List<Score> scores) {
-        List<Object> objects = new ArrayList<>();
-        objects.addAll(scores);
-        return new ScoreAdapter(this, objects, new OnItemAdapterClickListener() {
+        return new ScoreAdapter(this, scores, new OnItemAdapterClickListener() {
             @Override
             public void onClick(View view, Object object) {
                 startActivity(showDetails(object));
