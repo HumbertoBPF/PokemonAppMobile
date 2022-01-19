@@ -11,10 +11,10 @@ import java.util.List;
 public class PokemonOrderedByForceTask extends DatabaseRecordsTask<Pokemon>{
     /**
      * @param baseDAO                     DAO allowing to communicate with the database containing the entity <b>E</b>.
-     * @param databaseNavigationInterface interface to specify what should be done after fetching.
+     * @param onResultListener interface to specify what should be done after fetching.
      */
-    public PokemonOrderedByForceTask(PokemonDAO baseDAO, DatabaseNavigationInterface<Pokemon> databaseNavigationInterface) {
-        super(baseDAO, databaseNavigationInterface);
+    public PokemonOrderedByForceTask(PokemonDAO baseDAO, OnResultListener<List<Pokemon>> onResultListener) {
+        super(baseDAO, onResultListener);
     }
 
     @Override

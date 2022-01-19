@@ -3,34 +3,28 @@ package com.example.pokemonapp.async_task;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.example.pokemonapp.dao.MoveDAO;
 import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 public class StruggleMoveTask extends AsyncTask<Void,Void, Move> {
 
     private Context context;
-    private OnMoveSelectionListener onMoveSelectionListener;
+    private OnResultListener<Move> onResultListener;
 
-    public StruggleMoveTask(Context context, OnMoveSelectionListener onMoveSelectionListener) {
+    public StruggleMoveTask(Context context, OnResultListener<Move> onResultListener) {
         this.context = context;
-        this.onMoveSelectionListener = onMoveSelectionListener;
+        this.onResultListener = onResultListener;
     }
 
     @Override
     protected Move doInBackground(Void... voids) {
-        MoveDAO moveDAO = PokemonAppDatabase.getInstance(context).getMoveDAO();
-        return moveDAO.getMoveByName("Struggle");
+        return PokemonAppDatabase.getInstance(context).getMoveDAO().getMoveByName("Struggle");
     }
 
     @Override
     protected void onPostExecute(Move move) {
         super.onPostExecute(move);
-        onMoveSelectionListener.onMoveSelection(move);
-    }
-
-    public interface OnMoveSelectionListener{
-        void onMoveSelection(Move move);
+        onResultListener.onResult(move);
     }
 
 }

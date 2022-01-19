@@ -27,17 +27,17 @@ public class CpuMoveSelectionTask extends AsyncTask<Void,Void, Move> {
     private Pokemon currentPlayerPokemon;
     private Pokemon currentCpuPokemon;
     private String gameLevel;
-    private OnMoveSelectionListener onMoveSelectionListener;
+    private OnResultListener<Move> onResultListener;
     private String TAG = "CpuMoveSelectionTask";
 
     public CpuMoveSelectionTask(Context context, List<Move> moves, Pokemon currentPlayerPokemon, Pokemon currentCpuPokemon,
-                                String gameLevel, OnMoveSelectionListener onMoveSelectionListener) {
+                                String gameLevel, OnResultListener<Move> onResultListener) {
         this.context = context;
         this.moves = moves;
         this.currentPlayerPokemon = currentPlayerPokemon;
         this.currentCpuPokemon = currentCpuPokemon;
         this.gameLevel = gameLevel;
-        this.onMoveSelectionListener = onMoveSelectionListener;
+        this.onResultListener = onResultListener;
     }
 
     @Override
@@ -163,11 +163,7 @@ public class CpuMoveSelectionTask extends AsyncTask<Void,Void, Move> {
     @Override
     protected void onPostExecute(Move move) {
         super.onPostExecute(move);
-        onMoveSelectionListener.onMoveSelection(move);
-    }
-
-    public interface OnMoveSelectionListener{
-        void onMoveSelection(Move move);
+        onResultListener.onResult(move);
     }
 
 }

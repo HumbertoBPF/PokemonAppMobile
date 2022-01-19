@@ -28,9 +28,10 @@ import com.example.pokemonapp.R;
 import com.example.pokemonapp.adapters.MovesAdapter;
 import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.PokemonAdapter;
-import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.async_task.CpuMoveSelectionTask;
 import com.example.pokemonapp.async_task.DatabaseRecordsTask;
+import com.example.pokemonapp.async_task.MaxScoreTask;
+import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.async_task.SaveLocalResourceTask;
 import com.example.pokemonapp.async_task.StruggleMoveTask;
 import com.example.pokemonapp.async_task.TypeBonusTask;
@@ -111,9 +112,9 @@ public class GameActivity extends AppCompatActivity {
         cpu.setTeam(loadTeam(this,getString(R.string.filename_json_cpu_team)));
         pokemonChosenByCPU = getDistinctRandomIntegers(0,player.getTeam().size()-1,cpu.getTeam().size());
 
-        new DatabaseRecordsTask<>(pokemonDAO, new DatabaseRecordsTask.DatabaseNavigationInterface<Pokemon>() {
+        new DatabaseRecordsTask<>(pokemonDAO, new OnResultListener<List<Pokemon>>() {
             @Override
-            public void onPostExecute(List<Pokemon> records) {
+            public void onResult(List<Pokemon> records) {
                 allPokemon = records;
                 pickPokemonForCPU();
                 handler.postDelayed(new Runnable() {
@@ -330,16 +331,9 @@ public class GameActivity extends AppCompatActivity {
      * @param playerWon boolean indicating if player won the battle
      */
     private void endGame(boolean playerWon) {
-        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+        new MaxScoreTask(this, new OnResultListener<Long>() {
             @Override
-            public List<Object> doInBackground() {  // an async task is called to get the greatest score from local DB
-                List<Object> objects = new ArrayList<>();
-                objects.add(scoreDAO.getMaxScore());
-                return objects;
-            }
-
-            @Override
-            public void onPostExecute(List<Object> objects) {
+            public void onResult(Long result) {
                 int idResultString;
                 int idResultAudio;
                 long scoreValue = -1;
@@ -352,18 +346,17 @@ public class GameActivity extends AppCompatActivity {
                     idResultAudio = R.raw.fail;
                 }
                 gameDescription.setText(idResultString);
-                Long maxScoreValue = (Long) objects.get(0);
                 String scoreMessage = "";
                 if (scoreValue != -1){  // score text is shown only when the score is computed and saved
-                    Log.i(TAG,"maxScoreValue = "+maxScoreValue);
-                    if (maxScoreValue != null) {
-                        if (scoreValue > maxScoreValue) {   // if the new score is greater than the current max, it is a record
+                    Log.i(TAG,"maxScoreValue = "+result);
+                    if (result != null) {
+                        if (scoreValue > result) {   // if the new score is greater than the current max, it is a record
                             scoreMessage = "New record! You scored " + scoreValue + " points! ";
                         }else{  // else, show only the score without the message 'new record'
                             scoreMessage = "You scored "+scoreValue+".";
                         }
                     }else{  // if maxScoreValue is null, then there is no score register in the DB at all, so the new score
-                            // is the first one and as a consequence it is a record
+                        // is the first one and as a consequence it is a record
                         scoreMessage = "New record! You scored " + scoreValue + " points! ";
                     }
                 }
@@ -500,9 +493,9 @@ public class GameActivity extends AppCompatActivity {
         if (!player.isLoading()){
             List<Move> moves = getRemainingMoves(player.getCurrentPokemon());
             if (moves.isEmpty()){   // if there is no move remaining, use struggle
-                new StruggleMoveTask(this, new StruggleMoveTask.OnMoveSelectionListener() {
+                new StruggleMoveTask(this, new OnResultListener<Move>() {
                     @Override
-                    public void onMoveSelection(Move move) {
+                    public void onResult(Move move) {
                         player.setCurrentMove(move);
                         onChoiceListener.onChoice();
                     }
@@ -549,19 +542,19 @@ public class GameActivity extends AppCompatActivity {
         if (!cpu.isLoading()) {
             List<Move> moves = getRemainingMoves(cpu.getCurrentPokemon());
             if (moves.isEmpty()){   // if there is no move remaining, use struggle
-                new StruggleMoveTask(this, new StruggleMoveTask.OnMoveSelectionListener() {
+                new StruggleMoveTask(this, new OnResultListener<Move>() {
                     @Override
-                    public void onMoveSelection(Move move) {
+                    public void onResult(Move move) {
                         cpu.setCurrentMove(move);
                         onChoiceListener.onChoice();
                     }
                 }).execute();
             }else{                  // else, pick a move in the list of available moves
                 new CpuMoveSelectionTask(this, moves, player.getCurrentPokemon().getPokemonServer(),
-                        cpu.getCurrentPokemon().getPokemonServer(), gameLevel, new CpuMoveSelectionTask.OnMoveSelectionListener() {
+                        cpu.getCurrentPokemon().getPokemonServer(), gameLevel, new OnResultListener<Move>() {
                     @Override
-                    public void onMoveSelection(Move move) {
-                        cpu.setCurrentMove(move);
+                    public void onResult(Move result) {
+                        cpu.setCurrentMove(result);
                         onChoiceListener.onChoice();
                     }
                 }).execute();
@@ -573,9 +566,9 @@ public class GameActivity extends AppCompatActivity {
 
     private void attack(InGamePokemon attackingPokemon, InGamePokemon defendingPokemon, Move move, OnChoiceListener onChoiceListener){
         new TypeBonusTask(this, attackingPokemon.getPokemonServer(), defendingPokemon.getPokemonServer(), move,
-                new TypeBonusTask.OnTypeBonusListener() {
+                new OnResultListener<List<Double>>() {
                     @Override
-                    public void onPostExecute(List<Double> typeBonus) {
+                    public void onResult(List<Double> typeBonus) {
                         double stab = typeBonus.get(0);
                         double typeFactor = typeBonus.get(1);
 

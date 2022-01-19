@@ -14,6 +14,7 @@ import com.example.pokemonapp.activities.SelectionActivity;
 import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.TeamAdapter;
 import com.example.pokemonapp.async_task.DatabaseRecordsTask;
+import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.dao.TeamDAO;
 import com.example.pokemonapp.entities.Team;
 import com.example.pokemonapp.room.PokemonAppDatabase;
@@ -43,9 +44,9 @@ public class LoadTeamActivity extends SelectionActivity {
         maxOverallPoints = getIntent().getIntExtra("maxOverallPoints",-1);
 
         loadingDialog.show();
-        new DatabaseRecordsTask<>(teamDAO, new DatabaseRecordsTask.DatabaseNavigationInterface<Team>() {
+        new DatabaseRecordsTask<>(teamDAO, new OnResultListener<List<Team>>() {
             @Override
-            public void onPostExecute(List<Team> records) {
+            public void onResult(List<Team> records) {
                 List<Object> objects = new ArrayList<>();
                 objects.addAll(records);
                 loadingDialog.dismiss();

@@ -14,16 +14,16 @@ import java.util.List;
 public class DatabaseRecordsTask<E> extends AsyncTask<Void,Void,List<E>> {
 
     protected BaseDAO<E> baseDAO;
-    protected DatabaseNavigationInterface<E> databaseNavigationInterface;
+    protected OnResultListener<List<E>> onResultListener;
 
     /**
      * @param baseDAO DAO allowing to communicate with the database containing the entity <b>E</b>.
-     * @param databaseNavigationInterface interface to specify what should be done after fetching
+     * @param onResultListener interface to specify what should be done after fetching
      *                                    the data concerning the entity <b>E</b>.
      */
-    public DatabaseRecordsTask(BaseDAO<E> baseDAO, DatabaseNavigationInterface<E> databaseNavigationInterface) {
+    public DatabaseRecordsTask(BaseDAO<E> baseDAO, OnResultListener<List<E>> onResultListener) {
         this.baseDAO = baseDAO;
-        this.databaseNavigationInterface = databaseNavigationInterface;
+        this.onResultListener = onResultListener;
     }
 
     @Override
@@ -34,11 +34,7 @@ public class DatabaseRecordsTask<E> extends AsyncTask<Void,Void,List<E>> {
     @Override
     protected void onPostExecute(List<E> records) {
         super.onPostExecute(records);
-        databaseNavigationInterface.onPostExecute(records);
-    }
-
-    public interface DatabaseNavigationInterface<E>{
-        void onPostExecute(List<E> records);
+        onResultListener.onResult(records);
     }
 
 }

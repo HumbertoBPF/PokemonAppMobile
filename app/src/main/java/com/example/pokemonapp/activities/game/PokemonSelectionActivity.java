@@ -25,6 +25,7 @@ import com.example.pokemonapp.activities.game.team.LoadTeamActivity;
 import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.PokemonAdapter;
 import com.example.pokemonapp.async_task.DatabaseRecordsTask;
+import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.async_task.PokemonOrderedByForceTask;
 import com.example.pokemonapp.dao.PokemonDAO;
 import com.example.pokemonapp.entities.Pokemon;
@@ -59,9 +60,9 @@ public class PokemonSelectionActivity extends SelectionActivity {
             setTitle(R.string.summary_title_app_bar);
             enableLoading(false);   // cannot load a team for the random mode since the team must be random
             loadingDialog.show();
-            new PokemonOrderedByForceTask(pokemonDAO, new DatabaseRecordsTask.DatabaseNavigationInterface<Pokemon>() {
+            new PokemonOrderedByForceTask(pokemonDAO, new OnResultListener<List<Pokemon>>() {
                 @Override
-                public void onPostExecute(List<Pokemon> records) {
+                public void onResult(List<Pokemon> records) {
                     allPokemonRanked = records;                                     // get pokémon ordered by OverallPoints
                     indexWeakestPokemon = getIndexWeakestPokemon();                 // defines the top pokémon to be considered by the CPU
                     saveTeamAutomatically(getString(R.string.filename_json_player_team));
@@ -80,14 +81,14 @@ public class PokemonSelectionActivity extends SelectionActivity {
             cpuTeamLabel.setVisibility(View.GONE);
             enableLoading(true);    // before confirming the choice of the 6 pokémon, can load a team
             loadingDialog.show();
-            new PokemonOrderedByForceTask(pokemonDAO, new DatabaseRecordsTask.DatabaseNavigationInterface<Pokemon>() {
+            new PokemonOrderedByForceTask(pokemonDAO, new OnResultListener<List<Pokemon>>() {
                 @Override
-                public void onPostExecute(List<Pokemon> records) {
+                public void onResult(List<Pokemon> records) {
                     allPokemonRanked = records;                     // get pokémon ordered by OverallPoints
                     indexWeakestPokemon = getIndexWeakestPokemon(); // defines the top pokémon to be considered by the CPU
-                    new DatabaseRecordsTask<>(pokemonDAO, new DatabaseRecordsTask.DatabaseNavigationInterface<Pokemon>() {
+                    new DatabaseRecordsTask<>(pokemonDAO, new OnResultListener<List<Pokemon>>() {
                         @Override
-                        public void onPostExecute(List<Pokemon> records) {
+                        public void onResult(List<Pokemon> records) {
                             saveTeamAutomatically(getString(R.string.filename_json_cpu_team));  // save a random team for the CPU
 
                             if (gameMode.equals(getString(R.string.label_strategy_mode))){

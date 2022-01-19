@@ -22,16 +22,16 @@ public class TypeBonusTask extends AsyncTask<Void,Void, List<Double>> {
     private Pokemon attackingPokemon;
     private Pokemon defendingPokemon;
     private Move move;
-    private OnTypeBonusListener onTypeBonusListener;
+    private OnResultListener<List<Double>> onResultListener;
     private final String TAG = "TypeBonusTask";
 
     public TypeBonusTask(Context context, Pokemon attackingPokemon, Pokemon defendingPokemon, Move move,
-                         OnTypeBonusListener onTypeBonusListener) {
+                         OnResultListener<List<Double>> onResultListener) {
         this.context = context;
         this.attackingPokemon = attackingPokemon;
         this.defendingPokemon = defendingPokemon;
         this.move = move;
-        this.onTypeBonusListener = onTypeBonusListener;
+        this.onResultListener = onResultListener;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class TypeBonusTask extends AsyncTask<Void,Void, List<Double>> {
     @Override
     protected void onPostExecute(List<Double> typeBonus) {
         super.onPostExecute(typeBonus);
-        onTypeBonusListener.onPostExecute(typeBonus);
+        onResultListener.onResult(typeBonus);
     }
 
     /**
@@ -114,10 +114,6 @@ public class TypeBonusTask extends AsyncTask<Void,Void, List<Double>> {
             }
         }
         return typeFactor;
-    }
-
-    public interface OnTypeBonusListener{
-        void onPostExecute(List<Double> typeBonus);
     }
 
 }
