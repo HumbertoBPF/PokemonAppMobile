@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.adapters.PokemonMovesAdapter;
 import com.example.pokemonapp.async_task.BaseAsyncTask;
-import com.example.pokemonapp.async_task.SaveLocalResourceTask;
+import com.example.pokemonapp.async_task.OnTaskListener;
 import com.example.pokemonapp.dao.TeamDAO;
 import com.example.pokemonapp.entities.Team;
 import com.example.pokemonapp.models.InGamePokemon;
@@ -106,9 +106,9 @@ public class SaveTeamActivity extends AppCompatActivity {
                         public void onPostExecute(List<Object> objects) {
                             if (!objects.contains(nameTeam)){               // AND if the name has not been used yet
                                 team.setName(nameTeam);
-                                new SaveLocalResourceTask<>(teamDAO, team, new SaveLocalResourceTask.OnSavingListener() {
+                                teamDAO.saveTask(team, new OnTaskListener() {
                                     @Override
-                                    public void onSave() {
+                                    public void onTask() {
                                         loadingDialog.dismiss();
                                         finish();
                                     }

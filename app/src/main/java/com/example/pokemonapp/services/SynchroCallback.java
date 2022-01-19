@@ -4,8 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 
-import com.example.pokemonapp.async_task.SaveRemoteResourcesTask;
-import com.example.pokemonapp.async_task.SaveResourceTask;
+import com.example.pokemonapp.async_task.OnTaskListener;
 import com.example.pokemonapp.dao.RemoteDAO;
 
 import java.util.List;
@@ -63,9 +62,9 @@ public class SynchroCallback<E> {
                                                                 // database, show a message informing that to the user and go to the
                                                                 // next step (onResult method of the interface CallbackSetup)
                             List<E> resources = responsePokemon.body();
-                            new SaveRemoteResourcesTask<>(remoteDAO, resources, new SaveResourceTask.OnSavingListener() {
+                            remoteDAO.saveTask(resources, new OnTaskListener() {
                                 @Override
-                                public void onSave() {
+                                public void onTask() {
                                     loadingDialog.setMessage(context.getString(
                                             context.getResources().getIdentifier("success_"+getGenericClassName()+"_download",
                                                     "string", context.getPackageName())));

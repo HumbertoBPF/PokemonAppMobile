@@ -2,8 +2,12 @@ package com.example.pokemonapp.dao;
 
 import static androidx.room.OnConflictStrategy.REPLACE;
 
+import android.os.AsyncTask;
+
 import androidx.room.Delete;
 import androidx.room.Insert;
+
+import com.example.pokemonapp.async_task.OnTaskListener;
 
 /**
  * DAO specifying the operations that are common to all the entities available only on local.
@@ -28,5 +32,21 @@ public abstract class LocalDAO<E> extends BaseDAO<E> {
      */
     @Delete
     public abstract void delete(E entity);
+
+    public AsyncTask<Void,Void,Void> saveTask(E entity, OnTaskListener onTaskListener){
+        return new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                save(entity);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void unused) {
+                super.onPostExecute(unused);
+                onTaskListener.onTask();
+            }
+        };
+    }
 
 }

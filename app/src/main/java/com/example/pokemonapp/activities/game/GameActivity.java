@@ -30,7 +30,7 @@ import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.PokemonAdapter;
 import com.example.pokemonapp.async_task.CpuMoveSelectionTask;
 import com.example.pokemonapp.async_task.OnResultListener;
-import com.example.pokemonapp.async_task.SaveLocalResourceTask;
+import com.example.pokemonapp.async_task.OnTaskListener;
 import com.example.pokemonapp.async_task.TypeBonusTask;
 import com.example.pokemonapp.dao.MoveDAO;
 import com.example.pokemonapp.dao.PokemonDAO;
@@ -973,9 +973,9 @@ public class GameActivity extends AppCompatActivity {
                 overallPointsCpu, gameMode, gameLevel, playerTeam, cpuTeam, date);
 
         // async task to store the score entity in the local DB
-        new SaveLocalResourceTask<>(scoreDAO, score, new SaveLocalResourceTask.OnSavingListener() {
+        scoreDAO.saveTask(score, new OnTaskListener() {
             @Override
-            public void onSave() {
+            public void onTask() {
 
             }
         }).execute();

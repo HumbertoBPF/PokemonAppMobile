@@ -2,7 +2,11 @@ package com.example.pokemonapp.dao;
 
 import static androidx.room.OnConflictStrategy.REPLACE;
 
+import android.os.AsyncTask;
+
 import androidx.room.Insert;
+
+import com.example.pokemonapp.async_task.OnTaskListener;
 
 import java.util.List;
 
@@ -22,5 +26,21 @@ public abstract class RemoteDAO<E> extends BaseDAO<E>{
      */
     @Insert(onConflict = REPLACE)
     public abstract void save(List<E> entities);
+
+    public AsyncTask<Void,Void,Void> saveTask(List<E> entities, OnTaskListener onTaskListener){
+        return new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                save(entities);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void unused) {
+                super.onPostExecute(unused);
+                onTaskListener.onTask();
+            }
+        };
+    }
 
 }
