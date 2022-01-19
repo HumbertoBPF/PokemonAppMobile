@@ -23,7 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
-import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.async_task.OnTaskListener;
 import com.example.pokemonapp.dao.ScoreDAO;
 import com.example.pokemonapp.entities.Score;
 import com.example.pokemonapp.models.InGamePokemon;
@@ -137,16 +137,11 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ScoreViewHol
                                 public void onClick(DialogInterface dialog, int which) {
                                     ProgressDialog loadingDialog = loadingDialog(context);
                                     loadingDialog.show();
-                                    new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                                    Score selectedScore = (Score) scores.get(ScoreViewHolder.this.getBindingAdapterPosition());
+                                    // deletes the clicked element from the database
+                                    scoreDAO.deleteTask(selectedScore, new OnTaskListener() {
                                         @Override
-                                        public List<Object> doInBackground() {
-                                            // deletes the clicked element from the database
-                                            scoreDAO.delete((Score) scores.get(ScoreViewHolder.this.getBindingAdapterPosition()));
-                                            return null;
-                                        }
-
-                                        @Override
-                                        public void onPostExecute(List<Object> objects) {
+                                        public void onTask() {
                                             // removes the clicked element from the recycler view list
                                             scores.remove(ScoreViewHolder.this.getBindingAdapterPosition());
                                             // communicates the adapter about the change of its list

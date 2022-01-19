@@ -49,4 +49,20 @@ public abstract class LocalDAO<E> extends BaseDAO<E> {
         };
     }
 
+    public AsyncTask<Void,Void,Void> deleteTask(E entity, OnTaskListener onTaskListener){
+        return new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                delete(entity);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void unused) {
+                super.onPostExecute(unused);
+                onTaskListener.onTask();
+            }
+        };
+    }
+
 }

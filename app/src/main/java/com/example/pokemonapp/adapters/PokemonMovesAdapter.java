@@ -13,7 +13,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
-import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.entities.Move;
@@ -137,21 +137,14 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
             List<Move> moves = inGamePokemon.getMoves();
             Log.i("movesList",moves.size()+"");
             this.pokemonName.setText(pokemon.getFName());
-            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+            pokemonTypeDAO.TypesOfPokemonTask(pokemon, new OnResultListener<List<Type>>() {
                 @Override
-                public List<Object> doInBackground() {
-                    List<Object> objects = new ArrayList<>();
-                    objects.addAll(pokemonTypeDAO.getTypesOfPokemon(pokemon.getFId()));
-                    return objects;
-                }
-
-                @Override
-                public void onPostExecute(List<Object> objects) {
-                    Type type2 = (Type) objects.get(0);
+                public void onResult(List<Type> result) {
+                    Type type2 = (Type) result.get(0);
                     pokemonType2.setText(type2.getFName());
                     pokemonTypeContainer2.setCardBackgroundColor(Color.parseColor("#"+type2.getFColorCode()));
-                    if (objects.size()>1){  // if the pokémon has a second type, add it to layout
-                        Type type1 = (Type) objects.get(1);
+                    if (result.size() > 1){  // if the pokémon has a second type, add it to layout
+                        Type type1 = (Type) result.get(1);
                         pokemonTypeContainer1.setVisibility(View.VISIBLE);
                         pokemonType1.setText(type1.getFName());
                         pokemonTypeContainer1.setCardBackgroundColor(Color.parseColor("#"+type1.getFColorCode()));
@@ -185,17 +178,10 @@ public class PokemonMovesAdapter extends RecyclerView.Adapter<PokemonMovesAdapte
                     this.moveNames.get(i).setText(move.getFName());
                     CardView moveTypeContainer = moveTypeContainers.get(i);
                     TextView moveType = moveTypes.get(i);
-                    new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                    moveTypeDAO.TypesOfMoveTask(move, new OnResultListener<List<Type>>() {
                         @Override
-                        public List<Object> doInBackground() {
-                            List<Object> objects = new ArrayList<>();
-                            objects.addAll(moveTypeDAO.getTypesOfMove(move.getFId()));
-                            return objects;
-                        }
-
-                        @Override
-                        public void onPostExecute(List<Object> objects) {
-                            Type type = (Type) objects.get(0);
+                        public void onResult(List<Type> result) {
+                            Type type = (Type) result.get(0);
                             moveTypeContainer.setCardBackgroundColor(Color.parseColor("#"+type.getFColorCode()));
                             moveType.setText(type.getFName());
                         }

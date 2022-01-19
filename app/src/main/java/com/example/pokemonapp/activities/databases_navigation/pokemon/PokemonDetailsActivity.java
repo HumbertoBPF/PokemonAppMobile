@@ -10,13 +10,12 @@ import androidx.cardview.widget.CardView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.DatabaseDetailsActivity;
-import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.entities.Pokemon;
 import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -78,21 +77,14 @@ public class PokemonDetailsActivity extends DatabaseDetailsActivity {
 
     protected void bind() {
         pokemonName.setText(getString(R.string.label_name)+" : "+pokemon.getFName());
-        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+        pokemonTypeDAO.TypesOfPokemonTask(pokemon, new OnResultListener<List<Type>>() {
             @Override
-            public List<Object> doInBackground() {
-                List<Object> objects = new ArrayList<>();
-                objects.addAll(pokemonTypeDAO.getTypesOfPokemon(pokemon.getFId()));
-                return objects;
-            }
-
-            @Override
-            public void onPostExecute(List<Object> objects) {
-                Type type1 = (Type) objects.get(0);
+            public void onResult(List<Type> result) {
+                Type type1 = (Type) result.get(0);
                 pokemonTypeContainer2.setCardBackgroundColor(Color.parseColor("#"+type1.getFColorCode()));
                 pokemonType2.setText(type1.getFName());
-                if (objects.size() > 1){    // if the pokémon has a second type, add it to layout
-                    Type type2 = (Type) objects.get(1);
+                if (result.size() > 1){    // if the pokémon has a second type, add it to layout
+                    Type type2 = (Type) result.get(1);
                     pokemonTypeContainer1.setCardBackgroundColor(Color.parseColor("#"+type2.getFColorCode()));
                     pokemonType1.setText(type2.getFName());
                 }else{

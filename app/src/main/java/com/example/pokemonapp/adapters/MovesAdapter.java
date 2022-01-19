@@ -15,7 +15,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
-import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.Type;
@@ -82,18 +82,13 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
         public void bind(Move move){
             this.itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
             this.moveName.setText(move.getFName());
-            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+            moveTypeDAO.TypesOfMoveTask(move, new OnResultListener<List<Type>>() {
                 @Override
-                public List<Object> doInBackground() {
+                public void onResult(List<Type> result) {
                     List<Object> objects = new ArrayList<>();
-                    objects.addAll(moveTypeDAO.getTypesOfMove(move.getFId()));
-                    return objects;
-                }
-
-                @Override
-                public void onPostExecute(List<Object> objects) {
+                    objects.addAll(result);
                     moveType.setText(listOfTypesAsString(objects));
-                    Type typeMove = (Type) objects.get(0);
+                    Type typeMove = (Type) result.get(0);
                     moveTypeContainer.setCardBackgroundColor(Color.parseColor("#"+typeMove.getFColorCode()));
                 }
             }).execute();

@@ -14,12 +14,11 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
-import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TypesAdapter extends RecyclerView.Adapter<TypesAdapter.TypeViewHolder> {
@@ -73,18 +72,10 @@ public class TypesAdapter extends RecyclerView.Adapter<TypesAdapter.TypeViewHold
             this.itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
             this.typeNameContainer.setCardBackgroundColor(Color.parseColor("#"+type.getFColorCode()));
             this.typeName.setText(type.getFName());
-            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+            pokemonTypeDAO.nbPokemonWithThisTypeTask(type, new OnResultListener<Integer>() {
                 @Override
-                public List<Object> doInBackground() {
-                    List<Object> objects = new ArrayList<>();
-                    objects.add(pokemonTypeDAO.getNbPokemonWithThisType(type.getFId()));
-                    return objects;
-                }
-
-                @Override
-                public void onPostExecute(List<Object> objects) {
-                    Integer nbOfPokemon = (Integer) objects.get(0);
-                    nbPokemonType.setText(nbOfPokemon+context.getString(R.string.pokemon_have_type));
+                public void onResult(Integer result) {
+                    nbPokemonType.setText(result.toString()+context.getString(R.string.pokemon_have_type));
                 }
             }).execute();
             this.itemView.setOnClickListener(new View.OnClickListener() {

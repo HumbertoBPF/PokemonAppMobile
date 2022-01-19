@@ -10,7 +10,7 @@ import androidx.cardview.widget.CardView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.DatabaseDetailsActivity;
-import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.dao.TypeEffectiveDAO;
@@ -19,7 +19,6 @@ import com.example.pokemonapp.dao.TypeNotEffectiveDAO;
 import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TypesDetailsActivity extends DatabaseDetailsActivity {
@@ -73,30 +72,34 @@ public class TypesDetailsActivity extends DatabaseDetailsActivity {
     protected void bind() {
         typeNameContainer.setCardBackgroundColor(Color.parseColor("#"+type.getFColorCode()));
         typeName.setText(type.getFName());
-        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+        pokemonTypeDAO.nbPokemonWithThisTypeTask(type, new OnResultListener<Integer>() {
             @Override
-            public List<Object> doInBackground() {
-                List<Object> objects = new ArrayList<>();
-                objects.add(pokemonTypeDAO.getNbPokemonWithThisType(type.getFId()));
-                objects.add(moveTypeDAO.getNbMovesWithThisType(type.getFId()));
-                objects.add(listOfTypesAsStringFromTypeList(typeEffectiveDAO.getEffectiveTypes(type.getFId())));
-                objects.add(listOfTypesAsStringFromTypeList(typeNotEffectiveDAO.getNotEffectiveTypes(type.getFId())));
-                objects.add(listOfTypesAsStringFromTypeList(typeNoEffectDAO.getNoEffectTypes(type.getFId())));
-                return objects;
+            public void onResult(Integer result) {
+                pokemonType.setText(result.toString() + getString(R.string.pokemon_have_type));
             }
-
+        }).execute();
+        moveTypeDAO.nbMovesWithThisTypeTask(type, new OnResultListener<Integer>() {
             @Override
-            public void onPostExecute(List<Object> objects) {
-                Integer nbOfPokemon = (Integer) objects.get(0);
-                Integer nbOfMoves = (Integer) objects.get(1);
-                String effectiveTypes = (String) objects.get(2);
-                String notEffectiveTypes = (String) objects.get(3);
-                String noEffectTypes = (String) objects.get(4);
-                pokemonType.setText(nbOfPokemon.toString() + getString(R.string.pokemon_have_type));
-                movesType.setText(nbOfMoves.toString() + getString(R.string.moves_have_type));
-                typeEffective.setText(getString(R.string.label_effective_against)+" : "+effectiveTypes);
-                typeNotEffective.setText(getString(R.string.label_not_effective_agains)+" : "+notEffectiveTypes);
-                typeNoEffect.setText(getString(R.string.label_no_effect_against)+" : "+noEffectTypes);
+            public void onResult(Integer result) {
+                movesType.setText(result.toString() + getString(R.string.moves_have_type));
+            }
+        }).execute();
+        typeEffectiveDAO.effectiveTypesTask(type, new OnResultListener<List<Type>>() {
+            @Override
+            public void onResult(List<Type> result) {
+                typeEffective.setText(getString(R.string.label_effective_against)+" : "+listOfTypesAsStringFromTypeList(result));
+            }
+        }).execute();
+        typeNotEffectiveDAO.notEffectiveTypesTask(type, new OnResultListener<List<Type>>() {
+            @Override
+            public void onResult(List<Type> result) {
+                typeNotEffective.setText(getString(R.string.label_not_effective_agains)+" : "+listOfTypesAsStringFromTypeList(result));
+            }
+        }).execute();
+        typeNoEffectDAO.noEffectTypesTask(type, new OnResultListener<List<Type>>() {
+            @Override
+            public void onResult(List<Type> result) {
+                typeNoEffect.setText(getString(R.string.label_no_effect_against)+" : "+listOfTypesAsStringFromTypeList(result));
             }
         }).execute();
     }

@@ -18,8 +18,9 @@ import androidx.annotation.NonNull;
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.databases_navigation.RemoteDatabasesActivity;
 import com.example.pokemonapp.activities.game.GameModeSelectionActivity;
-import com.example.pokemonapp.async_task.BaseAsyncTask;
 import com.example.pokemonapp.async_task.ConnexionVerificationTask;
+import com.example.pokemonapp.async_task.OnResultListener;
+import com.example.pokemonapp.async_task.ValidationResourcesForGameTask;
 import com.example.pokemonapp.dao.MoveDAO;
 import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.dao.PokemonDAO;
@@ -45,7 +46,6 @@ import com.example.pokemonapp.services.PokemonDbService;
 import com.example.pokemonapp.services.SynchroCallback;
 import com.example.pokemonapp.util.Tools;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -86,18 +86,10 @@ public class MainActivity extends ButtonsActivity implements ConnexionVerificati
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                        new ValidationResourcesForGameTask(getApplicationContext(), new OnResultListener<Boolean>() {
                             @Override
-                            public List<Object> doInBackground() {
-                                List<Object> objects = new ArrayList<>();
-                                objects.add((moveDAO.getNbOfElements() > 0 &&
-                                        typeDAO.getNbOfElements() > 0 && pokemonDAO.getNbOfElements() > 0));
-                                return objects;
-                            }
-
-                            @Override
-                            public void onPostExecute(List<Object> objects) {
-                                if ((Boolean) objects.get(0)){
+                            public void onResult(Boolean result) {
+                                if (result){
                                     startActivity(new Intent(getApplicationContext(), GameModeSelectionActivity.class));
                                 }else{
                                     Toast.makeText(getApplicationContext(),R.string.needs_synchro_warning,Toast.LENGTH_LONG).show();

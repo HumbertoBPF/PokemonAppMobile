@@ -24,7 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.game.team.SaveTeamActivity;
-import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.async_task.OnTaskListener;
 import com.example.pokemonapp.dao.TeamDAO;
 import com.example.pokemonapp.entities.Team;
 import com.example.pokemonapp.models.InGamePokemon;
@@ -124,16 +124,11 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
                                 public void onClick(DialogInterface dialog, int which) {
                                     ProgressDialog loadingDialog = loadingDialog(context);
                                     loadingDialog.show();
-                                    new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                                    Team selectedTeam = (Team) teams.get(TeamViewHolder.this.getBindingAdapterPosition());
+                                    // deletes the clicked element from the database
+                                    teamDAO.deleteTask(selectedTeam, new OnTaskListener() {
                                         @Override
-                                        public List<Object> doInBackground() {
-                                            // deletes the clicked element from the database
-                                            teamDAO.delete((Team) teams.get(TeamViewHolder.this.getBindingAdapterPosition()));
-                                            return null;
-                                        }
-
-                                        @Override
-                                        public void onPostExecute(List<Object> objects) {
+                                        public void onTask() {
                                             // removes the clicked element from the recycler view list
                                             teams.remove(TeamViewHolder.this.getBindingAdapterPosition());
                                             // communicates the adapter about the change of its list

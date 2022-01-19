@@ -10,7 +10,7 @@ import androidx.cardview.widget.CardView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.DatabaseDetailsActivity;
-import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.Type;
@@ -69,18 +69,13 @@ public class MovesDetailsActivity extends DatabaseDetailsActivity {
 
     protected void bind() {
         moveName.setText(getString(R.string.label_name)+" : "+move.getFName());
-        new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+        moveTypeDAO.TypesOfMoveTask(move, new OnResultListener<List<Type>>() {
             @Override
-            public List<Object> doInBackground() {
-                List<Object> objects = new ArrayList<>();
-                objects.addAll(moveTypeDAO.getTypesOfMove(move.getFId()));
-                return objects;
-            }
-
-            @Override
-            public void onPostExecute(List<Object> objects) {
-                Type type = (Type) objects.get(0);
+            public void onResult(List<Type> result) {
+                Type type = (Type) result.get(0);
                 moveTypeContainer.setCardBackgroundColor(Color.parseColor("#"+type.getFColorCode()));
+                List<Object> objects = new ArrayList<>();
+                objects.addAll(result);
                 moveType.setText(listOfTypesAsString(objects));
             }
         }).execute();

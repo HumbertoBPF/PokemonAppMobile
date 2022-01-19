@@ -14,13 +14,12 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
-import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.entities.Pokemon;
 import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonViewHolder> {
@@ -91,21 +90,14 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
         public void bind(Pokemon pokemon){
             this.itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
             this.pokemonName.setText(pokemon.getFName());
-            new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+            pokemonTypeDAO.TypesOfPokemonTask(pokemon, new OnResultListener<List<Type>>() {
                 @Override
-                public List<Object> doInBackground() {
-                    List<Object> objects = new ArrayList<>();
-                    objects.addAll(pokemonTypeDAO.getTypesOfPokemon(pokemon.getFId()));
-                    return objects;
-                }
-
-                @Override
-                public void onPostExecute(List<Object> objects) {
-                    Type type2 = (Type) objects.get(0);
+                public void onResult(List<Type> result) {
+                    Type type2 = (Type) result.get(0);
                     pokemonType2.setText(type2.getFName());
                     pokemonTypeContainer2.setCardBackgroundColor(Color.parseColor("#"+ type2.getFColorCode()));
-                    if (objects.size() > 1){    // if the pokémon has a second type, add it to layout
-                        Type type1 = (Type) objects.get(1);
+                    if (result.size() > 1){    // if the pokémon has a second type, add it to layout
+                        Type type1 = (Type) result.get(1);
                         pokemonType1.setVisibility(View.VISIBLE);
                         pokemonType1.setText(type1.getFName());
                         pokemonTypeContainer1.setCardBackgroundColor(Color.parseColor("#"+ type1.getFColorCode()));

@@ -16,14 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.adapters.PokemonMovesAdapter;
-import com.example.pokemonapp.async_task.BaseAsyncTask;
+import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.async_task.OnTaskListener;
 import com.example.pokemonapp.dao.TeamDAO;
 import com.example.pokemonapp.entities.Team;
 import com.example.pokemonapp.models.InGamePokemon;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SaveTeamActivity extends AppCompatActivity {
@@ -94,17 +93,10 @@ public class SaveTeamActivity extends AppCompatActivity {
                 String nameTeam = nameTeamEditText.getText().toString();    // gets the name input by the user
                 if (!nameTeam.isEmpty()){                                   // if the name is not ""
                     loadingDialog.show();
-                    new BaseAsyncTask(new BaseAsyncTask.BaseAsyncTaskInterface() {
+                    teamDAO.findTeamByNameTask(nameTeam, new OnResultListener<List<Team>>() {
                         @Override
-                        public List<Object> doInBackground() {
-                            List<Object> objects = new ArrayList<>();
-                            objects.addAll(teamDAO.getAllTeamNames());
-                            return objects;
-                        }
-
-                        @Override
-                        public void onPostExecute(List<Object> objects) {
-                            if (!objects.contains(nameTeam)){               // AND if the name has not been used yet
+                        public void onResult(List<Team> result) {
+                            if (result.isEmpty()){               // AND if the name has not been used yet
                                 team.setName(nameTeam);
                                 teamDAO.saveTask(team, new OnTaskListener() {
                                     @Override
@@ -119,7 +111,6 @@ public class SaveTeamActivity extends AppCompatActivity {
                             }
                         }
                     }).execute();
-
                 }else{
                     Toast.makeText(getApplicationContext(), R.string.name_empty_warning, Toast.LENGTH_LONG).show();
                 }

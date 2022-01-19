@@ -1,8 +1,11 @@
 package com.example.pokemonapp.dao;
 
+import android.os.AsyncTask;
+
 import androidx.room.Dao;
 import androidx.room.Query;
 
+import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.entities.TypeNotEffective;
 
@@ -25,5 +28,20 @@ public abstract class TypeNotEffectiveDAO extends RemoteDAO<TypeNotEffective>{
 
     @Query("SELECT COUNT(*) FROM move_type;")
     public abstract Long getNbOfElements();
+
+    public AsyncTask<Void,Void,List<Type>> notEffectiveTypesTask(Type type, OnResultListener<List<Type>> onResultListener){
+        return new AsyncTask<Void, Void, List<Type>>() {
+            @Override
+            protected List<Type> doInBackground(Void... voids) {
+                return getNotEffectiveTypes(type.getFId());
+            }
+
+            @Override
+            protected void onPostExecute(List<Type> types) {
+                super.onPostExecute(types);
+                onResultListener.onResult(types);
+            }
+        };
+    }
 
 }
