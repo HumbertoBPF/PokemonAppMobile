@@ -1,9 +1,13 @@
 package com.example.pokemonapp.dao;
 
+import android.os.AsyncTask;
+
 import androidx.room.Dao;
 import androidx.room.Query;
 
+import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.entities.Move;
+import com.example.pokemonapp.entities.Pokemon;
 import com.example.pokemonapp.entities.PokemonMove;
 
 import java.util.List;
@@ -25,5 +29,22 @@ public abstract class PokemonMoveDAO extends RemoteDAO<PokemonMove>{
 
     @Query("SELECT COUNT(*) FROM pokemon_moves;")
     public abstract Long getNbOfElements();
+
+    public AsyncTask<Void,Void,List<Move>> getMovesOfPokemonTask(Pokemon pokemon,
+                                                                 OnResultListener<List<Move>> onResultListener){
+        return new AsyncTask<Void, Void, List<Move>>() {
+            @Override
+            protected List<Move> doInBackground(Void... voids) {
+                return getMovesOfPokemon(pokemon.getFId());
+            }
+
+            @Override
+            protected void onPostExecute(List<Move> moves) {
+                super.onPostExecute(moves);
+                onResultListener.onResult(moves);
+            }
+
+        };
+    }
 
 }

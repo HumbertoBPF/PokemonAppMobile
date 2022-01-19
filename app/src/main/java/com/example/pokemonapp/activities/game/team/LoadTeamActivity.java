@@ -13,7 +13,6 @@ import com.example.pokemonapp.R;
 import com.example.pokemonapp.activities.SelectionActivity;
 import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.TeamAdapter;
-import com.example.pokemonapp.async_task.DatabaseRecordsTask;
 import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.dao.TeamDAO;
 import com.example.pokemonapp.entities.Team;
@@ -44,17 +43,17 @@ public class LoadTeamActivity extends SelectionActivity {
         maxOverallPoints = getIntent().getIntExtra("maxOverallPoints",-1);
 
         loadingDialog.show();
-        new DatabaseRecordsTask<>(teamDAO, new OnResultListener<List<Team>>() {
+        teamDAO.getAllRecordsTask(new OnResultListener<List<Team>>() {
             @Override
-            public void onResult(List<Team> records) {
+            public void onResult(List<Team> result) {
                 List<Object> objects = new ArrayList<>();
-                objects.addAll(records);
+                objects.addAll(result);
                 loadingDialog.dismiss();
                 // shows all the teams previously saved
                 playerRecyclerView.setAdapter(new TeamAdapter(getApplicationContext(), objects, new OnItemAdapterClickListener() {
                     @Override
                     public void onClick(View view, Object object) { // when a team is selected, the details of this team are shown,
-                        // i.e. the details about the pokémon and their moves
+                                                                    // i.e. the details about the pokémon and their moves
                         if (maxOverallPoints != -1){
                             if (getOverallPointsOfTeam((Team) object) <= maxOverallPoints){
                                 showTeamDetails((Team) object);
@@ -68,7 +67,6 @@ public class LoadTeamActivity extends SelectionActivity {
                 },false));
             }
         }).execute();
-
     }
 
     private void showTeamDetails(Team team) {

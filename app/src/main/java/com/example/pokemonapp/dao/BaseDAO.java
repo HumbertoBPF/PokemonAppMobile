@@ -1,9 +1,13 @@
 package com.example.pokemonapp.dao;
 
+import android.os.AsyncTask;
+
 import androidx.room.Dao;
 import androidx.room.RawQuery;
 import androidx.sqlite.db.SimpleSQLiteQuery;
 import androidx.sqlite.db.SupportSQLiteQuery;
+
+import com.example.pokemonapp.async_task.OnResultListener;
 
 import java.util.List;
 
@@ -32,6 +36,21 @@ public abstract class BaseDAO<E> {
      */
     public List<E> getAllRecords(){
         return getAllRecords(new SimpleSQLiteQuery("SELECT * FROM "+tableName));
+    }
+
+    public AsyncTask<Void,Void,List<E>> getAllRecordsTask(OnResultListener<List<E>> onResultListener){
+        return new AsyncTask<Void, Void, List<E>>() {
+            @Override
+            protected List<E> doInBackground(Void... voids) {
+                return getAllRecords();
+            }
+
+            @Override
+            protected void onPostExecute(List<E> records) {
+                super.onPostExecute(records);
+                onResultListener.onResult(records);
+            }
+        };
     }
 
 }

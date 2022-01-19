@@ -29,12 +29,10 @@ import com.example.pokemonapp.adapters.MovesAdapter;
 import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.PokemonAdapter;
 import com.example.pokemonapp.async_task.CpuMoveSelectionTask;
-import com.example.pokemonapp.async_task.DatabaseRecordsTask;
-import com.example.pokemonapp.async_task.MaxScoreTask;
 import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.async_task.SaveLocalResourceTask;
-import com.example.pokemonapp.async_task.StruggleMoveTask;
 import com.example.pokemonapp.async_task.TypeBonusTask;
+import com.example.pokemonapp.dao.MoveDAO;
 import com.example.pokemonapp.dao.PokemonDAO;
 import com.example.pokemonapp.dao.ScoreDAO;
 import com.example.pokemonapp.entities.Move;
@@ -65,6 +63,7 @@ public class GameActivity extends AppCompatActivity {
     private String gameLevel;
 
     private PokemonDAO pokemonDAO;
+    private MoveDAO moveDAO;
     private ScoreDAO scoreDAO;
 
     private List<Pokemon> allPokemon;
@@ -112,10 +111,10 @@ public class GameActivity extends AppCompatActivity {
         cpu.setTeam(loadTeam(this,getString(R.string.filename_json_cpu_team)));
         pokemonChosenByCPU = getDistinctRandomIntegers(0,player.getTeam().size()-1,cpu.getTeam().size());
 
-        new DatabaseRecordsTask<>(pokemonDAO, new OnResultListener<List<Pokemon>>() {
+        pokemonDAO.getAllRecordsTask(new OnResultListener<List<Pokemon>>() {
             @Override
-            public void onResult(List<Pokemon> records) {
-                allPokemon = records;
+            public void onResult(List<Pokemon> result) {
+                allPokemon = result;
                 pickPokemonForCPU();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -159,6 +158,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void getDAOs() {
         pokemonDAO = PokemonAppDatabase.getInstance(this).getPokemonDAO();
+        moveDAO = PokemonAppDatabase.getInstance(this).getMoveDAO();
         scoreDAO = PokemonAppDatabase.getInstance(this).getScoreDAO();
     }
 
@@ -331,7 +331,7 @@ public class GameActivity extends AppCompatActivity {
      * @param playerWon boolean indicating if player won the battle
      */
     private void endGame(boolean playerWon) {
-        new MaxScoreTask(this, new OnResultListener<Long>() {
+        scoreDAO.getMaxScoreTask(new OnResultListener<Long>() {
             @Override
             public void onResult(Long result) {
                 int idResultString;
@@ -493,10 +493,10 @@ public class GameActivity extends AppCompatActivity {
         if (!player.isLoading()){
             List<Move> moves = getRemainingMoves(player.getCurrentPokemon());
             if (moves.isEmpty()){   // if there is no move remaining, use struggle
-                new StruggleMoveTask(this, new OnResultListener<Move>() {
+                moveDAO.getStruggleMoveTask(new OnResultListener<Move>() {
                     @Override
-                    public void onResult(Move move) {
-                        player.setCurrentMove(move);
+                    public void onResult(Move result) {
+                        player.setCurrentMove(result);
                         onChoiceListener.onChoice();
                     }
                 }).execute();
@@ -542,10 +542,10 @@ public class GameActivity extends AppCompatActivity {
         if (!cpu.isLoading()) {
             List<Move> moves = getRemainingMoves(cpu.getCurrentPokemon());
             if (moves.isEmpty()){   // if there is no move remaining, use struggle
-                new StruggleMoveTask(this, new OnResultListener<Move>() {
+                moveDAO.getStruggleMoveTask(new OnResultListener<Move>() {
                     @Override
-                    public void onResult(Move move) {
-                        cpu.setCurrentMove(move);
+                    public void onResult(Move result) {
+                        cpu.setCurrentMove(result);
                         onChoiceListener.onChoice();
                     }
                 }).execute();

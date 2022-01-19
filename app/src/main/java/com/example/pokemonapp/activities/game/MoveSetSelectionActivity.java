@@ -22,12 +22,9 @@ import com.example.pokemonapp.activities.game.team.SaveTeamActivity;
 import com.example.pokemonapp.adapters.MovesAdapter;
 import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.PokemonMovesAdapter;
-import com.example.pokemonapp.async_task.MovesOfPokemonTask;
 import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.async_task.SmartMoveSetSelectionTask;
-import com.example.pokemonapp.dao.MoveTypeDAO;
 import com.example.pokemonapp.dao.PokemonMoveDAO;
-import com.example.pokemonapp.dao.PokemonTypeDAO;
 import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.models.InGamePokemon;
 import com.example.pokemonapp.room.PokemonAppDatabase;
@@ -38,8 +35,6 @@ import java.util.List;
 public class MoveSetSelectionActivity extends SelectionActivity {
 
     private PokemonMoveDAO pokemonMoveDAO;
-    private PokemonTypeDAO pokemonTypeDAO;
-    private MoveTypeDAO moveTypeDAO;
     private List<InGamePokemon> playerTeam;
     private int currentPokemonIndex = 0;    // index of the player's pokémon whose moves are being currenly chosen
     private boolean canSave;
@@ -115,20 +110,18 @@ public class MoveSetSelectionActivity extends SelectionActivity {
 
     private void getDAOs() {
         pokemonMoveDAO = PokemonAppDatabase.getInstance(this).getPokemonMoveDAO();
-        pokemonTypeDAO = PokemonAppDatabase.getInstance(this).getPokemonTypeDAO();
-        moveTypeDAO = PokemonAppDatabase.getInstance(this).getMoveTypeDAO();
     }
 
     private void chooseMovesForCurrentPokemon() {
         setTitle(getString(R.string.choose_moves_pokemon)+playerTeam.get(currentPokemonIndex).getPokemonServer().getFName());
 
         loadingDialog.show();
-        new MovesOfPokemonTask(this, playerTeam.get(currentPokemonIndex).getPokemonServer(),
+        pokemonMoveDAO.getMovesOfPokemonTask(playerTeam.get(currentPokemonIndex).getPokemonServer(),
                 new OnResultListener<List<Move>>() {
                     @Override
-                    public void onResult(List<Move> moves) {
+                    public void onResult(List<Move> result) {
                         List<Object> objects = new ArrayList<>();
-                        objects.addAll(moves);
+                        objects.addAll(result);
                         playerRecyclerView.setAdapter(new MovesAdapter(getApplicationContext(), objects, new OnItemAdapterClickListener() {
                             @Override
                             public void onClick(View view, Object object) {
@@ -196,18 +189,18 @@ public class MoveSetSelectionActivity extends SelectionActivity {
         List<InGamePokemon> inGamePokemonList = loadTeam(this, key);    // get list of pokémon
         loadingDialog.show();
         for (InGamePokemon inGamePokemon : inGamePokemonList){                 // iterates over all the pokémon
-            new MovesOfPokemonTask(this, inGamePokemon.getPokemonServer(), new OnResultListener<List<Move>>() {
+            pokemonMoveDAO.getMovesOfPokemonTask(inGamePokemon.getPokemonServer(), new OnResultListener<List<Move>>() {
                 @Override
-                public void onResult(List<Move> moves) {
+                public void onResult(List<Move> result) {
                     List<Move> movesInGamePokemon = new ArrayList<>();
                     List<Integer> indexes = new ArrayList<>();
-                    if (moves.size()>0){                                      // if the pokémon has any move, we pick at most 4
+                    if (result.size()>0){                                      // if the pokémon has any move, we pick at most 4
                         // (if it has less than 4, we get all)
-                        indexes = getDistinctRandomIntegers(0,moves.size()-1,
-                                Math.min(moves.size(),4));
+                        indexes = getDistinctRandomIntegers(0,result.size()-1,
+                                Math.min(result.size(),4));
                     }
                     for (int index : indexes){                                  // add the selected moves to the list of moves
-                        movesInGamePokemon.add(moves.get(index));
+                        movesInGamePokemon.add(result.get(index));
                     }
                     inGamePokemon.setMoves(movesInGamePokemon);                 // set the list of moves of the current pokémon
                     if (inGamePokemonList.indexOf(inGamePokemon) == inGamePokemonList.size() - 1){

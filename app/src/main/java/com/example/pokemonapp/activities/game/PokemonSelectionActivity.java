@@ -24,9 +24,7 @@ import com.example.pokemonapp.activities.SelectionActivity;
 import com.example.pokemonapp.activities.game.team.LoadTeamActivity;
 import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.PokemonAdapter;
-import com.example.pokemonapp.async_task.DatabaseRecordsTask;
 import com.example.pokemonapp.async_task.OnResultListener;
-import com.example.pokemonapp.async_task.PokemonOrderedByForceTask;
 import com.example.pokemonapp.dao.PokemonDAO;
 import com.example.pokemonapp.entities.Pokemon;
 import com.example.pokemonapp.models.InGamePokemon;
@@ -60,10 +58,10 @@ public class PokemonSelectionActivity extends SelectionActivity {
             setTitle(R.string.summary_title_app_bar);
             enableLoading(false);   // cannot load a team for the random mode since the team must be random
             loadingDialog.show();
-            new PokemonOrderedByForceTask(pokemonDAO, new OnResultListener<List<Pokemon>>() {
+            pokemonDAO.getPokemonOrderedByForceTask(new OnResultListener<List<Pokemon>>() {
                 @Override
-                public void onResult(List<Pokemon> records) {
-                    allPokemonRanked = records;                                     // get pokémon ordered by OverallPoints
+                public void onResult(List<Pokemon> result) {
+                    allPokemonRanked = result;                                     // get pokémon ordered by OverallPoints
                     indexWeakestPokemon = getIndexWeakestPokemon();                 // defines the top pokémon to be considered by the CPU
                     saveTeamAutomatically(getString(R.string.filename_json_player_team));
                     saveTeamAutomatically(getString(R.string.filename_json_cpu_team));
@@ -81,14 +79,14 @@ public class PokemonSelectionActivity extends SelectionActivity {
             cpuTeamLabel.setVisibility(View.GONE);
             enableLoading(true);    // before confirming the choice of the 6 pokémon, can load a team
             loadingDialog.show();
-            new PokemonOrderedByForceTask(pokemonDAO, new OnResultListener<List<Pokemon>>() {
+            pokemonDAO.getPokemonOrderedByForceTask(new OnResultListener<List<Pokemon>>() {
                 @Override
-                public void onResult(List<Pokemon> records) {
-                    allPokemonRanked = records;                     // get pokémon ordered by OverallPoints
+                public void onResult(List<Pokemon> result) {
+                    allPokemonRanked = result;                      // get pokémon ordered by OverallPoints
                     indexWeakestPokemon = getIndexWeakestPokemon(); // defines the top pokémon to be considered by the CPU
-                    new DatabaseRecordsTask<>(pokemonDAO, new OnResultListener<List<Pokemon>>() {
+                    pokemonDAO.getAllRecordsTask(new OnResultListener<List<Pokemon>>() {
                         @Override
-                        public void onResult(List<Pokemon> records) {
+                        public void onResult(List<Pokemon> result) {
                             saveTeamAutomatically(getString(R.string.filename_json_cpu_team));  // save a random team for the CPU
 
                             if (gameMode.equals(getString(R.string.label_strategy_mode))){
@@ -100,7 +98,7 @@ public class PokemonSelectionActivity extends SelectionActivity {
                             }
 
                             List<Object> objects = new ArrayList<>();
-                            objects.addAll(records);
+                            objects.addAll(result);
                             // shows all the pokémon for the players so as he can pick 6 for their team
                             playerRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(),
                                     objects,
@@ -112,8 +110,8 @@ public class PokemonSelectionActivity extends SelectionActivity {
                                         }
                                     }));
                             configureConfirmChoiceButton();
-                            dismissDialogWhenViewIsDrawn(playerRecyclerView, loadingDialog);    // when all has been set up, dismiss
-                                                                                                // loading dialog
+                            dismissDialogWhenViewIsDrawn(playerRecyclerView, loadingDialog);    // when all has been set up,
+                                                                                                // dismiss loading dialog
                         }
                     }).execute();
                 }

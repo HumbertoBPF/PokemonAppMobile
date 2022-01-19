@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
-import com.example.pokemonapp.async_task.DatabaseRecordsTask;
 import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.dao.BaseDAO;
 
@@ -56,7 +55,7 @@ public abstract class DatabaseNavigationActivity<E> extends AppCompatActivity im
 
     protected void configureRecyclerView() {
         loadingDialog.show();
-        new DatabaseRecordsTask<>(baseDAO, this).execute();
+        baseDAO.getAllRecordsTask(this).execute();
     }
 
     /**
