@@ -1,8 +1,8 @@
 package com.example.pokemonapp.activities.game.score;
 
-import static com.example.pokemonapp.util.Tools.getGameLevelStringFromMnemonic;
-import static com.example.pokemonapp.util.Tools.getGameModeStringFromMnemonic;
-import static com.example.pokemonapp.util.Tools.getInGamePokemonFromJSON;
+import static com.example.pokemonapp.util.GeneralTools.getGameLevelStringFromMnemonic;
+import static com.example.pokemonapp.util.GeneralTools.getGameModeStringFromMnemonic;
+import static com.example.pokemonapp.util.SharedPreferencesTools.getInGamePokemonFromJSON;
 
 import android.content.Intent;
 import android.os.Bundle;

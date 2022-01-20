@@ -1,7 +1,7 @@
 package com.example.pokemonapp.adapters;
 
-import static com.example.pokemonapp.util.Tools.listOfTypesAsString;
-import static com.example.pokemonapp.util.Tools.makeSelector;
+import static com.example.pokemonapp.util.GeneralTools.listOfTypesAsString;
+import static com.example.pokemonapp.util.UiTools.makeSelector;
 
 import android.content.Context;
 import android.graphics.Color;

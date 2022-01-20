@@ -1,7 +1,6 @@
 package com.example.pokemonapp.activities.game.team;
 
-import static com.example.pokemonapp.util.Tools.getInGamePokemonFromTeam;
-import static com.example.pokemonapp.util.Tools.loadingDialog;
+import static com.example.pokemonapp.util.DialogTools.loadingDialog;
 
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
@@ -82,7 +81,7 @@ public class SaveTeamActivity extends AppCompatActivity {
     }
 
     private void configureRecyclerView() {
-        List<InGamePokemon> teamToSave = getInGamePokemonFromTeam(team);
+        List<InGamePokemon> teamToSave = team.getInGamePokemonFromTeam();
         teamToSaveRecyclerView.setAdapter(new PokemonMovesAdapter(this, teamToSave));
     }
 

@@ -1,7 +1,7 @@
 package com.example.pokemonapp.activities.game;
 
-import static com.example.pokemonapp.util.Tools.goToNextActivityWithStringExtra;
-import static com.example.pokemonapp.util.Tools.singleButtonDialog;
+import static com.example.pokemonapp.util.DialogTools.singleButtonDialog;
+import static com.example.pokemonapp.util.SharedPreferencesTools.goToNextActivityWithStringExtra;
 
 import android.app.Dialog;
 import android.content.DialogInterface;

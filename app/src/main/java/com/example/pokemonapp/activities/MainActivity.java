@@ -1,6 +1,8 @@
 package com.example.pokemonapp.activities;
 
-import static com.example.pokemonapp.util.Tools.loadingDialog;
+import static com.example.pokemonapp.util.DialogTools.dualButtonDialog;
+import static com.example.pokemonapp.util.DialogTools.loadingDialog;
+import static com.example.pokemonapp.util.DialogTools.singleButtonDialog;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -44,7 +46,6 @@ import com.example.pokemonapp.retrofit.PokemonDbRetrofit;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 import com.example.pokemonapp.services.PokemonDbService;
 import com.example.pokemonapp.services.SynchroCallback;
-import com.example.pokemonapp.util.Tools;
 
 import java.util.List;
 
@@ -132,7 +133,7 @@ public class MainActivity extends ButtonsActivity implements ConnexionVerificati
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.item_sync) {
-            Dialog dialog = Tools.dualButtonDialog(this, getString(R.string.title_synchronization_dialog),
+            Dialog dialog = dualButtonDialog(this, getString(R.string.title_synchronization_dialog),
                     getString(R.string.message_synchronization_dialog), getString(R.string.confirm_button_text_synchronization_dialog),
                     getString(R.string.cancel_button_text_synchronization_dialog),
                     new DialogInterface.OnClickListener() {
@@ -173,7 +174,7 @@ public class MainActivity extends ButtonsActivity implements ConnexionVerificati
                 loadingDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
-                        Dialog noInternetDialog = Tools.singleButtonDialog(
+                        Dialog noInternetDialog = singleButtonDialog(
                                 MainActivity.this,
                                 getString(R.string.no_internet_dialog_title),
                                 getString(R.string.no_internet_dialog_text),

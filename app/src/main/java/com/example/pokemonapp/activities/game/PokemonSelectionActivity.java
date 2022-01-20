@@ -1,10 +1,10 @@
 package com.example.pokemonapp.activities.game;
 
-import static com.example.pokemonapp.util.Tools.dismissDialogWhenViewIsDrawn;
-import static com.example.pokemonapp.util.Tools.getDistinctRandomIntegers;
-import static com.example.pokemonapp.util.Tools.loadTeam;
-import static com.example.pokemonapp.util.Tools.makeSelector;
-import static com.example.pokemonapp.util.Tools.saveTeam;
+import static com.example.pokemonapp.util.DialogTools.dismissDialogWhenViewIsDrawn;
+import static com.example.pokemonapp.util.GeneralTools.getDistinctRandomIntegers;
+import static com.example.pokemonapp.util.SharedPreferencesTools.loadTeam;
+import static com.example.pokemonapp.util.SharedPreferencesTools.saveTeam;
+import static com.example.pokemonapp.util.UiTools.makeSelector;
 
 import android.content.Intent;
 import android.os.Bundle;

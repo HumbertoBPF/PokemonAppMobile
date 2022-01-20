@@ -3,11 +3,11 @@ package com.example.pokemonapp.activities.game;
 import static com.example.pokemonapp.models.Trainer.Position.BACK;
 import static com.example.pokemonapp.models.Trainer.Position.DEFEATED;
 import static com.example.pokemonapp.models.Trainer.Position.FRONT;
-import static com.example.pokemonapp.util.Tools.dualButtonDialog;
-import static com.example.pokemonapp.util.Tools.getDistinctRandomIntegers;
-import static com.example.pokemonapp.util.Tools.getOverallPointsOfTeam;
-import static com.example.pokemonapp.util.Tools.goToNextActivityWithStringExtra;
-import static com.example.pokemonapp.util.Tools.loadTeam;
+import static com.example.pokemonapp.util.DialogTools.dualButtonDialog;
+import static com.example.pokemonapp.util.GeneralTools.getDistinctRandomIntegers;
+import static com.example.pokemonapp.util.GeneralTools.getOverallPointsOfTeam;
+import static com.example.pokemonapp.util.SharedPreferencesTools.goToNextActivityWithStringExtra;
+import static com.example.pokemonapp.util.SharedPreferencesTools.loadTeam;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -729,7 +729,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     /**
-     * Makes the cpu to finish realoding and makes the necessary UI changes.
+     * Makes the cpu to finish reloading and makes the necessary UI changes.
      * @param attackingPokemon pokémon that used the move being reloaded.
      * @param defendingPokemon pokémon that received the move.
      * @param onTaskListener code to be executed at the end of this round.

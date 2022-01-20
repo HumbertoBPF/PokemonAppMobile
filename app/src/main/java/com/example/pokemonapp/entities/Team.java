@@ -1,9 +1,16 @@
 package com.example.pokemonapp.entities;
 
+import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.example.pokemonapp.models.InGamePokemon;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Team implements Serializable {
@@ -55,4 +62,27 @@ public class Team implements Serializable {
     public void setTeam(String team) {
         this.team = team;
     }
+
+    /**
+     * Converts the team attribute of a Team object (it is a JSON String) into a list of pokémon.
+     * @return a list of the pokémon corresponding to team attribute of the specified object.
+     */
+    @Nullable
+    public List<InGamePokemon> getInGamePokemonFromTeam() {
+        Gson gson = new Gson();
+        java.lang.reflect.Type type = new TypeToken<ArrayList<InGamePokemon>>() {}.getType();
+        return gson.fromJson(team, type);
+    }
+
+    /**
+     * @return sum of the Overall Points of the pokémon of the specified team.
+     */
+    public int getOverallPointsOfTeam() {
+        int teamOverallPoints = 0;
+        for (InGamePokemon inGamePokemon : getInGamePokemonFromTeam()){
+            teamOverallPoints += inGamePokemon.getPokemonServer().getFOverallPts();
+        }
+        return teamOverallPoints;
+    }
+
 }

@@ -1,7 +1,5 @@
 package com.example.pokemonapp.activities.game.team;
 
-import static com.example.pokemonapp.util.Tools.getOverallPointsOfTeam;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -52,7 +50,7 @@ public class LoadTeamActivity extends SelectionActivity {
                     public void onClick(View view, Object object) { // when a team is selected, the details of this team are shown,
                                                                     // i.e. the details about the pokémon and their moves
                         if (maxOverallPoints != -1){
-                            if (getOverallPointsOfTeam((Team) object) <= maxOverallPoints){
+                            if (((Team) object).getOverallPointsOfTeam() <= maxOverallPoints){
                                 showTeamDetails((Team) object);
                             }else{
                                 Toast.makeText(getApplicationContext(), R.string.max_op_load_team_warning, Toast.LENGTH_LONG).show();

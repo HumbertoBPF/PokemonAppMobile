@@ -1,6 +1,6 @@
 package com.example.pokemonapp.activities;
 
-import static com.example.pokemonapp.util.Tools.setAppbarColor;
+import static com.example.pokemonapp.util.UiTools.setAppbarColor;
 
 import android.os.Bundle;
 

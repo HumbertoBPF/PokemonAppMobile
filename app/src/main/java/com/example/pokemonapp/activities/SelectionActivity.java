@@ -1,6 +1,6 @@
 package com.example.pokemonapp.activities;
 
-import static com.example.pokemonapp.util.Tools.loadingDialog;
+import static com.example.pokemonapp.util.DialogTools.loadingDialog;
 
 import android.app.ProgressDialog;
 import android.content.Intent;

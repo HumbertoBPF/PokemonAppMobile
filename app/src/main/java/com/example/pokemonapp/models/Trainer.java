@@ -1,6 +1,6 @@
 package com.example.pokemonapp.models;
 
-import static com.example.pokemonapp.util.Tools.getDistinctRandomIntegers;
+import static com.example.pokemonapp.util.GeneralTools.getDistinctRandomIntegers;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;

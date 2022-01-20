@@ -1,11 +1,11 @@
 package com.example.pokemonapp.adapters;
 
-import static com.example.pokemonapp.util.Tools.dualButtonDialog;
-import static com.example.pokemonapp.util.Tools.getGameLevelStringFromMnemonic;
-import static com.example.pokemonapp.util.Tools.getGameModeStringFromMnemonic;
-import static com.example.pokemonapp.util.Tools.getInGamePokemonFromJSON;
-import static com.example.pokemonapp.util.Tools.loadingDialog;
-import static com.example.pokemonapp.util.Tools.makeSelector;
+import static com.example.pokemonapp.util.DialogTools.dualButtonDialog;
+import static com.example.pokemonapp.util.DialogTools.loadingDialog;
+import static com.example.pokemonapp.util.GeneralTools.getGameLevelStringFromMnemonic;
+import static com.example.pokemonapp.util.GeneralTools.getGameModeStringFromMnemonic;
+import static com.example.pokemonapp.util.SharedPreferencesTools.getInGamePokemonFromJSON;
+import static com.example.pokemonapp.util.UiTools.makeSelector;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;

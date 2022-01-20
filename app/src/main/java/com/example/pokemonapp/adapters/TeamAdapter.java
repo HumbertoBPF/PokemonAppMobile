@@ -1,10 +1,8 @@
 package com.example.pokemonapp.adapters;
 
-import static com.example.pokemonapp.util.Tools.dualButtonDialog;
-import static com.example.pokemonapp.util.Tools.getInGamePokemonFromTeam;
-import static com.example.pokemonapp.util.Tools.getOverallPointsOfTeam;
-import static com.example.pokemonapp.util.Tools.loadingDialog;
-import static com.example.pokemonapp.util.Tools.makeSelector;
+import static com.example.pokemonapp.util.DialogTools.dualButtonDialog;
+import static com.example.pokemonapp.util.DialogTools.loadingDialog;
+import static com.example.pokemonapp.util.UiTools.makeSelector;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -92,13 +90,13 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
             this.itemView.setBackground(makeSelector(context.getResources().getColor(R.color.white),0.8f));
             this.teamName.setText(team.getName());
 
-            List<InGamePokemon> inGamePokemonList = getInGamePokemonFromTeam(team);
+            List<InGamePokemon> inGamePokemonList = team.getInGamePokemonFromTeam();
 
             for (int i=0;i<inGamePokemonList.size();i++){
                 pokemonTextView.get(i).setText(inGamePokemonList.get(i).getPokemonServer().getFName());
             }
 
-            this.teamOverallPoints.setText(context.getString(R.string.team_overall_points_label)+" : "+getOverallPointsOfTeam(team));
+            this.teamOverallPoints.setText(context.getString(R.string.team_overall_points_label)+" : "+team.getOverallPointsOfTeam());
 
             this.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

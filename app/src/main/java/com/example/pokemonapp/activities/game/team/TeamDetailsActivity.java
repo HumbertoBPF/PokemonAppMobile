@@ -1,7 +1,6 @@
 package com.example.pokemonapp.activities.game.team;
 
-import static com.example.pokemonapp.util.Tools.getInGamePokemonFromTeam;
-import static com.example.pokemonapp.util.Tools.saveTeam;
+import static com.example.pokemonapp.util.SharedPreferencesTools.saveTeam;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -44,7 +43,7 @@ public class TeamDetailsActivity extends DatabaseDetailsActivity {
 
     @Override
     protected void bind() {
-        List<InGamePokemon> inGamePokemonList = getInGamePokemonFromTeam(team);
+        List<InGamePokemon> inGamePokemonList = team.getInGamePokemonFromTeam();
         teamToLoadRecyclerView.setAdapter(new PokemonMovesAdapter(this, inGamePokemonList));
         configureLoadButton(inGamePokemonList);
 

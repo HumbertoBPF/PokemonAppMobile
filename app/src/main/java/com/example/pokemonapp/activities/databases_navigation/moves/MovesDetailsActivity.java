@@ -1,6 +1,6 @@
 package com.example.pokemonapp.activities.databases_navigation.moves;
 
-import static com.example.pokemonapp.util.Tools.listOfTypesAsString;
+import static com.example.pokemonapp.util.GeneralTools.listOfTypesAsString;
 
 import android.graphics.Color;
 import android.os.Bundle;

@@ -1,6 +1,6 @@
 package com.example.pokemonapp.async_task;
 
-import static com.example.pokemonapp.util.Tools.getDistinctRandomIntegers;
+import static com.example.pokemonapp.util.GeneralTools.getDistinctRandomIntegers;
 
 import android.content.Context;
 import android.os.AsyncTask;
