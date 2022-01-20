@@ -27,6 +27,11 @@ public abstract class RemoteDAO<E> extends BaseDAO<E>{
     @Insert(onConflict = REPLACE)
     public abstract void save(List<E> entities);
 
+    /**
+     * Performs the async task to save a list of entities.
+     * @param onTaskListener code to be executed after the task has finished.
+     * @return the AsyncTask allowing to execute the saving task.
+     */
     public AsyncTask<Void,Void,Void> saveTask(List<E> entities, OnTaskListener onTaskListener){
         return new AsyncTask<Void, Void, Void>() {
             @Override

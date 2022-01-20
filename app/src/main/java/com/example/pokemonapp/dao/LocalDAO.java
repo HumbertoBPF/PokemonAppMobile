@@ -33,6 +33,12 @@ public abstract class LocalDAO<E> extends BaseDAO<E> {
     @Delete
     public abstract void delete(E entity);
 
+    /**
+     * Performs the async task to save an entity.
+     * @param entity entity to be saved.
+     * @param onTaskListener code to be executed after the task has finished.
+     * @return the AsyncTask allowing to execute the saving task.
+     */
     public AsyncTask<Void,Void,Void> saveTask(E entity, OnTaskListener onTaskListener){
         return new AsyncTask<Void, Void, Void>() {
             @Override
@@ -49,6 +55,12 @@ public abstract class LocalDAO<E> extends BaseDAO<E> {
         };
     }
 
+    /**
+     * Performs the async task to delete an entity.
+     * @param entity entity to be deleted.
+     * @param onTaskListener code to be executed after the task has finished.
+     * @return the AsyncTask allowing to execute the deleting task.
+     */
     public AsyncTask<Void,Void,Void> deleteTask(E entity, OnTaskListener onTaskListener){
         return new AsyncTask<Void, Void, Void>() {
             @Override

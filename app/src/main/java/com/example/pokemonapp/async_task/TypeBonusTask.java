@@ -16,6 +16,16 @@ import com.example.pokemonapp.room.PokemonAppDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * AsyncTask to determine the <b>stab and type bonus</b> of a move.<br>
+ * The <b>stab bonus</b> is a factor of 1.5 over the damage of a move whose type is the same as the pokémon
+ * using it.<br>
+ * The <b>type bonus</b> depends on the relationship between the type of the move and the type of the pokémon
+ * hit. The damage is multiplied by 2 for each pokémon type against which the move type is effective.
+ * For each pokémon type against which the move type is not effective, the damage is multiplied by 1/2.
+ * If there is at least one type of the pokémon which is no affected by the type of the move, then the
+ * move causes no damage at all.
+ */
 public class TypeBonusTask extends AsyncTask<Void,Void, List<Double>> {
 
     private Context context;

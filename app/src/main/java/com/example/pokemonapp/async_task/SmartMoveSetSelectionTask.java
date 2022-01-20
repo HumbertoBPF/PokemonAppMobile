@@ -16,6 +16,15 @@ import com.example.pokemonapp.room.PokemonAppDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * AsyncTask to choose the move set of a pokémon "smartly". Some aspects are taken into account in
+ * order to do a wise choice. They are :<br>
+ *     - The diversity of the types of the moves such that the pokémon is less likely to be useless
+ *     against pokémon of a specific type.<br>
+ *     - The power of the move so as to try to pick some of the strongest moves available.<br>
+ *     - A random aspect to add some unpredictability on the move set (if it was predictable, the
+ *     player could develop a strategy against the cpu easier).<br>
+ */
 public class SmartMoveSetSelectionTask extends AsyncTask<Void,Void, List<Move>> {
 
     private Context context;

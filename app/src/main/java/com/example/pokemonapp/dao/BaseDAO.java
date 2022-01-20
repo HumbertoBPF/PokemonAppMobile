@@ -31,13 +31,18 @@ public abstract class BaseDAO<E> {
     protected abstract List<E> getAllRecords(SupportSQLiteQuery sqLiteQuery);
 
     /**
-     * Executes the query to get the list of all the records concerning the entity <b>E</b>.
+     * Executes the query to get the list of all the records of the entity <b>E</b>.
      * @return
      */
     public List<E> getAllRecords(){
         return getAllRecords(new SimpleSQLiteQuery("SELECT * FROM "+tableName));
     }
 
+    /**
+     * Performs the async task to get all entities.
+     * @param onResultListener code to be executed after the task has finished.
+     * @return the AsyncTask allowing to execute the task.
+     */
     public AsyncTask<Void,Void,List<E>> getAllRecordsTask(OnResultListener<List<E>> onResultListener){
         return new AsyncTask<Void, Void, List<E>>() {
             @Override

@@ -20,6 +20,15 @@ import com.example.pokemonapp.room.PokemonAppDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * AsyncTask to perform the choice of a move by the CPU. This choice may be completely random or
+ * "smart" depending on the gameLevel (random for easy level and "smart" otherwise). The "smart"
+ * choice analyses the type of the moves available, the type of the defending pokémon and the type
+ * of the attacking pokémon in order not only to provoke the maximum damage, but also taking into
+ * account other factors such as the accuracy (probability of hitting the opponent), the number of
+ * turns necessary to load the move or to reload after using the move etc (check comments for more
+ * details).
+ */
 public class CpuMoveSelectionTask extends AsyncTask<Void,Void, Move> {
 
     private Context context;
