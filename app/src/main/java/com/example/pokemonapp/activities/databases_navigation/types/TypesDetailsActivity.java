@@ -1,6 +1,6 @@
 package com.example.pokemonapp.activities.databases_navigation.types;
 
-import static com.example.pokemonapp.util.Tools.listOfTypesAsStringFromTypeList;
+import static com.example.pokemonapp.util.Tools.listOfTypesAsString;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -87,19 +87,19 @@ public class TypesDetailsActivity extends DatabaseDetailsActivity {
         typeEffectiveDAO.effectiveTypesTask(type, new OnResultListener<List<Type>>() {
             @Override
             public void onResult(List<Type> result) {
-                typeEffective.setText(getString(R.string.label_effective_against)+" : "+listOfTypesAsStringFromTypeList(result));
+                typeEffective.setText(getString(R.string.label_effective_against)+" : "+ listOfTypesAsString(result));
             }
         }).execute();
         typeNotEffectiveDAO.notEffectiveTypesTask(type, new OnResultListener<List<Type>>() {
             @Override
             public void onResult(List<Type> result) {
-                typeNotEffective.setText(getString(R.string.label_not_effective_agains)+" : "+listOfTypesAsStringFromTypeList(result));
+                typeNotEffective.setText(getString(R.string.label_not_effective_agains)+" : "+ listOfTypesAsString(result));
             }
         }).execute();
         typeNoEffectDAO.noEffectTypesTask(type, new OnResultListener<List<Type>>() {
             @Override
             public void onResult(List<Type> result) {
-                typeNoEffect.setText(getString(R.string.label_no_effect_against)+" : "+listOfTypesAsStringFromTypeList(result));
+                typeNoEffect.setText(getString(R.string.label_no_effect_against)+" : "+ listOfTypesAsString(result));
             }
         }).execute();
     }

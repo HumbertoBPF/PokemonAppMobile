@@ -21,7 +21,6 @@ import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHolder> {
@@ -85,9 +84,7 @@ public class MovesAdapter extends RecyclerView.Adapter<MovesAdapter.MovesViewHol
             moveTypeDAO.TypesOfMoveTask(move, new OnResultListener<List<Type>>() {
                 @Override
                 public void onResult(List<Type> result) {
-                    List<Object> objects = new ArrayList<>();
-                    objects.addAll(result);
-                    moveType.setText(listOfTypesAsString(objects));
+                    moveType.setText(listOfTypesAsString(result));
                     Type typeMove = (Type) result.get(0);
                     moveTypeContainer.setCardBackgroundColor(Color.parseColor("#"+typeMove.getFColorCode()));
                 }

@@ -174,4 +174,23 @@ public class Score implements Serializable {
     public void setDate(String date) {
         this.date = date;
     }
+
+    public String getScoreMessage(Context context, Long maxScore){
+        String scoreMessage = "";
+        if (scoreValue != -1){  // score text is shown only when the score is computed and saved
+            if (maxScore != null) {
+                if (scoreValue > maxScore) {   // if the new score is greater than the current max, it is a record
+                    scoreMessage = context.getString(R.string.new_record_score_message) + scoreValue + context.getString(R.string.points) + "! ";
+                }else{  // else, show only the score without the message 'new record'
+                    scoreMessage = context.getString(R.string.score_message)+scoreValue+".";
+                }
+            }else{  // if maxScoreValue is null, then there is no score register in the DB at all, so the new score
+                // is the first one and as a consequence it is a record
+                scoreMessage = context.getString(R.string.new_record_score_message) + scoreValue + context.getString(R.string.points) + "! ";
+            }
+        }
+
+        return scoreMessage;
+    }
+
 }

@@ -16,7 +16,6 @@ import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.Type;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MovesDetailsActivity extends DatabaseDetailsActivity {
@@ -74,9 +73,7 @@ public class MovesDetailsActivity extends DatabaseDetailsActivity {
             public void onResult(List<Type> result) {
                 Type type = (Type) result.get(0);
                 moveTypeContainer.setCardBackgroundColor(Color.parseColor("#"+type.getFColorCode()));
-                List<Object> objects = new ArrayList<>();
-                objects.addAll(result);
-                moveType.setText(listOfTypesAsString(objects));
+                moveType.setText(listOfTypesAsString(result));
             }
         }).execute();
         moveCategory.setText(getString(R.string.label_category)+"\n"+move.getFCategory());

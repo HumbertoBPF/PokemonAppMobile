@@ -34,29 +34,11 @@ import java.util.List;
 public class Tools {
 
     /**
-     * Converts a List&lt;Object&gt; of types into a string with the types of the list separated
-     * by commas.
-     * @param objects list of objects containing types.
-     * @return a String containing all the types separated by commas.
-     */
-    public static String listOfTypesAsString(List<Object> objects) {
-        String stringTypes = "";
-        for (int i = 0;i<objects.size();i++){
-            Type type = (Type) objects.get(i);
-            stringTypes += type.getFName();
-            if (i<objects.size()-1){
-                stringTypes += ", ";
-            }
-        }
-        return stringTypes;
-    }
-
-    /**
      * Converts a List&lt;Type&gt; into a string with the types of the list separated by commas.
      * @param types list of types.
      * @return a String containing all the types separated by commas.
      */
-    public static String listOfTypesAsStringFromTypeList(List<Type> types) {
+    public static String listOfTypesAsString(List<Type> types) {
         String stringTypes = "";
         for (int i = 0;i<types.size();i++){
             Type type = types.get(i);
