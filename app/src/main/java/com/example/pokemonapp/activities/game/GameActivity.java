@@ -119,12 +119,7 @@ public class GameActivity extends AppCompatActivity {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        pickPokemonForPlayer(new OnTaskListener() {
-                            @Override
-                            public void onTask() {
-                                battle();
-                            }
-                        });
+                        pickPokemonForPlayer(GameActivity.this::battle);
                     }
                 }, 6000);
             }

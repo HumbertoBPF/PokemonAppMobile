@@ -1,4 +1,4 @@
-package com.example.pokemonapp.services;
+package com.example.pokemonapp.services.retrofit;
 
 import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.MoveType;

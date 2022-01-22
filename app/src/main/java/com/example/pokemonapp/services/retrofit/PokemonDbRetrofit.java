@@ -1,6 +1,4 @@
-package com.example.pokemonapp.retrofit;
-
-import com.example.pokemonapp.services.PokemonDbService;
+package com.example.pokemonapp.services.retrofit;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

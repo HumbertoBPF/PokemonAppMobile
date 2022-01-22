@@ -4,7 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 
 import com.example.pokemonapp.entities.Pokemon;
-import com.example.pokemonapp.retrofit.PokemonDbRetrofit;
+import com.example.pokemonapp.services.retrofit.PokemonDbRetrofit;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.List;
