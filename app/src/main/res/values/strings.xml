@@ -14,35 +14,11 @@
     <string name="summary_title_app_bar">Summary</string>
     <string name="score_details_appbar_title">Battle details</string>
     <!-- DOWNLOAD RESOURCE -->
-    <string name="success_pokemon_download">Pokémon database downloaded</string>
-    <string name="success_move_download">Move database downloaded</string>
-    <string name="success_type_download">Type database downloaded</string>
-    <string name="success_movetype_download">move_type database downloaded</string>
-    <string name="success_pokemontype_download">pokemon_type database downloaded</string>
-    <string name="success_pokemonmove_download">pokemon_moves database downloaded</string>
-    <string name="success_typeeffective_download">type_effective database downloaded</string>
-    <string name="success_typenoteffective_download">type_not_effective database downloaded</string>
-    <string name="success_typenoeffect_download">type_no_effect database downloaded</string>
+    <string name="success_table_download">\u0020successfully downloaded</string>
     <!-- FAIL GET RESOURCE -->
-    <string name="fail_pokemon_download">Fail to get pokémon database</string>
-    <string name="fail_move_download">Fail to get move database</string>
-    <string name="fail_type_download">Fail to get type database</string>
-    <string name="fail_movetype_download">Fail to get move_type database</string>
-    <string name="fail_pokemontype_download">Fail to get pokemon_type database</string>
-    <string name="fail_pokemonmove_download">Fail to get pokemon_moves database</string>
-    <string name="fail_typeeffective_download">Fail to get type_effective database</string>
-    <string name="fail_typenoteffective_download">Fail to get type_not_effective database</string>
-    <string name="fail_typenoeffect_download">Fail to get type_no_effect database</string>
+    <string name="fail_table_download">Fail to get table\u0020</string>
     <!-- FETCHING RESOURCE -->
-    <string name="fetch_pokemon_db">Fetching pokémon database</string>
-    <string name="fetch_move_db">Fetching move database</string>
-    <string name="fetch_type_db">Fetching type database</string>
-    <string name="fetch_movetype_db">Fetching move_type database</string>
-    <string name="fetch_pokemontype_db">Fetching pokemon_type database</string>
-    <string name="fetch_pokemonmove_db">Fetching pokemon_move database</string>
-    <string name="fetch_typeeffective_db">Fetching type_effective database</string>
-    <string name="fetch_typenoteffective_db">Fetching type_not_effective database</string>
-    <string name="fetch_typenoeffect_db">Fetching type_no_effect database</string>
+    <string name="fetch_table">Fetching table\u0020</string>
     <!-- SYNCHRONIZATION DIALOG -->
     <string name="title_synchronization_dialog">Database Synchronization</string>
     <string name="message_synchronization_dialog">Would you like to perform a synchronization now ?</string>

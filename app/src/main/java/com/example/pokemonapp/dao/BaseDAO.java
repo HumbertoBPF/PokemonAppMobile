@@ -27,6 +27,10 @@ public abstract class BaseDAO<E> {
         this.tableName = tableName;
     }
 
+    public String getTableName() {
+        return tableName;
+    }
+
     @RawQuery
     protected abstract List<E> getAllRecords(SupportSQLiteQuery sqLiteQuery);
 
