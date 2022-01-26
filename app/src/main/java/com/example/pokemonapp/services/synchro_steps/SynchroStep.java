@@ -1,4 +1,4 @@
-package com.example.pokemonapp.services.synchro_callbacks;
+package com.example.pokemonapp.services.synchro_steps;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -20,13 +20,14 @@ import retrofit2.Response;
  * @param <E> entity which models the SQLite table that stands for the resource that is concerned by
  *           the synchronization.
  */
-public abstract class SynchroCallback<E> {
+public abstract class SynchroStep<E> {
 
     private Context context;
     private Handler handler = new Handler();
     private ProgressDialog loadingDialog;
     private RemoteDAO<E> remoteDAO;
-    private SynchroCallback nextSynchro;
+    private Call<List<E>> service;
+    private SynchroStep nextStep;    // Chain of Responsibility pattern : next synchro in the chain of synchros to be performed
 
     /**
      * Constructor of the callback allowing to synchronize the local database with the remote one.
@@ -34,12 +35,15 @@ public abstract class SynchroCallback<E> {
      *                resources).
      * @param loadingDialog dialog showing the progress of the synchronization.
      * @param remoteDAO DAO concerning an entity also available on remote.
+     * @param nextStep next SynchroStep to be called (next synchronization step).
      */
-    public SynchroCallback(Context context, ProgressDialog loadingDialog, RemoteDAO<E> remoteDAO, SynchroCallback nextSynchro) {
+    public SynchroStep(Context context, ProgressDialog loadingDialog, RemoteDAO<E> remoteDAO, Call<List<E>> service,
+                       SynchroStep nextStep) {
         this.context = context;
         this.loadingDialog = loadingDialog;
         this.remoteDAO = remoteDAO;
-        this.nextSynchro = nextSynchro;
+        this.service = service;
+        this.nextStep = nextStep;
     }
 
     public void execute(){
@@ -47,7 +51,7 @@ public abstract class SynchroCallback<E> {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Call<List<E>> callForResources = callService();    // request the remote resources
+                Call<List<E>> callForResources = service;    // request the remote resources
                 callForResources.enqueue(new Callback<List<E>>() {
                     @Override
                     public void onResponse(Call<List<E>> call, Response<List<E>> responsePokemon) {
@@ -58,42 +62,41 @@ public abstract class SynchroCallback<E> {
                             remoteDAO.saveTask(resources, new OnTaskListener() {
                                 @Override
                                 public void onTask() {
-                                    loadingDialog.setMessage(remoteDAO.getTableName()+context.getString(R.string.success_table_download));
-                                    goToNextStepOrStop();
+                                    concludeSyncStep(true);
                                 }
                             }).execute();
                         }else{  // if the request was not successful, show fail message and go to the next step
-                                // TODO maybe it is a better idea to stop the synchro
-                            loadingDialog.setMessage(context.getString(R.string.fail_table_download)+remoteDAO.getTableName());
-                            goToNextStepOrStop();
+                            concludeSyncStep(false);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<E>> call, Throwable t) {// if the request failed,
                                                                             // show fail message and go to the next step
-                                                                            // TODO maybe it is a better idea to stop the synchro
-                        loadingDialog.setMessage(context.getString(R.string.fail_table_download)+remoteDAO.getTableName());
-                        goToNextStepOrStop();
+                        concludeSyncStep(false);
                     }
                 });
             }
         },2000);
     }
 
-    private void goToNextStepOrStop() {
+    private void concludeSyncStep(boolean isSuccessful) {
+        if (isSuccessful){
+            loadingDialog.setMessage(remoteDAO.getTableName()+context.getString(R.string.success_table_download));
+        }else{
+            // TODO maybe it is a better idea to stop the synchro
+            loadingDialog.setMessage(context.getString(R.string.fail_table_download)+remoteDAO.getTableName());
+        }
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (nextSynchro != null){
-                    nextSynchro.execute();
+                if (nextStep != null){
+                    nextStep.execute();
                 }else{
                     loadingDialog.dismiss();
                 }
             }
         }, 2000);
     }
-
-    protected abstract Call<List<E>> callService();
 
 }

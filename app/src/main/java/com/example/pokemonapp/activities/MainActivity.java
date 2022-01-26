@@ -24,7 +24,7 @@ import com.example.pokemonapp.async_task.ConnexionVerificationTask;
 import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.async_task.ValidationResourcesForGameTask;
 import com.example.pokemonapp.models.RoundedButton;
-import com.example.pokemonapp.services.synchro_callbacks.SynchroPokemon;
+import com.example.pokemonapp.services.synchro_steps.SynchroPokemon;
 
 public class MainActivity extends ButtonsActivity implements ConnexionVerificationTask.OnInternetVerifiedListener{
 

@@ -1,17 +1,13 @@
-package com.example.pokemonapp.services.synchro_callbacks;
+package com.example.pokemonapp.services.synchro_steps;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 
 import com.example.pokemonapp.entities.Type;
-import com.example.pokemonapp.services.retrofit.PokemonDbRetrofit;
 import com.example.pokemonapp.room.PokemonAppDatabase;
+import com.example.pokemonapp.services.retrofit.PokemonDbRetrofit;
 
-import java.util.List;
-
-import retrofit2.Call;
-
-public class SynchroType extends SynchroCallback<Type>{
+public class SynchroType extends SynchroStep<Type> {
     /**
      * Constructor of the callback allowing to synchronize the local database with the remote one.
      *
@@ -21,11 +17,6 @@ public class SynchroType extends SynchroCallback<Type>{
      */
     public SynchroType(Context context, ProgressDialog loadingDialog) {
         super(context, loadingDialog, PokemonAppDatabase.getInstance(context).getTypeDAO(),
-                new SynchroMoveType(context, loadingDialog));
-    }
-
-    @Override
-    protected Call<List<Type>> callService() {
-        return new PokemonDbRetrofit().getPokemonDbService().getAllTypesFromRemote();
+                new PokemonDbRetrofit().getPokemonDbService().getAllTypesFromRemote(), new SynchroMoveType(context, loadingDialog));
     }
 }

@@ -676,7 +676,7 @@ public class GameActivity extends AppCompatActivity {
      * @param onTaskListener code to be executed at the end of this round.
      */
     private void playerLoadsAttack(InGamePokemon attackingPokemon, InGamePokemon defendingPokemon, OnTaskListener onTaskListener) {
-        player.setLoading(true);    // set to false, because in the next turn the trainer will not be able to pick a move
+        player.setLoading(true);    // set to true, because in the this turn the trainer will not be able to attack
         gameDescription.setText(getString(R.string.player_possessive) + attackingPokemon.getPokemonServer().getFName() +
                 getString(R.string.loads_attack));
         handler.postDelayed(new Runnable() {
@@ -712,7 +712,7 @@ public class GameActivity extends AppCompatActivity {
      * @param onTaskListener code to be executed at the end of this round.
      */
     private void cpuLoadsAttack(InGamePokemon attackingPokemon, InGamePokemon defendingPokemon, OnTaskListener onTaskListener) {
-        cpu.setLoading(true);   // set to false, because in the next turn the trainer will not be able to pick a move
+        cpu.setLoading(true);   // set to true, because in the next turn the trainer will not be able to attack
         gameDescription.setText(getString(R.string.foe_possessive) + attackingPokemon.getPokemonServer().getFName() +
                 getString(R.string.loads_attack));
         handler.postDelayed(new Runnable() {
