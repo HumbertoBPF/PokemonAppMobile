@@ -10,15 +10,23 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
+import com.example.pokemonapp.adapters.MovesAdapter;
 import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
 import com.example.pokemonapp.adapters.PokemonAdapter;
+import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.async_task.OnTaskListener;
+import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.entities.Pokemon;
+import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Player extends Trainer{
+
+    public Player() {
+        trainerName = "Player";
+    }
 
     /**
      * Asks the player to choose a pokémon by showing and configuring the RecyclerView with the pokémon
@@ -62,6 +70,41 @@ public class Player extends Trainer{
                     }
                 })
         );
+    }
+
+    /**
+     * Manage the selection of a move for the player's pokémon by either asking the player to select a move
+     * when there are remaining moves (i.e. moves whose number of pp is greater than 0) to be selected
+     * or selecting 'Struggle' when there is no remaining move.
+     * @param onTaskListener code to be executed after the player's choice
+     */
+    public void pickMove(Context context, TextView gameDescription, RecyclerView playerChoicesRecyclerView,
+                         OnTaskListener onTaskListener){
+        if (!isLoading()){
+            List<Move> moves = getRemainingMoves(getCurrentPokemon());
+            if (moves.isEmpty()){   // if there is no move remaining, use struggle
+                PokemonAppDatabase.getInstance(context).getMoveDAO().getStruggleMoveTask(new OnResultListener<Move>() {
+                    @Override
+                    public void onResult(Move result) {
+                        setCurrentMove(result);
+                        onTaskListener.onTask();
+                    }
+                }).execute();
+            }else{  // else, ask the player to choose a mode by presenting the moves in a RecyclerView
+                gameDescription.setText(R.string.choose_move_msg);
+                playerChoicesRecyclerView.setVisibility(View.VISIBLE);
+                playerChoicesRecyclerView.setAdapter(new MovesAdapter(context, moves, new OnItemAdapterClickListener() {
+                    @Override
+                    public void onClick(View view, Object object) {
+                        setCurrentMove((Move) object);
+                        playerChoicesRecyclerView.setVisibility(View.GONE);
+                        onTaskListener.onTask();
+                    }
+                }));
+            }
+        }else{  // if pokémon is loading an attack or reloading, skips this step
+            onTaskListener.onTask();
+        }
     }
 
     /**

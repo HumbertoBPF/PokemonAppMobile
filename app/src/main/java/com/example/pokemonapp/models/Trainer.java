@@ -1,11 +1,13 @@
 package com.example.pokemonapp.models;
 
+import static com.example.pokemonapp.models.Trainer.Position.DEFEATED;
 import static com.example.pokemonapp.util.GeneralTools.getDistinctRandomIntegers;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.util.Log;
 import android.view.animation.LinearInterpolator;
@@ -16,12 +18,33 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.pokemonapp.R;
+import com.example.pokemonapp.async_task.OnTaskListener;
 import com.example.pokemonapp.entities.Move;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Class to gather and to treat information concerning the player and the cpu. Its attributes
+ * are :<br>
+ * <br>
+ *      - <b>team</b> : list of pokémon of the trainer.<br>
+ *      - <b>currentPokemon</b> : pokémon that is on the field.<br>
+ *      - <b>currentMove</b> : move that was choose lastly.<br>
+ *      - <b>currentPokemonName</b> : TextView with the name of the current pokémon.<br>
+ *      - <b>currentPokemonProgressBarHP</b> : ProgressBar representing the HP of the current
+ *      pokémon.<br>
+ *      - <b>currentPokemonImageView</b> : ImageView with the image of the current pokémon.<br>
+ *      - <b>pokeballs</b> : list of ImageViews with pokéballs to represent the remaining pokémon
+ *      of the trainer.<br>
+ *      - <b>nbRemainingPokemon</b> : integer indicating the number of remaining pokémon (i.e.
+ *      pokémon that can still be used in the current battle).<br>
+ *      - <b>isLoading</b> : boolean indicating if the pokémon is loading an attack.<br>
+ *      - <b>isFlinched</b> : boolean indicating if the pokémon is flinched during this round.<br>
+ *      - <b>nbTurnsTrapped</b> : integer indicating the number of turns during which the current
+ *      pokémon will keep trapped.<br>
+ */
 public class Trainer {
 
     private final String TAG = "GameActivity";
@@ -37,29 +60,7 @@ public class Trainer {
     private boolean isFlinched = false;
     private int nbTurnsTrapped = 0;
     protected Handler handler = new Handler();
-
-    /**
-     * Class to gather and to treat information concerning the player and the cpu. Its attributes
-     * are :<br>
-     * <br>
-     *      - <b>team</b> : list of pokémon of the trainer.<br>
-     *      - <b>currentPokemon</b> : pokémon that is on the field.<br>
-     *      - <b>currentMove</b> : move that was choose lastly.<br>
-     *      - <b>currentPokemonName</b> : TextView with the name of the current pokémon.<br>
-     *      - <b>currentPokemonProgressBarHP</b> : ProgressBar representing the HP of the current
-     *      pokémon.<br>
-     *      - <b>currentPokemonImageView</b> : ImageView with the image of the current pokémon.<br>
-     *      - <b>pokeballs</b> : list of ImageViews with pokéballs to represent the remaining pokémon
-     *      of the trainer.<br>
-     *      - <b>nbRemainingPokemon</b> : integer indicating the number of remaining pokémon (i.e.
-     *      pokémon that can still be used in the current battle).<br>
-     *      - <b>isLoading</b> : boolean indicating if the pokémon is loading an attack.<br>
-     *      - <b>isFlinched</b> : boolean indicating if the pokémon is flinched during this round.<br>
-     *      - <b>nbTurnsTrapped</b> : integer indicating the number of turns during which the current
-     *      pokémon will keep trapped.<br>
-     */
-    public Trainer() {
-    }
+    protected String trainerName;
 
     public List<InGamePokemon> getTeam() {
         return team;
@@ -337,6 +338,65 @@ public class Trainer {
         this.pokeballs.get(nbRemainingPokemon -1).setImageResource(R.drawable.pokeball_defeated);
         this.nbRemainingPokemon--;
         Log.i(TAG,"REMAINING POKEMON : "+this.nbRemainingPokemon);
+    }
+
+    /**
+     * Updates the UI when a CPU's pokémon is defeated and decides what to do next.
+     */
+    public void onPokemonDefeat(Context context, TextView gameDescription, OnTaskListener onTaskListener) {
+        // updates UI
+        updateRemainingPokemon();
+        gameDescription.setText(trainerName + "'s " +
+                getCurrentPokemon().getPokemonServer().getFName() + context.getString(R.string.fainted));
+        setPokemonImageResource(context,DEFEATED);
+        // plays fainting sound
+        playsFaintSound(context);
+        // decides the next step
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                onTaskListener.onTask();
+            }
+        }, 3000);
+    }
+
+    private void playsFaintSound(Context context) {
+        MediaPlayer mpLocal = MediaPlayer.create(context, R.raw.faint);
+        mpLocal.start();
+        mpLocal.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mpLocal.release();
+            }
+        });
+    }
+
+    /**
+     * @return number of pokémon whose HP is greater than 0 (i.e. that have not fainted yet)
+     */
+    public int getNbOfRemainingPokemon(){
+        int nbOfRemainingPokemon = 0;
+        for (InGamePokemon inGamePokemon : getTeam()){
+            if (inGamePokemon.getCurrentHp() > 0){
+                nbOfRemainingPokemon++;
+            }
+        }
+        Log.i(TAG,"nbOfRemainingPokemon = "+nbOfRemainingPokemon);
+        return nbOfRemainingPokemon;
+    }
+
+    /**
+     * @param inGamePokemon pokémon concerned.
+     * @return list of moves whose the number of pp is greater than 0.
+     */
+    public List<Move> getRemainingMoves(InGamePokemon inGamePokemon) {
+        List<Move> moves = new ArrayList<>();
+        for (Move move : inGamePokemon.getMoves()){
+            if (move.getFPp() > 0){
+                moves.add(move);
+            }
+        }
+        return moves;
     }
 
     /**
