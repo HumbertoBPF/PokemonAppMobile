@@ -28,6 +28,7 @@ import com.example.pokemonapp.entities.Score;
 import com.example.pokemonapp.models.Cpu;
 import com.example.pokemonapp.models.InGamePokemon;
 import com.example.pokemonapp.models.Player;
+import com.example.pokemonapp.models.Trainer;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.text.DateFormat;
@@ -51,8 +52,8 @@ public class GameActivity extends AppCompatActivity {
 
     private ScoreDAO scoreDAO;
 
-    private final Player player = new Player();
-    private final Cpu cpu = new Cpu();
+    private Player player;
+    private Cpu cpu;
 
     private MediaPlayer mp;
     private long battleDuration = 0;
@@ -63,8 +64,11 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_layout);
 
+        player = new Player(loadTeam(this,getString(R.string.filename_json_player_team)));
+        cpu = new Cpu(loadTeam(this,getString(R.string.filename_json_cpu_team)));
+
         getLayoutElements();
-        getDAOs();
+        scoreDAO = PokemonAppDatabase.getInstance(this).getScoreDAO();
 
         SharedPreferences sh = getSharedPreferences(getString(R.string.name_shared_preferences_file), MODE_PRIVATE);
         gameMode = sh.getString(getString(R.string.key_game_mode),null);
@@ -88,10 +92,6 @@ public class GameActivity extends AppCompatActivity {
                     }
                 });
         quitGameDialog.setCancelable(false);
-
-        player.setTeam(loadTeam(this,getString(R.string.filename_json_player_team)));
-        cpu.setTeam(loadTeam(this,getString(R.string.filename_json_cpu_team)));
-        cpu.setPokemonChosenByCPU(getDistinctRandomIntegers(0,player.getTeam().size()-1,cpu.getTeam().size()));
 
         cpu.pickPokemon(this,gameDescription);
         handler.postDelayed(new Runnable() {
@@ -127,10 +127,6 @@ public class GameActivity extends AppCompatActivity {
         cpu.setCurrentPokemonImageView(findViewById(R.id.cpu_pokemon_image));
     }
 
-    private void getDAOs() {
-        scoreDAO = PokemonAppDatabase.getInstance(this).getScoreDAO();
-    }
-
     private void battle() {
         Log.i(TAG,"Pokemon player HP : "+player.getCurrentPokemon().getCurrentHp());
         Log.i(TAG,"CPU player HP : "+cpu.getCurrentPokemon().getCurrentHp());
@@ -147,17 +143,16 @@ public class GameActivity extends AppCompatActivity {
                             Log.i(TAG,"Pokemon CPU speed : "+cpu.getCurrentPokemon().getPokemonServer().getFSpeed());
                             // according to the speed attribute of the pokémon, we decide which pokémon attacks first
                             if (player.getCurrentPokemon().getPokemonServer().getFSpeed()<cpu.getCurrentPokemon().getPokemonServer().getFSpeed()){
-                                attack(cpu.getCurrentPokemon(),player.getCurrentPokemon(),cpu.getCurrentMove(), new OnTaskListener() {
+                                attack(cpu,player,new OnTaskListener() {
                                     @Override
                                     public void onTask() {
                                         if (player.isPokemonAlive() && cpu.isPokemonAlive()){
-                                            attack(player.getCurrentPokemon(),cpu.getCurrentPokemon(),player.getCurrentMove(),
-                                                    new OnTaskListener() {
-                                                        @Override
-                                                        public void onTask() {
-                                                            battle();
-                                                        }
-                                                    });
+                                            attack(player,cpu,new OnTaskListener() {
+                                                                @Override
+                                                                public void onTask() {
+                                                                    battle();
+                                                                }
+                                                            });
                                         }else if (!player.isPokemonAlive()){
                                             player.onPokemonDefeat(getApplicationContext(), gameDescription, new OnTaskListener() {
                                                 @Override
@@ -176,11 +171,11 @@ public class GameActivity extends AppCompatActivity {
                                     }
                                 });
                             }else{
-                                attack(player.getCurrentPokemon(),cpu.getCurrentPokemon(),player.getCurrentMove(), new OnTaskListener() {
+                                attack(player,cpu, new OnTaskListener() {
                                     @Override
                                     public void onTask() {
                                         if (player.isPokemonAlive() && cpu.isPokemonAlive()){
-                                            attack(cpu.getCurrentPokemon(),player.getCurrentPokemon(),cpu.getCurrentMove(),new OnTaskListener() {
+                                            attack(cpu,player,new OnTaskListener() {
                                                 @Override
                                                 public void onTask() {
                                                     handler.postDelayed(new Runnable() {
@@ -321,7 +316,10 @@ public class GameActivity extends AppCompatActivity {
         }).execute();
     }
 
-    private void attack(InGamePokemon attackingPokemon, InGamePokemon defendingPokemon, Move move, OnTaskListener onTaskListener){
+    private void attack(Trainer attackingTrainer, Trainer defendingTrainer, OnTaskListener onTaskListener){
+        InGamePokemon attackingPokemon = attackingTrainer.getCurrentPokemon();
+        InGamePokemon defendingPokemon = defendingTrainer.getCurrentPokemon();
+        Move move = attackingTrainer.getCurrentMove();
         new TypeBonusTask(this, attackingPokemon.getPokemonServer(), defendingPokemon.getPokemonServer(), move,
                 new OnResultListener<List<Double>>() {
                     @Override
@@ -338,25 +336,21 @@ public class GameActivity extends AppCompatActivity {
                         int nbOfHits = getDistinctRandomIntegers(minHits,maxHits,1).get(0);
 
                         // skip the turn, if the move needs to be loaded or if the attacking pokémon is reloading or flinched
-                        if (isLoading(attackingPokemon, defendingPokemon, move, onTaskListener) ||
-                                isReloading(attackingPokemon, defendingPokemon, move, onTaskListener) ||
-                                isFlinched(attackingPokemon, defendingPokemon, onTaskListener)){
+                        if (isLoading(attackingTrainer, defendingTrainer, onTaskListener) ||
+                                isReloading(attackingTrainer, defendingTrainer, onTaskListener) ||
+                                isFlinched(attackingTrainer, defendingTrainer, onTaskListener)){
                             return;
                         }
 
                         // shows to the player the move that is going to be used
-                        if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())) {
-                            gameDescription.setText(getString(R.string.player_possessive) + player.getCurrentPokemon().getPokemonServer().getFName() +
-                                    getString(R.string.used) + player.getCurrentMove().getFName());
-                        }else{
-                            gameDescription.setText(getString(R.string.foe_possessive) + cpu.getCurrentPokemon().getPokemonServer().getFName() +
-                                    getString(R.string.used) + cpu.getCurrentMove().getFName());
-                        }
+                        gameDescription.setText(attackingTrainer.getTrainerName() + "'s " +
+                                attackingTrainer.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.used) +
+                                attackingTrainer.getCurrentMove().getFName());
 
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                hit(defendingPokemon, move, stab, typeFactor, messageEffectiveness,1, nbOfHits, onTaskListener);
+                                hit(defendingTrainer, move, stab, typeFactor, messageEffectiveness,1, nbOfHits, onTaskListener);
                             }
                         }, 3000);
                     }
@@ -364,168 +358,84 @@ public class GameActivity extends AppCompatActivity {
     }
 
     /**
-     * @param attackingPokemon pokémon that is using the move
-     * @param defendingPokemon pokémon that receives the attack
-     * @param move move being used by the attacking pokémon
      * @param onTaskListener code to be executed at the end of the turn
      * @return a boolean indicating if this turn should be skipped to loading the move
      */
-    private boolean isLoading(InGamePokemon attackingPokemon, InGamePokemon defendingPokemon, Move move, OnTaskListener onTaskListener) {
-        if (move.getFRoundsToLoad() == 1){
-            if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
-                if (!player.isLoading()){ // no need to set to load if pokémon is already loading
-                    playerLoadsAttack(attackingPokemon, defendingPokemon, onTaskListener);
-                    return true;
+    private boolean isLoading(Trainer attackingTrainer, Trainer defendingTrainer, OnTaskListener onTaskListener) {
+        if (attackingTrainer.getCurrentMove().getFRoundsToLoad() == 1){
+            if (!attackingTrainer.isLoading()){       // no need to set to load if pokémon is already loading
+                if (attackingTrainer instanceof Player){    // set to true, because in the this turn the trainer will not be able to attack
+                    player.setLoading(true);
+                }else{
+                    cpu.setLoading(true);
                 }
-            }else{
-                if (!cpu.isLoading()){ // no need to set to load if pokémon is already loading
-                    cpuLoadsAttack(attackingPokemon, defendingPokemon, onTaskListener);
-                    return true;
-                }
+                gameDescription.setText(attackingTrainer.getTrainerName() + "'s " +
+                        attackingTrainer.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.loads_attack));
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finishAttackTurn(defendingTrainer,onTaskListener);
+                    }
+                },3000);
+                return true;
             }
         }
         return false;
     }
 
     /**
-     * @param attackingPokemon pokémon that is using the move
-     * @param defendingPokemon pokémon that receives the attack
-     * @param move move being used by the attacking pokémon
      * @param onTaskListener code to be executed at the end of the turn
      * @return a boolean indicating if this turn should be skipped to reload the move
      */
-    private boolean isReloading(InGamePokemon attackingPokemon, InGamePokemon defendingPokemon, Move move, OnTaskListener onTaskListener) {
-        if (move.getFRoundsToLoad() == -1){
-            if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
-                if (player.isLoading()){
-                    playerReloadsAttack(attackingPokemon, defendingPokemon, onTaskListener);
-                    return true;
+    private boolean isReloading(Trainer attackingTrainer, Trainer defendingTrainer, OnTaskListener onTaskListener) {
+        if (attackingTrainer.getCurrentMove().getFRoundsToLoad() == -1){
+            if (attackingTrainer.isLoading()){
+                if (attackingTrainer instanceof Player){    // set to false, because in the next turn the trainer will be able to pick a move
+                    player.setLoading(false);
+                }else{
+                    cpu.setLoading(false);
                 }
-            }else{
-                if (cpu.isLoading()){
-                    cpuReloadsAttack(attackingPokemon, defendingPokemon, onTaskListener);
-                    return true;
-                }
+                gameDescription.setText(attackingTrainer.getTrainerName() + "'s " +
+                        attackingTrainer.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.is_reloading));
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finishAttackTurn(defendingTrainer,onTaskListener);
+                    }
+                },3000);
+                return true;
             }
         }
         return false;
     }
 
     /**
-     * @param attackingPokemon pokémon that is using the move
-     * @param defendingPokemon pokémon that receives the attack
      * @param onTaskListener code to be executed at the end of the turn
      * @return a boolean indicating if this turn should be skipped because the attacking pokémon is flinched
      */
-    private boolean isFlinched(InGamePokemon attackingPokemon, InGamePokemon defendingPokemon, OnTaskListener onTaskListener) {
-        if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())) {
-            if (player.isFlinched()){
-                gameDescription.setText(getString(R.string.player_possessive) + attackingPokemon.getPokemonServer().getFName() +
-                        getString(R.string.is_flinched));
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        finishAttackTurn(defendingPokemon, onTaskListener);
-                    }
-                },3000);
-                return true;
-            }
-        }else{
-            if (cpu.isFlinched()){
-                gameDescription.setText(getString(R.string.player_possessive) + attackingPokemon.getPokemonServer().getFName() +
-                        getString(R.string.is_flinched));
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        finishAttackTurn(defendingPokemon, onTaskListener);
-                    }
-                },3000);
-                return true;
-            }
+    private boolean isFlinched(Trainer attackingTrainer, Trainer defendingTrainer, OnTaskListener onTaskListener) {
+        if (attackingTrainer.isFlinched()){
+            gameDescription.setText(attackingTrainer.getTrainerName() + "'s " +
+                    attackingTrainer.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.is_flinched));
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    finishAttackTurn(defendingTrainer, onTaskListener);
+                }
+            },3000);
+            return true;
         }
         return false;
     }
 
-    /**
-     * Sets the player's pokémon to load the move and makes the necessary UI changes.
-     * @param attackingPokemon pokémon that will use the move being loaded.
-     * @param defendingPokemon pokémon that will receive the move.
-     * @param onTaskListener code to be executed at the end of this round.
-     */
-    private void playerLoadsAttack(InGamePokemon attackingPokemon, InGamePokemon defendingPokemon, OnTaskListener onTaskListener) {
-        player.setLoading(true);    // set to true, because in the this turn the trainer will not be able to attack
-        gameDescription.setText(getString(R.string.player_possessive) + attackingPokemon.getPokemonServer().getFName() +
-                getString(R.string.loads_attack));
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finishAttackTurn(defendingPokemon,onTaskListener);
-            }
-        },3000);
-    }
-
-    /**
-     * Makes the player to finish realoding and makes the necessary UI changes.
-     * @param attackingPokemon pokémon that used the move being reloaded.
-     * @param defendingPokemon pokémon that received the move.
-     * @param onTaskListener code to be executed at the end of this round.
-     */
-    private void playerReloadsAttack(InGamePokemon attackingPokemon, InGamePokemon defendingPokemon, OnTaskListener onTaskListener) {
-        player.setLoading(false);   // set to false, because in the next turn the trainer will be able to pick a move
-        gameDescription.setText(getString(R.string.player_possessive) + attackingPokemon.getPokemonServer().getFName() +
-                getString(R.string.is_reloading));
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finishAttackTurn(defendingPokemon,onTaskListener);
-            }
-        },3000);
-    }
-
-    /**
-     * Sets the cpu's pokémon to load the move and makes the necessary UI changes.
-     * @param attackingPokemon pokémon that will use the move being loaded.
-     * @param defendingPokemon pokémon that will receive the move.
-     * @param onTaskListener code to be executed at the end of this round.
-     */
-    private void cpuLoadsAttack(InGamePokemon attackingPokemon, InGamePokemon defendingPokemon, OnTaskListener onTaskListener) {
-        cpu.setLoading(true);   // set to true, because in the next turn the trainer will not be able to attack
-        gameDescription.setText(getString(R.string.foe_possessive) + attackingPokemon.getPokemonServer().getFName() +
-                getString(R.string.loads_attack));
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finishAttackTurn(defendingPokemon,onTaskListener);
-            }
-        },3000);
-    }
-
-    /**
-     * Makes the cpu to finish reloading and makes the necessary UI changes.
-     * @param attackingPokemon pokémon that used the move being reloaded.
-     * @param defendingPokemon pokémon that received the move.
-     * @param onTaskListener code to be executed at the end of this round.
-     */
-    private void cpuReloadsAttack(InGamePokemon attackingPokemon, InGamePokemon defendingPokemon, OnTaskListener onTaskListener) {
-        cpu.setLoading(false);  // set to false, because in the next turn the trainer will be able to pick a move
-        gameDescription.setText(getString(R.string.foe_possessive) + attackingPokemon.getPokemonServer().getFName() +
-                getString(R.string.is_reloading));
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finishAttackTurn(defendingPokemon,onTaskListener);
-            }
-        },3000);
-    }
-
-    private void hit(InGamePokemon defendingPokemon, Move move, double stab, double typeFactor,
+    private void hit(Trainer defendingTrainer, Move move, double stab, double typeFactor,
                      String messageEffectiveness, int currentHit, int nbOfHits, OnTaskListener onTaskListener) {
 
-        if (defendingPokemon.getCurrentHp() <= 0){
+        if (defendingTrainer.getCurrentPokemon().getCurrentHp() <= 0){
             onTaskListener.onTask();
         }else{
             double damage;
-            if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
+            if (defendingTrainer instanceof Cpu){
                 damage = player.hitOpponent(currentHit,move,stab,typeFactor); // gets the damage
                 if (damage == -1){ // defending pokémon processes the move received and the UI is updated according to the result
                     gameDescription.setText(R.string.attack_missed_msg);
@@ -548,13 +458,12 @@ public class GameActivity extends AppCompatActivity {
             player.setHpBar(this);
             cpu.setHpBar(this);
 
-            hitAgainOrStop(defendingPokemon, move, stab, typeFactor, messageEffectiveness, currentHit, nbOfHits, onTaskListener);
+            hitAgainOrStop(defendingTrainer, move, stab, typeFactor, messageEffectiveness, currentHit, nbOfHits, onTaskListener);
         }
     }
 
     /**
      * Decides if the move must hit the opponent again or if the turn is finished.
-     * @param defendingPokemon opponent pokémon (i.e. pokémon that receives the attack).
      * @param move move that is being used.
      * @param stab stab factor (bonus of 50% over damage when the type of the attack matches the type of the user).
      * @param typeFactor type factor derived from the relationship between the type of the move and the types of defendingPokémon.
@@ -563,7 +472,7 @@ public class GameActivity extends AppCompatActivity {
      * @param nbOfHits number of hits that this move is intended to touch the opponent this turn.
      * @param onTaskListener code to be executed at the end of the current turn.
      */
-    private void hitAgainOrStop(InGamePokemon defendingPokemon, Move move, double stab, double typeFactor,
+    private void hitAgainOrStop(Trainer defendingTrainer, Move move, double stab, double typeFactor,
                                 String messageEffectiveness, int currentHit, int nbOfHits, OnTaskListener onTaskListener) {
         handler.postDelayed(new Runnable() {
             @Override
@@ -574,14 +483,14 @@ public class GameActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             if (currentHit < nbOfHits){
-                                hit(defendingPokemon, move, stab, typeFactor, messageEffectiveness, currentHit +1, nbOfHits, onTaskListener);
+                                hit(defendingTrainer, move, stab, typeFactor, messageEffectiveness, currentHit +1, nbOfHits, onTaskListener);
                             }else if (currentHit == nbOfHits){
-                                finishAttackTurn(defendingPokemon, onTaskListener);
+                                finishAttackTurn(defendingTrainer, onTaskListener);
                             }
                         }
                     },3000);
                 }else{ // else we can finish the turn
-                    finishAttackTurn(defendingPokemon, onTaskListener);
+                    finishAttackTurn(defendingTrainer, onTaskListener);
                 }
             }
         },3000);
@@ -590,12 +499,11 @@ public class GameActivity extends AppCompatActivity {
     /**
      * Finishes the turn by inflicting wrapping damage on the opponent and executing the code specified
      * in the listener.
-     * @param defendingPokemon pokémon that receives the attack this turn.
      * @param onTaskListener code to be executed at the end of this turn.
      */
-    private void finishAttackTurn(InGamePokemon defendingPokemon, OnTaskListener onTaskListener) {
+    private void finishAttackTurn(Trainer defendingTrainer, OnTaskListener onTaskListener) {
         int delay = 0;
-        if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())) {
+        if (defendingTrainer instanceof Cpu) {
             if (cpu.receiveWrappingDamage()) {
                 gameDescription.setText(getString(R.string.foe_possessive) + cpu.getCurrentPokemon().getPokemonServer().getFName() +
                         getString(R.string.trapping_damage));

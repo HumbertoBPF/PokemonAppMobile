@@ -1,7 +1,5 @@
 package com.example.pokemonapp.models;
 
-import static com.example.pokemonapp.models.Trainer.Position.BACK;
-
 import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
@@ -21,11 +19,13 @@ import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Player extends Trainer{
 
-    public Player() {
-        trainerName = "Player";
+    public Player(List<InGamePokemon> team) {
+        super(team);
+        this.trainerName = "Player";
     }
 
     /**
@@ -38,7 +38,7 @@ public class Player extends Trainer{
         gameDescription.setText(R.string.choose_pokemon_msg);
         recyclerView.setVisibility(View.VISIBLE);
 
-        recyclerView.setAdapter(new PokemonAdapter(context, getAlivePokemonPlayer(),
+        recyclerView.setAdapter(new PokemonAdapter(context, getAlivePokemon(),
                 new OnItemAdapterClickListener() {
                     @Override
                     public void onClick(View view, Object object) {
@@ -56,7 +56,7 @@ public class Player extends Trainer{
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                setPokemonImageResource(context,BACK);
+                                setCurrentPokemonImageResource(context);
                                 setHpBar(context);
                                 updateCurrentPokemonName();
                                 handler.postDelayed(new Runnable() {
@@ -70,6 +70,16 @@ public class Player extends Trainer{
                     }
                 })
         );
+    }
+
+    public void setCurrentPokemonImageResource(Context context) {
+        String pokemonImageName = "pokemon_"+
+                getCurrentPokemon().getPokemonServer().getFName().toLowerCase(Locale.ROOT)
+                        .replace("'","")
+                        .replace(" ","_")
+                        .replace(".","") + "_back";
+        int imageId = context.getResources().getIdentifier(pokemonImageName,"drawable",context.getPackageName());
+        this.currentPokemonImageView.setImageResource(imageId);
     }
 
     /**
@@ -111,7 +121,7 @@ public class Player extends Trainer{
      * Returns the list of player's pokémon that are still alive (whose HP is greater than 0).
      */
     @NonNull
-    public List<Pokemon> getAlivePokemonPlayer() {
+    public List<Pokemon> getAlivePokemon() {
         List<Pokemon> pokemonList = new ArrayList<>();
         for (InGamePokemon inGamePokemon : getTeam()){
             if (inGamePokemon.getCurrentHp() > 0){

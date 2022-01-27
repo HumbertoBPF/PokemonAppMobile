@@ -73,6 +73,7 @@ public class TypeBonusTask extends AsyncTask<Void,Void, List<Double>> {
         // if the attacking pokémon has the same type of the move that is inflicted, the move
         // get a damage bonus of 50%
         Double stab = attackingPokemonTypes.contains(moveType) ? 1.5 : 1.0;
+        Log.i(TAG,"Stab = "+stab);
         // factor due to the effectiveness of the type of the move against the ones of the defending pokémon
         Double typeFactor = computeTypeFactor(defendingPokemonTypes, effectiveTypes, notEffectiveTypes, noEffectType);
 
@@ -123,6 +124,7 @@ public class TypeBonusTask extends AsyncTask<Void,Void, List<Double>> {
                 typeFactor *= 0;
             }
         }
+        Log.i(TAG, "Type factor = "+typeFactor);
         return typeFactor;
     }
 

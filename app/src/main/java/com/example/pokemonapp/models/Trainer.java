@@ -1,6 +1,5 @@
 package com.example.pokemonapp.models;
 
-import static com.example.pokemonapp.models.Trainer.Position.DEFEATED;
 import static com.example.pokemonapp.util.GeneralTools.getDistinctRandomIntegers;
 
 import android.animation.ObjectAnimator;
@@ -23,7 +22,6 @@ import com.example.pokemonapp.entities.Move;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Class to gather and to treat information concerning the player and the cpu. Its attributes
@@ -53,7 +51,7 @@ public class Trainer {
     private Move currentMove;
     private TextView currentPokemonName;
     private ProgressBar currentPokemonProgressBarHP;
-    private ImageView currentPokemonImageView;
+    protected ImageView currentPokemonImageView;
     private List<ImageView> pokeballs = new ArrayList<>();
     private int nbRemainingPokemon = 6;
     private boolean isLoading = false;
@@ -62,12 +60,12 @@ public class Trainer {
     protected Handler handler = new Handler();
     protected String trainerName;
 
-    public List<InGamePokemon> getTeam() {
-        return team;
+    public Trainer(List<InGamePokemon> team) {
+        this.team = team;
     }
 
-    public void setTeam(List<InGamePokemon> team) {
-        this.team = team;
+    public List<InGamePokemon> getTeam() {
+        return team;
     }
 
     public InGamePokemon getCurrentPokemon() {
@@ -98,21 +96,6 @@ public class Trainer {
         this.currentPokemonImageView = currentPokemonImageView;
     }
 
-    public void setPokemonImageResource(Context context, Position position) {
-        String imageNameSuffix = position.getImageNameSuffix();
-        if (imageNameSuffix != null){
-            String pokemonImageName = "pokemon_"+
-                    getCurrentPokemon().getPokemonServer().getFName().toLowerCase(Locale.ROOT)
-                            .replace("'","")
-                            .replace(" ","_")
-                            .replace(".","") + imageNameSuffix;
-            int imageId = context.getResources().getIdentifier(pokemonImageName,"drawable",context.getPackageName());
-            this.currentPokemonImageView.setImageResource(imageId);
-        }else{
-            this.currentPokemonImageView.setImageResource(0);
-        }
-    }
-
     public void addPokeball(ImageView pokeball) {
         this.pokeballs.add(pokeball);
     }
@@ -133,12 +116,12 @@ public class Trainer {
         this.isFlinched = flinched;
     }
 
-    public int getNbTurnsTrapped() {
-        return nbTurnsTrapped;
-    }
-
     public void setNbTurnsTrapped(int nbTurnsTrapped) {
         this.nbTurnsTrapped = nbTurnsTrapped;
+    }
+
+    public String getTrainerName() {
+        return trainerName;
     }
 
     /**
@@ -213,7 +196,7 @@ public class Trainer {
 
             return damage;
         }else{
-            return -1; // if -1 is returned, the pokémon missed the attack
+            return -1; // if -1 is returned, the pokémon misses the attack
         }
     }
 
@@ -241,7 +224,7 @@ public class Trainer {
      * @return true if wrapping damage was inflicted, false otherwise.
      */
     public boolean receiveWrappingDamage(){
-        if (getNbTurnsTrapped() > 0 && currentPokemon.getCurrentHp() > 0){
+        if (this.nbTurnsTrapped > 0 && currentPokemon.getCurrentHp() > 0){
             int fullHp = currentPokemon.getPokemonServer().getFHp();
             this.getCurrentPokemon().setCurrentHp((this.getCurrentPokemon().getCurrentHp() - fullHp/8));
             Log.i(TAG,"DAMAGE WRAPPED : "+(fullHp/8));
@@ -348,7 +331,7 @@ public class Trainer {
         updateRemainingPokemon();
         gameDescription.setText(trainerName + "'s " +
                 getCurrentPokemon().getPokemonServer().getFName() + context.getString(R.string.fainted));
-        setPokemonImageResource(context,DEFEATED);
+        this.currentPokemonImageView.setImageResource(0);
         // plays fainting sound
         playsFaintSound(context);
         // decides the next step
@@ -397,32 +380,6 @@ public class Trainer {
             }
         }
         return moves;
-    }
-
-    /**
-     * Enum to indicate the positions of the pokémon in the image loaded into its ImageView. These
-     * positions are : <br>
-     * <br>
-     *     - <b>FRONT</b> : frontal image.<br>
-     *     - <b>BACK</b> : back image.<br>
-     *     - <b>DEFEATED</b> : no image. It is used for the moments where the pokémon still has not
-     *     been chosen or where it is defeated.<br>
-     */
-    public enum Position{
-
-        FRONT(""),  // frontal image of the pokémon
-        BACK("_back"),  // back image of the pokémon
-        DEFEATED(null); // no image
-
-        private final String imageNameSuffix;
-
-        Position(String imageNameSuffix){
-            this.imageNameSuffix = imageNameSuffix;
-        }
-
-        public String getImageNameSuffix() {
-            return imageNameSuffix;
-        }
     }
 
 }

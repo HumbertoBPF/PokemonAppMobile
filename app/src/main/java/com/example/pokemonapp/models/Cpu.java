@@ -1,6 +1,6 @@
 package com.example.pokemonapp.models;
 
-import static com.example.pokemonapp.models.Trainer.Position.FRONT;
+import static com.example.pokemonapp.util.GeneralTools.getDistinctRandomIntegers;
 
 import android.content.Context;
 import android.widget.TextView;
@@ -13,23 +13,21 @@ import com.example.pokemonapp.async_task.OnTaskListener;
 import com.example.pokemonapp.entities.Move;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Cpu extends Trainer{
 
-    private List<Integer> pokemonChosenByCPU = new ArrayList<>();   // indexes of the pokémon to be chosen by CPU everytime it is necessary
+    private List<Integer> pokemonChosenByCPU;   // indexes of the pokémon to be chosen by CPU everytime it is necessary
 
-    public Cpu() {
-        trainerName = "Cpu";
+    public Cpu(List<InGamePokemon> team) {
+        super(team);
+        this.trainerName = "Cpu";
+        this.pokemonChosenByCPU = getDistinctRandomIntegers(0,getTeam().size()-1,getTeam().size());
     }
 
     public List<Integer> getPokemonChosenByCPU() {
         return pokemonChosenByCPU;
-    }
-
-    public void setPokemonChosenByCPU(List<Integer> pokemonChosenByCPU) {
-        this.pokemonChosenByCPU = pokemonChosenByCPU;
     }
 
     /**
@@ -45,7 +43,7 @@ public class Cpu extends Trainer{
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    setPokemonImageResource(context,FRONT);
+                    setCurrentPokemonImageResource(context);
                     setHpBar(context);
                     updateCurrentPokemonName();
                 }
@@ -53,6 +51,16 @@ public class Cpu extends Trainer{
         }else{
             Toast.makeText(context,"The game is finished",Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void setCurrentPokemonImageResource(Context context) {
+        String pokemonImageName = "pokemon_"+
+                getCurrentPokemon().getPokemonServer().getFName().toLowerCase(Locale.ROOT)
+                        .replace("'","")
+                        .replace(" ","_")
+                        .replace(".","");
+        int imageId = context.getResources().getIdentifier(pokemonImageName,"drawable",context.getPackageName());
+        this.currentPokemonImageView.setImageResource(imageId);
     }
 
     /**
