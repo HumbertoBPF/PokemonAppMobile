@@ -1,8 +1,6 @@
 package com.example.pokemonapp.activities.game;
 
-import static com.example.pokemonapp.models.Trainer.Position.BACK;
 import static com.example.pokemonapp.models.Trainer.Position.DEFEATED;
-import static com.example.pokemonapp.models.Trainer.Position.FRONT;
 import static com.example.pokemonapp.util.DialogTools.dualButtonDialog;
 import static com.example.pokemonapp.util.GeneralTools.getDistinctRandomIntegers;
 import static com.example.pokemonapp.util.GeneralTools.getOverallPointsOfTeam;
@@ -18,27 +16,24 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.adapters.MovesAdapter;
 import com.example.pokemonapp.adapters.OnItemAdapterClickListener;
-import com.example.pokemonapp.adapters.PokemonAdapter;
 import com.example.pokemonapp.async_task.CpuMoveSelectionTask;
 import com.example.pokemonapp.async_task.OnResultListener;
 import com.example.pokemonapp.async_task.OnTaskListener;
 import com.example.pokemonapp.async_task.TypeBonusTask;
 import com.example.pokemonapp.dao.MoveDAO;
-import com.example.pokemonapp.dao.PokemonDAO;
 import com.example.pokemonapp.dao.ScoreDAO;
 import com.example.pokemonapp.entities.Move;
-import com.example.pokemonapp.entities.Pokemon;
 import com.example.pokemonapp.entities.Score;
+import com.example.pokemonapp.models.Cpu;
 import com.example.pokemonapp.models.InGamePokemon;
+import com.example.pokemonapp.models.Player;
 import com.example.pokemonapp.models.Trainer;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
@@ -62,15 +57,11 @@ public class GameActivity extends AppCompatActivity {
     private String gameMode;
     private String gameLevel;
 
-    private PokemonDAO pokemonDAO;
     private MoveDAO moveDAO;
     private ScoreDAO scoreDAO;
 
-    private List<Pokemon> allPokemon;
-    private List<Integer> pokemonChosenByCPU;   // indexes of the pokémon to be chosen by CPU everytime it is necessary
-
-    private final Trainer player = new Trainer();
-    private final Trainer cpu = new Trainer();
+    private final Player player = new Player();
+    private final Cpu cpu = new Cpu();
 
     private MediaPlayer mp;
     private long battleDuration = 0;
@@ -109,21 +100,15 @@ public class GameActivity extends AppCompatActivity {
 
         player.setTeam(loadTeam(this,getString(R.string.filename_json_player_team)));
         cpu.setTeam(loadTeam(this,getString(R.string.filename_json_cpu_team)));
-        pokemonChosenByCPU = getDistinctRandomIntegers(0,player.getTeam().size()-1,cpu.getTeam().size());
+        cpu.setPokemonChosenByCPU(getDistinctRandomIntegers(0,player.getTeam().size()-1,cpu.getTeam().size()));
 
-        pokemonDAO.getAllRecordsTask(new OnResultListener<List<Pokemon>>() {
+        cpu.pickPokemon(this,gameDescription);
+        handler.postDelayed(new Runnable() {
             @Override
-            public void onResult(List<Pokemon> result) {
-                allPokemon = result;
-                pickPokemonForCPU();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        pickPokemonForPlayer(GameActivity.this::battle);
-                    }
-                }, 6000);
+            public void run() {
+                player.pickPokemon(getApplicationContext(), gameDescription, playerChoicesRecyclerView, GameActivity.this::battle);
             }
-        }).execute();
+        }, 6000);
     }
 
     private void getLayoutElements() {
@@ -152,14 +137,13 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void getDAOs() {
-        pokemonDAO = PokemonAppDatabase.getInstance(this).getPokemonDAO();
         moveDAO = PokemonAppDatabase.getInstance(this).getMoveDAO();
         scoreDAO = PokemonAppDatabase.getInstance(this).getScoreDAO();
     }
 
     private void battle() {
-        Log.i(TAG,"Pokemon player HP : "+player.getCurrentPokemon().getPokemonServer().getFHp());
-        Log.i(TAG,"CPU player HP : "+cpu.getCurrentPokemon().getPokemonServer().getFHp());
+        Log.i(TAG,"Pokemon player HP : "+player.getCurrentPokemon().getCurrentHp());
+        Log.i(TAG,"CPU player HP : "+cpu.getCurrentPokemon().getCurrentHp());
         player.setFlinched(false);
         cpu.setFlinched(false);
         if (player.isPokemonAlive() && cpu.isPokemonAlive()){
@@ -272,7 +256,7 @@ public class GameActivity extends AppCompatActivity {
      * pokémon).
      */
     private void pickAnotherCpuPokemonOrEndgame() {
-        if (!pokemonChosenByCPU.isEmpty()){ // if the CPU still has pokémon to use, pick one and battle again
+        if (!cpu.getPokemonChosenByCPU().isEmpty()){ // if the CPU still has pokémon to use, pick one and battle again
             Log.i(TAG,"CPU changes its pokemon");
 
             // we reset some attributes of the pokémon that was defeated
@@ -281,7 +265,7 @@ public class GameActivity extends AppCompatActivity {
             // which was trapping it was defeated
             player.setNbTurnsTrapped(0);
 
-            pickPokemonForCPU();
+            cpu.pickPokemon(this, gameDescription);
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -307,13 +291,7 @@ public class GameActivity extends AppCompatActivity {
             // the nbOfTurnsTrapped of the pokémon that stays on the field is set to 0 since the pokémon
             // which was trapping it was defeated
             cpu.setNbTurnsTrapped(0);
-
-            pickPokemonForPlayer(new OnTaskListener() {
-                @Override
-                public void onTask() {
-                    battle();
-                }
-            });
+            player.pickPokemon(this, gameDescription, playerChoicesRecyclerView, this::battle);
         }else{  // otherwise, finish game
             Log.i(TAG,"Player was defeated");
             endGame(false);
@@ -376,93 +354,12 @@ public class GameActivity extends AppCompatActivity {
     private int getNbOfRemainingPokemon(Trainer trainer){
         int nbOfRemainingPokemon = 0;
         for (InGamePokemon inGamePokemon : trainer.getTeam()){
-            if (inGamePokemon.getPokemonServer().getFHp() > 0){
+            if (inGamePokemon.getCurrentHp() > 0){
                 nbOfRemainingPokemon++;
             }
         }
         Log.i(TAG,"nbOfRemainingPokemon = "+nbOfRemainingPokemon);
         return nbOfRemainingPokemon;
-    }
-
-    /**
-     * Asks the player to choose a pokémon by showing and configuring the RecyclerView with the pokémon
-     * @param onTaskListener code to be executed after the player's choice.
-     */
-    private void pickPokemonForPlayer(OnTaskListener onTaskListener){
-        // ask the player to choose a pokémon and shows the options
-        gameDescription.setText(R.string.choose_pokemon_msg);
-        playerChoicesRecyclerView.setVisibility(View.VISIBLE);
-
-        playerChoicesRecyclerView.setAdapter(new PokemonAdapter(getApplicationContext(), getAlivePokemonPlayer(),
-            new OnItemAdapterClickListener() {
-                @Override
-                public void onClick(View view, Object object) {
-                    // selects the InGamePokémon corresponding to the selected pokémon (same id)
-                    for (InGamePokemon inGamePokemon : player.getTeam()){
-                        if (inGamePokemon.getPokemonServer().getFId().equals(((Pokemon) object).getFId())){
-                            player.setCurrentPokemon(inGamePokemon);
-                            playerChoicesRecyclerView.setVisibility(View.GONE);
-                        }
-                    }
-                    // announces player's choice
-                    Pokemon pokemonServerPlayer = player.getCurrentPokemon().getPokemonServer();
-                    gameDescription.setText(getString(R.string.player_chooses)+pokemonServerPlayer.getFName());
-                    // update pokémon data UI after a while
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            player.setPokemonImageResource(getApplicationContext(),BACK);
-                            player.setHpBar(getApplicationContext(),allPokemon);
-                            player.updateCurrentPokemonName();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    onTaskListener.onTask();
-                                }
-                            },3000);
-                        }
-                    },3000);
-                }
-            })
-        );
-    }
-
-    /**
-     * Returns the list of player's pokémon that are still alive (whose HP is greater than 0).
-     */
-    @NonNull
-    private List<Pokemon> getAlivePokemonPlayer() {
-        List<Pokemon> pokemonList = new ArrayList<>();
-        for (InGamePokemon inGamePokemon : player.getTeam()){
-            Pokemon pokemon = inGamePokemon.getPokemonServer();
-            if (pokemon.getFHp() > 0){
-                pokemonList.add(pokemon);
-            }
-        }
-        return pokemonList;
-    }
-
-    /**
-     * Picks the next available pokémon for the CPU and updates the pokémon data UI.
-     */
-    private void pickPokemonForCPU(){
-        if (!pokemonChosenByCPU.isEmpty()){
-            // chooses the next pokémon available and removes its index from the list 'pokemonChosenByCPU'
-            cpu.setCurrentPokemon(cpu.getTeam().get(pokemonChosenByCPU.get(0)));
-            pokemonChosenByCPU.remove(0);
-            gameDescription.setText(getString(R.string.cpu_chooses)+cpu.getCurrentPokemon().getPokemonServer().getFName());
-            // updates pokémon data UI after a while
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    cpu.setPokemonImageResource(getApplicationContext(),FRONT);
-                    cpu.setHpBar(getApplicationContext(), allPokemon);
-                    cpu.updateCurrentPokemonName();
-                }
-            },3000);
-        }else{
-            Toast.makeText(this,"The game is finished",Toast.LENGTH_LONG).show();
-        }
     }
 
     /**
@@ -530,14 +427,14 @@ public class GameActivity extends AppCompatActivity {
                     }
                 }).execute();
             }else{                  // else, pick a move in the list of available moves
-                new CpuMoveSelectionTask(this, moves, player.getCurrentPokemon().getPokemonServer(),
-                        cpu.getCurrentPokemon().getPokemonServer(), gameLevel, new OnResultListener<Move>() {
-                    @Override
-                    public void onResult(Move result) {
-                        cpu.setCurrentMove(result);
-                        onTaskListener.onTask();
-                    }
-                }).execute();
+                new CpuMoveSelectionTask(this, moves, player.getCurrentPokemon(), cpu.getCurrentPokemon(), gameLevel,
+                        new OnResultListener<Move>() {
+                            @Override
+                            public void onResult(Move result) {
+                                cpu.setCurrentMove(result);
+                                onTaskListener.onTask();
+                            }
+                        }).execute();
             }
         }else{  // if pokémon is loading an attack or reloading, skips this step
             onTaskListener.onTask();
@@ -744,12 +641,12 @@ public class GameActivity extends AppCompatActivity {
     private void hit(InGamePokemon defendingPokemon, Move move, double stab, double typeFactor,
                      String messageEffectiveness, int currentHit, int nbOfHits, OnTaskListener onTaskListener) {
 
-        if (defendingPokemon.getPokemonServer().getFHp() <= 0){
+        if (defendingPokemon.getCurrentHp() <= 0){
             onTaskListener.onTask();
         }else{
             double damage;
             if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())){
-                damage = player.hitOpponent(currentHit,move,stab,typeFactor,allPokemon); // gets the damage
+                damage = player.hitOpponent(currentHit,move,stab,typeFactor); // gets the damage
                 if (damage == -1){ // defending pokémon processes the move received and the UI is updated according to the result
                     gameDescription.setText(R.string.attack_missed_msg);
                 }else{
@@ -757,7 +654,7 @@ public class GameActivity extends AppCompatActivity {
                     cpu.receiveDamage(damage,move);
                 }
             }else{
-                damage = cpu.hitOpponent(currentHit,move,stab,typeFactor,allPokemon);
+                damage = cpu.hitOpponent(currentHit,move,stab,typeFactor);
                 if (damage == -1){
                     gameDescription.setText(R.string.attack_missed_msg);
                 }else{
@@ -768,8 +665,8 @@ public class GameActivity extends AppCompatActivity {
 
             // updates HP bar (for the case when the pokémon faints after using a move, maybe it
             // can be done in a better way)
-            player.setHpBar(this, allPokemon);
-            cpu.setHpBar(this, allPokemon);
+            player.setHpBar(this);
+            cpu.setHpBar(this);
 
             hitAgainOrStop(defendingPokemon, move, stab, typeFactor, messageEffectiveness, currentHit, nbOfHits, onTaskListener);
         }
@@ -819,13 +716,13 @@ public class GameActivity extends AppCompatActivity {
     private void finishAttackTurn(InGamePokemon defendingPokemon, OnTaskListener onTaskListener) {
         int delay = 0;
         if (defendingPokemon.getId().equals(cpu.getCurrentPokemon().getId())) {
-            if (cpu.receiveWrappingDamage(allPokemon)) {
+            if (cpu.receiveWrappingDamage()) {
                 gameDescription.setText(getString(R.string.foe_possessive) + cpu.getCurrentPokemon().getPokemonServer().getFName() +
                         getString(R.string.trapping_damage));
                 delay = 3000;
             }
         } else {
-            if (player.receiveWrappingDamage(allPokemon)) {
+            if (player.receiveWrappingDamage()) {
                 gameDescription.setText(getString(R.string.player_possessive) + player.getCurrentPokemon().getPokemonServer().getFName() +
                         getString(R.string.trapping_damage));
                 delay = 3000;
@@ -834,8 +731,8 @@ public class GameActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                player.setHpBar(getApplicationContext(), allPokemon);
-                cpu.setHpBar(getApplicationContext(), allPokemon);
+                player.setHpBar(getApplicationContext());
+                cpu.setHpBar(getApplicationContext());
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {

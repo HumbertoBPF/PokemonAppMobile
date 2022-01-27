@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.os.Handler;
 import android.util.Log;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
@@ -16,7 +17,6 @@ import androidx.annotation.NonNull;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.entities.Move;
-import com.example.pokemonapp.entities.Pokemon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +36,7 @@ public class Trainer {
     private boolean isLoading = false;
     private boolean isFlinched = false;
     private int nbTurnsTrapped = 0;
+    protected Handler handler = new Handler();
 
     /**
      * Class to gather and to treat information concerning the player and the cpu. Its attributes
@@ -150,7 +151,7 @@ public class Trainer {
     }
 
     public boolean isPokemonAlive(){
-        return getCurrentPokemon().getPokemonServer().getFHp()>0;
+        return getCurrentPokemon().getCurrentHp()>0;
     }
 
     /**
@@ -161,10 +162,9 @@ public class Trainer {
      * @param stab stab factor (1.5 if there is stab, 1.0 otherwise).
      * @param typeFactor type factor (greater than 1 if the move is super effective, between 0 and 1.
      *                   if it is not effective or 0 if it has no effect).
-     * @param allPokemon list with all the pokémon from DB.
      * @return the damage inflicted if the move hits the opponent or -1 if it misses.
      */
-    public double hitOpponent(int currentHit, Move move, double stab, double typeFactor, List<Pokemon> allPokemon){
+    public double hitOpponent(int currentHit, Move move, double stab, double typeFactor){
         // updates the number of PP when the first hit is processed (because all the moves hit at least once)
         if (currentHit == 1){
             this.getCurrentPokemon().setMoves(updatePPs(this.getCurrentPokemon(), move));
@@ -193,7 +193,7 @@ public class Trainer {
             }
 
             if (move.getFUserFaints()){ // sets HP to 0 if the user of the move must faint after using it
-                this.getCurrentPokemon().getPokemonServer().setFHp(0);
+                this.getCurrentPokemon().setCurrentHp(0);
             }
 
             if (move.getFRoundsToLoad() == -1){ // if move requires reloading, set the pokémon to do it
@@ -202,13 +202,12 @@ public class Trainer {
 
             if (move.getFRecoversHp()){ // if the move recovers the HP of the user, half of the damage is added to the HP or it is recovered
                                         // completely if the original HP is lower then the result of this addition
-                int recoveredHp = this.getCurrentPokemon().getPokemonServer().getFHp() + ((int) damage/2);
-                for (Pokemon pokemon : allPokemon){
-                    if (pokemon.getFId().equals(this.getCurrentPokemon().getPokemonServer().getFId()) && recoveredHp > pokemon.getFHp()){
-                        recoveredHp = pokemon.getFHp();
-                    }
+                int recoveredHp = this.getCurrentPokemon().getCurrentHp() + ((int) damage/2);
+                int maxHp = this.getCurrentPokemon().getPokemonServer().getFHp();
+                if (recoveredHp > maxHp){
+                    recoveredHp = maxHp;
                 }
-                this.getCurrentPokemon().getPokemonServer().setFHp(recoveredHp);
+                this.getCurrentPokemon().setCurrentHp(recoveredHp);
             }
 
             return damage;
@@ -226,7 +225,7 @@ public class Trainer {
     public void receiveDamage(double damage, Move move){
         Log.i(TAG,"ATTACK DAMAGE : "+damage);
         // updates HP bar
-        this.getCurrentPokemon().getPokemonServer().setFHp((int) (this.getCurrentPokemon().getPokemonServer().getFHp() - damage));
+        this.getCurrentPokemon().setCurrentHp((int) (this.getCurrentPokemon().getCurrentHp() - damage));
         if (moveFlinchesOpponent(move)){    // if move flinches, set the pokémon as flinched
             this.setFlinched(true);
         }
@@ -238,20 +237,13 @@ public class Trainer {
     /**
      * Inflicts wrapping damage if necessary. Wrapping damage reduces the current HP of a pokémon by
      * 1/8 of the total HP.
-     * @param allPokemon list with all the pokémon from DB.
      * @return true if wrapping damage was inflicted, false otherwise.
      */
-    public boolean receiveWrappingDamage(List<Pokemon> allPokemon){
-        if (getNbTurnsTrapped() > 0 && currentPokemon.getPokemonServer().getFHp() > 0){
-            for (Pokemon pokemon : allPokemon){ // iterates over the list of all pokémon to find the full HP, since we will reduce
-                                                // the current HP by 1/8 of the full HP
-                if (pokemon.getFId().equals(currentPokemon.getPokemonServer().getFId())){
-                    int fullHp = pokemon.getFHp();
-                    this.getCurrentPokemon().getPokemonServer().setFHp((this.getCurrentPokemon().getPokemonServer().getFHp() - fullHp/8));
-                    Log.i(TAG,"DAMAGE WRAPPED : "+(fullHp/8));
-                    break;
-                }
-            }
+    public boolean receiveWrappingDamage(){
+        if (getNbTurnsTrapped() > 0 && currentPokemon.getCurrentHp() > 0){
+            int fullHp = currentPokemon.getPokemonServer().getFHp();
+            this.getCurrentPokemon().setCurrentHp((this.getCurrentPokemon().getCurrentHp() - fullHp/8));
+            Log.i(TAG,"DAMAGE WRAPPED : "+(fullHp/8));
             this.nbTurnsTrapped--;
             return true;
         }
@@ -308,19 +300,11 @@ public class Trainer {
     /**
      * Updates smoothly the value and the color of the HP bar.
      * @param context context of the activity calling this method.
-     * @param allPokemon list with all the pokémon of the DB.
      */
-    public void setHpBar(Context context, List<Pokemon> allPokemon) {
-        long fullHp = 100;
-        for (Pokemon pokemon : allPokemon){ // iterates over all the pokémon from the DB to get the fullHp of the currentPokemon,
-                                            // which will define the maximum of the HPBar
-            if (pokemon.getFId().equals(currentPokemon.getPokemonServer().getFId())){
-                fullHp = pokemon.getFHp();
-                break;
-            }
-        }
+    public void setHpBar(Context context) {
+        long fullHp = currentPokemon.getPokemonServer().getFHp();
         this.currentPokemonProgressBarHP.setMax((int) fullHp);
-        Integer hp = currentPokemon.getPokemonServer().getFHp();
+        Integer hp = currentPokemon.getCurrentHp();
         if (hp < 0){
             hp = 0;
         }

@@ -13,8 +13,8 @@ import com.example.pokemonapp.dao.TypeEffectiveDAO;
 import com.example.pokemonapp.dao.TypeNoEffectDAO;
 import com.example.pokemonapp.dao.TypeNotEffectiveDAO;
 import com.example.pokemonapp.entities.Move;
-import com.example.pokemonapp.entities.Pokemon;
 import com.example.pokemonapp.entities.Type;
+import com.example.pokemonapp.models.InGamePokemon;
 import com.example.pokemonapp.room.PokemonAppDatabase;
 
 import java.util.ArrayList;
@@ -33,13 +33,13 @@ public class CpuMoveSelectionTask extends AsyncTask<Void,Void, Move> {
 
     private Context context;
     private List<Move> moves;
-    private Pokemon currentPlayerPokemon;
-    private Pokemon currentCpuPokemon;
+    private InGamePokemon currentPlayerPokemon;
+    private InGamePokemon currentCpuPokemon;
     private String gameLevel;
     private OnResultListener<Move> onResultListener;
     private String TAG = "CpuMoveSelectionTask";
 
-    public CpuMoveSelectionTask(Context context, List<Move> moves, Pokemon currentPlayerPokemon, Pokemon currentCpuPokemon,
+    public CpuMoveSelectionTask(Context context, List<Move> moves, InGamePokemon currentPlayerPokemon, InGamePokemon currentCpuPokemon,
                                 String gameLevel, OnResultListener<Move> onResultListener) {
         this.context = context;
         this.moves = moves;
@@ -61,7 +61,7 @@ public class CpuMoveSelectionTask extends AsyncTask<Void,Void, Move> {
 
         if (!gameLevel.equals(context.getString(R.string.easy_level))){ // artificial intelligence for game levels different from easy
                                         // gets the types of the attacking pokémon
-            List<Type> attackingPokemonTypes = pokemonTypeDAO.getTypesOfPokemon(currentCpuPokemon.getFId());
+            List<Type> attackingPokemonTypes = pokemonTypeDAO.getTypesOfPokemon(currentCpuPokemon.getPokemonServer().getFId());
             Type attackingPokemonType1 = attackingPokemonTypes.get(0);
             Type attackingPokemonType2 = null;
             if (attackingPokemonTypes.size() == 2){ // get type 2 only if it exists
@@ -69,7 +69,7 @@ public class CpuMoveSelectionTask extends AsyncTask<Void,Void, Move> {
             }
 
             // gets the types of the defending pokémon
-            List<Type> defendingPokemonTypes = pokemonTypeDAO.getTypesOfPokemon(currentPlayerPokemon.getFId());
+            List<Type> defendingPokemonTypes = pokemonTypeDAO.getTypesOfPokemon(currentPlayerPokemon.getPokemonServer().getFId());
             Type defendingPokemonType1 = defendingPokemonTypes.get(0);
             Type defendingPokemonType2 = null;
             if (defendingPokemonTypes.size() == 2){ // get type 2 only if it exists
@@ -124,7 +124,7 @@ public class CpuMoveSelectionTask extends AsyncTask<Void,Void, Move> {
                 }
 
                 // avoids to use moves for which the user faints when the HP is not low enough
-                if (move.getFUserFaints() && currentCpuPokemon.getFHp() > 100){
+                if (move.getFUserFaints() && currentCpuPokemon.getCurrentHp() > 100){
                     qualityFactor*=0;
                 }
 

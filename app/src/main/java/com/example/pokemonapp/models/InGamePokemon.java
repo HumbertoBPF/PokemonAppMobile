@@ -20,11 +20,13 @@ public class InGamePokemon {
 
     private Integer id;
     private Pokemon pokemonServer;                  // pokémon of the pokédex
+    private Integer currentHp;
     private List<Move> moves = new ArrayList<>();   // list of at most 4 moves that can be used in a battle
 
     public InGamePokemon(Integer id, Pokemon pokemonServer) {
         this.id = id;
         this.pokemonServer = pokemonServer;
+        this.currentHp = pokemonServer.getFHp();
     }
 
     public Integer getId() {
@@ -41,6 +43,14 @@ public class InGamePokemon {
 
     public List<Move> getMoves() {
         return moves;
+    }
+
+    public Integer getCurrentHp() {
+        return currentHp;
+    }
+
+    public void setCurrentHp(Integer currentHp) {
+        this.currentHp = currentHp;
     }
 
     public void addMove(Move move){
