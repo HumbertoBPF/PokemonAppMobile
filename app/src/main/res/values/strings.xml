@@ -97,12 +97,8 @@
     <!-- GAMEPLAY -->
     <string name="choose_pokemon_msg">Choose a pokémon</string>
     <string name="choose_move_msg">Choose a move</string>
-    <string name="player_win_msg">Player won</string>
-    <string name="cpu_win_msg">Foe won</string>
-    <string name="cpu_chooses">CPU chooses\u0020</string>
-    <string name="player_chooses">You choose\u0020</string>
-    <string name="foe_possessive">Foe\'s\u0020</string>
-    <string name="player_possessive">Player\'s\u0020</string>
+    <string name="won">won</string>
+    <string name="chooses">chooses</string>
     <string name="used">\u0020used\u0020</string>
     <string name="fainted">\u0020fainted</string>
     <string name="attack_missed_msg">Attack missed</string>

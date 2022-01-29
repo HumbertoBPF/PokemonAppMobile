@@ -42,8 +42,10 @@ import java.util.List;
  *      - <b>isFlinched</b> : boolean indicating if the pokémon is flinched during this round.<br>
  *      - <b>nbTurnsTrapped</b> : integer indicating the number of turns during which the current
  *      pokémon will keep trapped.<br>
+ *      - <b>trainerName</b> : String indicating the name that will be used to refer to this player
+ *      in the text of the game.<br>
  */
-public class Trainer {
+public abstract class Trainer {
 
     private final String TAG = "GameActivity";
     private List<InGamePokemon> team;
@@ -235,6 +237,12 @@ public class Trainer {
         return false;
     }
 
+    /**
+     * Decrement the PPs of a move.
+     * @param inGamePokemon InGamePokemon that used the specified move.
+     * @param move move whose PPs must be decremented.
+     * @return new list of moves of the InGamePokemon (with the PPs of the specified move decremented).
+     */
     @NonNull
     private List<Move> updatePPs(InGamePokemon inGamePokemon, Move move) {
         List<Move> moves = inGamePokemon.getMoves();
@@ -324,7 +332,10 @@ public class Trainer {
     }
 
     /**
-     * Updates the UI when a CPU's pokémon is defeated and decides what to do next.
+     * Updates the UI when a CPU's pokémon is defeated.
+     * @param context context of the activity calling this method.
+     * @param gameDescription TextView which shows the text describing what is happening in the game.
+     * @param onTaskListener OnTaskListener specifying what should be done next.
      */
     public void onPokemonDefeat(Context context, TextView gameDescription, OnTaskListener onTaskListener) {
         // updates UI

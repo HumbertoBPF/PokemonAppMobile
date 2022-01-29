@@ -147,26 +147,13 @@ public class GameActivity extends AppCompatActivity {
                                     @Override
                                     public void onTask() {
                                         if (player.isPokemonAlive() && cpu.isPokemonAlive()){
-                                            attack(player,cpu,new OnTaskListener() {
-                                                                @Override
-                                                                public void onTask() {
-                                                                    battle();
-                                                                }
-                                                            });
+                                            attack(player,cpu,GameActivity.this::battle);
                                         }else if (!player.isPokemonAlive()){
-                                            player.onPokemonDefeat(getApplicationContext(), gameDescription, new OnTaskListener() {
-                                                @Override
-                                                public void onTask() {
-                                                    pickAnotherPlayerPokemonOrEndGame();
-                                                }
-                                            });
+                                            player.onPokemonDefeat(getApplicationContext(), gameDescription,
+                                                    GameActivity.this::pickAnotherPlayerPokemonOrEndGame);
                                         }else if (!cpu.isPokemonAlive()){
-                                            cpu.onPokemonDefeat(getApplicationContext(), gameDescription, new OnTaskListener() {
-                                                @Override
-                                                public void onTask() {
-                                                    pickAnotherCpuPokemonOrEndgame();
-                                                }
-                                            });
+                                            cpu.onPokemonDefeat(getApplicationContext(), gameDescription,
+                                                    GameActivity.this::pickAnotherCpuPokemonOrEndgame);
                                         }
                                     }
                                 });
@@ -178,28 +165,15 @@ public class GameActivity extends AppCompatActivity {
                                             attack(cpu,player,new OnTaskListener() {
                                                 @Override
                                                 public void onTask() {
-                                                    handler.postDelayed(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            battle();
-                                                        }
-                                                    },3000);
+                                                    handler.postDelayed(GameActivity.this::battle,3000);
                                                 }
                                             });
                                         }else if (!player.isPokemonAlive()){
-                                            player.onPokemonDefeat(getApplicationContext(), gameDescription, new OnTaskListener() {
-                                                @Override
-                                                public void onTask() {
-                                                    pickAnotherPlayerPokemonOrEndGame();
-                                                }
-                                            });
+                                            player.onPokemonDefeat(getApplicationContext(), gameDescription,
+                                                    GameActivity.this::pickAnotherPlayerPokemonOrEndGame);
                                         }else if (!cpu.isPokemonAlive()){
-                                            cpu.onPokemonDefeat(getApplicationContext(), gameDescription, new OnTaskListener() {
-                                                @Override
-                                                public void onTask() {
-                                                    pickAnotherCpuPokemonOrEndgame();
-                                                }
-                                            });
+                                            cpu.onPokemonDefeat(getApplicationContext(), gameDescription,
+                                                    GameActivity.this::pickAnotherCpuPokemonOrEndgame);
                                         }
                                     }
                                 });
@@ -209,19 +183,11 @@ public class GameActivity extends AppCompatActivity {
                 }
             });
         }else if (!player.isPokemonAlive()){
-            player.onPokemonDefeat(this, gameDescription, new OnTaskListener() {
-                @Override
-                public void onTask() {
-                    pickAnotherPlayerPokemonOrEndGame();
-                }
-            });
+            player.onPokemonDefeat(getApplicationContext(), gameDescription,
+                    GameActivity.this::pickAnotherPlayerPokemonOrEndGame);
         }else if (!cpu.isPokemonAlive()){
-            cpu.onPokemonDefeat(this, gameDescription, new OnTaskListener() {
-                @Override
-                public void onTask() {
-                    pickAnotherCpuPokemonOrEndgame();
-                }
-            });
+            cpu.onPokemonDefeat(getApplicationContext(), gameDescription,
+                    GameActivity.this::pickAnotherCpuPokemonOrEndgame);
         }
     }
 
@@ -260,6 +226,7 @@ public class GameActivity extends AppCompatActivity {
             // the nbOfTurnsTrapped of the pokémon that stays on the field is set to 0 since the pokémon
             // which was trapping it was defeated
             cpu.setNbTurnsTrapped(0);
+
             player.pickPokemon(this, gameDescription, playerChoicesRecyclerView, this::battle);
         }else{  // otherwise, finish game
             Log.i(TAG,"Player was defeated");
@@ -276,21 +243,21 @@ public class GameActivity extends AppCompatActivity {
         scoreDAO.getMaxScoreTask(new OnResultListener<Long>() {
             @Override
             public void onResult(Long result) {
-                int idResultString;
+                String resultString;
                 int idResultAudio;
                 String scoreMessage = "";
                 if (playerWon){
-                    idResultString = R.string.player_win_msg;
+                    resultString = player.getTrainerName() + " " + getString(R.string.won);
                     idResultAudio = R.raw.success;
                     Score score = saveScore();    // saves score only when the player wins
                     scoreMessage = score.getScoreMessage(getApplicationContext(),result);
                 }else{
-                    idResultString = R.string.cpu_win_msg;
+                    resultString = cpu.getTrainerName() + " " + getString(R.string.won);
                     idResultAudio = R.raw.fail;
                 }
-                gameDescription.setText(idResultString);
+                gameDescription.setText(resultString);
                 // show endgame dialog
-                endGameDialog = dualButtonDialog(GameActivity.this, getString(idResultString),
+                endGameDialog = dualButtonDialog(GameActivity.this, resultString,
                         scoreMessage+getString(R.string.play_again_dialog_text), getString(R.string.yes), getString(R.string.no),
                         new DialogInterface.OnClickListener() {
                             @Override
@@ -336,9 +303,13 @@ public class GameActivity extends AppCompatActivity {
                         int nbOfHits = getDistinctRandomIntegers(minHits,maxHits,1).get(0);
 
                         // skip the turn, if the move needs to be loaded or if the attacking pokémon is reloading or flinched
-                        if (isLoading(attackingTrainer, defendingTrainer, onTaskListener) ||
-                                isReloading(attackingTrainer, defendingTrainer, onTaskListener) ||
-                                isFlinched(attackingTrainer, defendingTrainer, onTaskListener)){
+                        if (isLoading(attackingTrainer) || isReloading(attackingTrainer) || isFlinched(attackingTrainer)){
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    finishAttackTurn(defendingTrainer, onTaskListener);
+                                }
+                            },3000);
                             return;
                         }
 
@@ -358,10 +329,10 @@ public class GameActivity extends AppCompatActivity {
     }
 
     /**
-     * @param onTaskListener code to be executed at the end of the turn
-     * @return a boolean indicating if this turn should be skipped to loading the move
+     * @param attackingTrainer Trainer object corresponding to the trainer whose pokémon attacked this turn.
+     * @return a boolean indicating if this turn should be skipped to loading the move.
      */
-    private boolean isLoading(Trainer attackingTrainer, Trainer defendingTrainer, OnTaskListener onTaskListener) {
+    private boolean isLoading(Trainer attackingTrainer) {
         if (attackingTrainer.getCurrentMove().getFRoundsToLoad() == 1){
             if (!attackingTrainer.isLoading()){       // no need to set to load if pokémon is already loading
                 if (attackingTrainer instanceof Player){    // set to true, because in the this turn the trainer will not be able to attack
@@ -371,12 +342,6 @@ public class GameActivity extends AppCompatActivity {
                 }
                 gameDescription.setText(attackingTrainer.getTrainerName() + "'s " +
                         attackingTrainer.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.loads_attack));
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        finishAttackTurn(defendingTrainer,onTaskListener);
-                    }
-                },3000);
                 return true;
             }
         }
@@ -384,10 +349,10 @@ public class GameActivity extends AppCompatActivity {
     }
 
     /**
-     * @param onTaskListener code to be executed at the end of the turn
-     * @return a boolean indicating if this turn should be skipped to reload the move
+     * @param attackingTrainer Trainer object corresponding to the trainer whose pokémon attacked this turn.
+     * @return a boolean indicating if this turn should be skipped to reload the move.
      */
-    private boolean isReloading(Trainer attackingTrainer, Trainer defendingTrainer, OnTaskListener onTaskListener) {
+    private boolean isReloading(Trainer attackingTrainer) {
         if (attackingTrainer.getCurrentMove().getFRoundsToLoad() == -1){
             if (attackingTrainer.isLoading()){
                 if (attackingTrainer instanceof Player){    // set to false, because in the next turn the trainer will be able to pick a move
@@ -397,12 +362,6 @@ public class GameActivity extends AppCompatActivity {
                 }
                 gameDescription.setText(attackingTrainer.getTrainerName() + "'s " +
                         attackingTrainer.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.is_reloading));
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        finishAttackTurn(defendingTrainer,onTaskListener);
-                    }
-                },3000);
                 return true;
             }
         }
@@ -410,19 +369,13 @@ public class GameActivity extends AppCompatActivity {
     }
 
     /**
-     * @param onTaskListener code to be executed at the end of the turn
-     * @return a boolean indicating if this turn should be skipped because the attacking pokémon is flinched
+     * @param attackingTrainer Trainer object corresponding to the trainer whose pokémon attacked this turn.
+     * @return a boolean indicating if this turn should be skipped because the attacking pokémon is flinched.
      */
-    private boolean isFlinched(Trainer attackingTrainer, Trainer defendingTrainer, OnTaskListener onTaskListener) {
+    private boolean isFlinched(Trainer attackingTrainer) {
         if (attackingTrainer.isFlinched()){
             gameDescription.setText(attackingTrainer.getTrainerName() + "'s " +
                     attackingTrainer.getCurrentPokemon().getPokemonServer().getFName() + getString(R.string.is_flinched));
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    finishAttackTurn(defendingTrainer, onTaskListener);
-                }
-            },3000);
             return true;
         }
         return false;
@@ -498,20 +451,21 @@ public class GameActivity extends AppCompatActivity {
 
     /**
      * Finishes the turn by inflicting wrapping damage on the opponent and executing the code specified
-     * in the listener.
+     * in the listener parameter.
+     * @param defendingTrainer trainer whose pokémon was attacked this turn.
      * @param onTaskListener code to be executed at the end of this turn.
      */
     private void finishAttackTurn(Trainer defendingTrainer, OnTaskListener onTaskListener) {
         int delay = 0;
         if (defendingTrainer instanceof Cpu) {
             if (cpu.receiveWrappingDamage()) {
-                gameDescription.setText(getString(R.string.foe_possessive) + cpu.getCurrentPokemon().getPokemonServer().getFName() +
+                gameDescription.setText(cpu.getTrainerName() + "'s " + cpu.getCurrentPokemon().getPokemonServer().getFName() +
                         getString(R.string.trapping_damage));
                 delay = 3000;
             }
         } else {
             if (player.receiveWrappingDamage()) {
-                gameDescription.setText(getString(R.string.player_possessive) + player.getCurrentPokemon().getPokemonServer().getFName() +
+                gameDescription.setText(player.getTrainerName() + "'s " + player.getCurrentPokemon().getPokemonServer().getFName() +
                         getString(R.string.trapping_damage));
                 delay = 3000;
             }

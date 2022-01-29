@@ -4,7 +4,6 @@ import static com.example.pokemonapp.util.GeneralTools.getDistinctRandomIntegers
 
 import android.content.Context;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.pokemonapp.R;
 import com.example.pokemonapp.async_task.CpuMoveSelectionTask;
@@ -32,13 +31,16 @@ public class Cpu extends Trainer{
 
     /**
      * Picks the next available pokémon for the CPU and updates the pokémon data UI.
+     * @param context Context of the activity that called this method.
+     * @param gameDescription TextView which shows the text describing what is happening in the game.
      */
     public void pickPokemon(Context context, TextView gameDescription){
         if (!pokemonChosenByCPU.isEmpty()){
             // chooses the next pokémon available and removes its index from the list 'pokemonChosenByCPU'
             setCurrentPokemon(getTeam().get(pokemonChosenByCPU.get(0)));
             pokemonChosenByCPU.remove(0);
-            gameDescription.setText(context.getString(R.string.cpu_chooses)+getCurrentPokemon().getPokemonServer().getFName());
+            gameDescription.setText(trainerName+" "+context.getString(R.string.chooses)+" "+
+                    getCurrentPokemon().getPokemonServer().getFName());
             // updates pokémon data UI after a while
             handler.postDelayed(new Runnable() {
                 @Override
@@ -48,8 +50,6 @@ public class Cpu extends Trainer{
                     updateCurrentPokemonName();
                 }
             },3000);
-        }else{
-            Toast.makeText(context,"The game is finished",Toast.LENGTH_LONG).show();
         }
     }
 
@@ -66,6 +66,9 @@ public class Cpu extends Trainer{
     /**
      * Manage the choice of a move for the CPU. This choice is random when there are remaining moves
      * (i.e. moves whose number of pps is greater than 0). Otherwise, the move 'Struggle' is picked.
+     * @param context Context of the activity that called this method.
+     * @param player Player object (corresponding to the other trainer).
+     * @param gameLevel String indicating the current game level.
      * @param onTaskListener code to be executed after the choice of a move for the CPU.
      */
     public void pickMove(Context context, Player player, String gameLevel, OnTaskListener onTaskListener){

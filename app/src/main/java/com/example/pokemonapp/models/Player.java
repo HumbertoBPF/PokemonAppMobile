@@ -29,7 +29,10 @@ public class Player extends Trainer{
     }
 
     /**
-     * Asks the player to choose a pokémon by showing and configuring the RecyclerView with the pokémon
+     * Asks the player to choose a pokémon by showing and configuring the RecyclerView with the pokémon available.
+     * @param context Context of the activity that called this method.
+     * @param gameDescription TextView which shows the text describing what is happening in the game.
+     * @param recyclerView RecyclerView object where the available pokémon will be shown.
      * @param onTaskListener code to be executed after the player's choice.
      */
     public void pickPokemon(Context context, TextView gameDescription, RecyclerView recyclerView,
@@ -51,7 +54,8 @@ public class Player extends Trainer{
                         }
                         // announces player's choice
                         Pokemon pokemonServerPlayer = getCurrentPokemon().getPokemonServer();
-                        gameDescription.setText(context.getString(R.string.player_chooses)+pokemonServerPlayer.getFName());
+                        gameDescription.setText(trainerName+" "+context.getString(R.string.chooses)+" "+
+                                pokemonServerPlayer.getFName());
                         // update pokémon data UI after a while
                         handler.postDelayed(new Runnable() {
                             @Override
@@ -86,9 +90,12 @@ public class Player extends Trainer{
      * Manage the selection of a move for the player's pokémon by either asking the player to select a move
      * when there are remaining moves (i.e. moves whose number of pp is greater than 0) to be selected
      * or selecting 'Struggle' when there is no remaining move.
+     * @param context Context of the activity that called this method.
+     * @param gameDescription TextView which shows the text describing what is happening in the game.
+     * @param recyclerView RecyclerView object where the available moves will be shown.
      * @param onTaskListener code to be executed after the player's choice
      */
-    public void pickMove(Context context, TextView gameDescription, RecyclerView playerChoicesRecyclerView,
+    public void pickMove(Context context, TextView gameDescription, RecyclerView recyclerView,
                          OnTaskListener onTaskListener){
         if (!isLoading()){
             List<Move> moves = getRemainingMoves(getCurrentPokemon());
@@ -102,12 +109,12 @@ public class Player extends Trainer{
                 }).execute();
             }else{  // else, ask the player to choose a mode by presenting the moves in a RecyclerView
                 gameDescription.setText(R.string.choose_move_msg);
-                playerChoicesRecyclerView.setVisibility(View.VISIBLE);
-                playerChoicesRecyclerView.setAdapter(new MovesAdapter(context, moves, new OnItemAdapterClickListener() {
+                recyclerView.setVisibility(View.VISIBLE);
+                recyclerView.setAdapter(new MovesAdapter(context, moves, new OnItemAdapterClickListener() {
                     @Override
                     public void onClick(View view, Object object) {
                         setCurrentMove((Move) object);
-                        playerChoicesRecyclerView.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
                         onTaskListener.onTask();
                     }
                 }));
