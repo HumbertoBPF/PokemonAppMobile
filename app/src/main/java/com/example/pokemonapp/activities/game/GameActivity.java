@@ -3,11 +3,11 @@ package com.example.pokemonapp.activities.game;
 import static com.example.pokemonapp.util.DialogTools.dualButtonDialog;
 import static com.example.pokemonapp.util.GeneralTools.getDistinctRandomIntegers;
 import static com.example.pokemonapp.util.GeneralTools.getOverallPointsOfTeam;
-import static com.example.pokemonapp.util.SharedPreferencesTools.goToNextActivityWithStringExtra;
 import static com.example.pokemonapp.util.SharedPreferencesTools.loadTeam;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -209,7 +209,7 @@ public class GameActivity extends AppCompatActivity {
             handler.postDelayed(this::battle,6000);
         }else{  // otherwise, finish game
             Log.i(TAG,"CPU was defeated");
-            endGame(true);
+            endGame(player);
         }
     }
 
@@ -230,57 +230,61 @@ public class GameActivity extends AppCompatActivity {
             player.pickPokemon(this, gameDescription, playerChoicesRecyclerView, this::battle);
         }else{  // otherwise, finish game
             Log.i(TAG,"Player was defeated");
-            endGame(false);
+            endGame(cpu);
         }
     }
 
     /**
      * Shows the result to the player in the TextView on the bottom of the screen and shows a play
      * again dialog.
-     * @param playerWon boolean indicating if player won the battle
+     * @param winner Trainer object corresponding to the winner.
      */
-    private void endGame(boolean playerWon) {
-        scoreDAO.getMaxScoreTask(new OnResultListener<Long>() {
-            @Override
-            public void onResult(Long result) {
-                String resultString;
-                int idResultAudio;
-                String scoreMessage = "";
-                if (playerWon){
-                    resultString = player.getTrainerName() + " " + getString(R.string.won);
-                    idResultAudio = R.raw.success;
-                    Score score = saveScore();    // saves score only when the player wins
-                    scoreMessage = score.getScoreMessage(getApplicationContext(),result);
-                }else{
-                    resultString = cpu.getTrainerName() + " " + getString(R.string.won);
-                    idResultAudio = R.raw.fail;
+    private void endGame(Trainer winner) {
+        String resultString = winner.getTrainerName() + " " + getString(R.string.won);
+        gameDescription.setText(resultString);
+        if (winner instanceof Player){
+            Score score = saveScore();    // saves score only when the player wins
+            scoreDAO.getMaxScoreTask(new OnResultListener<Long>() {
+                @Override
+                public void onResult(Long result) {
+                    showEndGameDialogWithAudio(R.raw.success,resultString,score.getScoreMessage(getApplicationContext(),result));
                 }
-                gameDescription.setText(resultString);
-                // show endgame dialog
-                endGameDialog = dualButtonDialog(GameActivity.this, resultString,
-                        scoreMessage+getString(R.string.play_again_dialog_text), getString(R.string.yes), getString(R.string.no),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                endGameDialog.dismiss();
-                                goToNextActivityWithStringExtra(GameActivity.this,getString(R.string.key_game_mode),
-                                        gameMode,PokemonSelectionActivity.class);
-                                finish();
-                            }
-                        }, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                endGameDialog.dismiss();
-                                finish();
-                            }
-                        });
-                endGameDialog.setCancelable(false);
-                mp.stop();
-                mp = MediaPlayer.create(getApplicationContext(), idResultAudio);
-                mp.start();
-                endGameDialog.show();
-            }
-        }).execute();
+            }).execute();
+        }else{
+            showEndGameDialogWithAudio(R.raw.fail,resultString,"");
+        }
+    }
+
+    /**
+     * Show Endgame dialog playing a specified audio resource.
+     * @param idAudio id of the audio resource to be played.
+     * @param titleDialog text for the title of the dialog.
+     * @param scoreMessage message informing the score to be shown before the message asking if the user wants to play again in
+     *                     the body of the dialog.
+     */
+    private void showEndGameDialogWithAudio(int idAudio, String titleDialog, String scoreMessage) {
+        // show endgame dialog
+        endGameDialog = dualButtonDialog(GameActivity.this, titleDialog,
+                scoreMessage +getString(R.string.play_again_dialog_text), getString(R.string.yes), getString(R.string.no),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        endGameDialog.dismiss();
+                        startActivity(new Intent(GameActivity.this,PokemonSelectionActivity.class));
+                        finish();
+                    }
+                }, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        endGameDialog.dismiss();
+                        finish();
+                    }
+                });
+        endGameDialog.setCancelable(false);
+        mp.stop();
+        mp = MediaPlayer.create(getApplicationContext(), idAudio);
+        mp.start();
+        endGameDialog.show();
     }
 
     private void attack(Trainer attackingTrainer, Trainer defendingTrainer, OnTaskListener onTaskListener){

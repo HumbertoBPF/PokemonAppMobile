@@ -56,7 +56,7 @@ public class SharedPreferencesTools {
     }
 
     /**
-     * Goes to the specified activity with a String extra.
+     * Goes to the specified activity storing a String Extra in SharedPreferences.
      * @param activity current activity.
      * @param key key of the extra.
      * @param stringExtra String extra to be carried.
