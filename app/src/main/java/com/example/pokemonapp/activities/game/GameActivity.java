@@ -243,11 +243,22 @@ public class GameActivity extends AppCompatActivity {
         String resultString = winner.getTrainerName() + " " + getString(R.string.won);
         gameDescription.setText(resultString);
         if (winner instanceof Player){
-            Score score = saveScore();    // saves score only when the player wins
             scoreDAO.getMaxScoreTask(new OnResultListener<Long>() {
                 @Override
-                public void onResult(Long result) {
-                    showEndGameDialogWithAudio(R.raw.success,resultString,score.getScoreMessage(getApplicationContext(),result));
+                public void onResult(Long maxScore) {
+                    long scoreValue = saveScore().getScoreValue();    // saves score only when the player wins
+                    String scoreMessage = "";
+                    if (maxScore != null) {
+                        if (scoreValue > maxScore) {   // if the new score is greater than the current max, it is a record
+                            scoreMessage = getString(R.string.new_record_score_message) + scoreValue + getString(R.string.points) + "! ";
+                        }else{  // else, show only the score without the message 'new record'
+                            scoreMessage = getString(R.string.score_message) + scoreValue + getString(R.string.points) + ". ";
+                        }
+                    }else{  // if maxScoreValue is null, then there is no score register in the DB at all, so the new score
+                        // is the first one and as a consequence it is a record
+                        scoreMessage = getString(R.string.new_record_score_message) + scoreValue + getString(R.string.points) + "! ";
+                    }
+                    showEndGameDialogWithAudio(R.raw.success,resultString,scoreMessage);
                 }
             }).execute();
         }else{

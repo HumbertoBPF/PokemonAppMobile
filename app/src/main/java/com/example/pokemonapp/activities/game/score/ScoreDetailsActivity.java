@@ -58,7 +58,7 @@ public class ScoreDetailsActivity extends DatabaseDetailsActivity {
         String gameLevelString = getGameLevelStringFromMnemonic(this,score.getGameLevel());
 
         scoreDate.setText(score.getDate());
-        scoreValue.setText(getString(R.string.score_label)+" : " + score.getScoreValue().toString() + " " + getString(R.string.points));
+        scoreValue.setText(getString(R.string.score_label)+" : " + score.getScoreValue().toString() + getString(R.string.points));
         scoreBattleDuration.setText(getString(R.string.duration_label)+" : " + score.getBattleDuration().toString() + " " + getString(R.string.seconds));
         scoreNbRemainingPokemon.setText(score.getNbPlayerRemainingPokemon().toString() + " " + getString(R.string.remaining_player_pokemon));
         scoreGameInfo.setText(gameModeString + " - " + gameLevelString);

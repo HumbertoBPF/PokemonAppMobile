@@ -176,7 +176,7 @@
     <string name="cpu_team_force_label">CPU\'s team force</string>
     <string name="remaining_player_pokemon">player\'s pokémon remaining at the end</string>
     <string name="seconds">seconds</string>
-    <string name="points">points</string>
+    <string name="points">\u0020points</string>
     <string name="new_record_score_message">New record! You scored\u0020</string>
     <string name="score_message">You scored\u0020</string>
     <!-- APPBAR ITEMS -->
