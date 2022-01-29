@@ -132,7 +132,7 @@ public class GameActivity extends AppCompatActivity {
         Log.i(TAG,"CPU player HP : "+cpu.getCurrentPokemon().getCurrentHp());
         player.setFlinched(false);
         cpu.setFlinched(false);
-        if (player.isPokemonAlive() && cpu.isPokemonAlive()){
+        if (areBothPokemonAlive()){
             player.pickMove(getApplicationContext(), gameDescription, playerChoicesRecyclerView, new OnTaskListener() {
                 @Override
                 public void onTask() {
@@ -146,14 +146,8 @@ public class GameActivity extends AppCompatActivity {
                                 attack(cpu,player,new OnTaskListener() {
                                     @Override
                                     public void onTask() {
-                                        if (player.isPokemonAlive() && cpu.isPokemonAlive()){
+                                        if (areBothPokemonAlive()){
                                             attack(player,cpu,GameActivity.this::battle);
-                                        }else if (!player.isPokemonAlive()){
-                                            player.onPokemonDefeat(getApplicationContext(), gameDescription,
-                                                    GameActivity.this::pickAnotherPlayerPokemonOrEndGame);
-                                        }else if (!cpu.isPokemonAlive()){
-                                            cpu.onPokemonDefeat(getApplicationContext(), gameDescription,
-                                                    GameActivity.this::pickAnotherCpuPokemonOrEndgame);
                                         }
                                     }
                                 });
@@ -161,19 +155,13 @@ public class GameActivity extends AppCompatActivity {
                                 attack(player,cpu, new OnTaskListener() {
                                     @Override
                                     public void onTask() {
-                                        if (player.isPokemonAlive() && cpu.isPokemonAlive()){
+                                        if (areBothPokemonAlive()){
                                             attack(cpu,player,new OnTaskListener() {
                                                 @Override
                                                 public void onTask() {
                                                     handler.postDelayed(GameActivity.this::battle,3000);
                                                 }
                                             });
-                                        }else if (!player.isPokemonAlive()){
-                                            player.onPokemonDefeat(getApplicationContext(), gameDescription,
-                                                    GameActivity.this::pickAnotherPlayerPokemonOrEndGame);
-                                        }else if (!cpu.isPokemonAlive()){
-                                            cpu.onPokemonDefeat(getApplicationContext(), gameDescription,
-                                                    GameActivity.this::pickAnotherCpuPokemonOrEndgame);
                                         }
                                     }
                                 });
@@ -182,6 +170,16 @@ public class GameActivity extends AppCompatActivity {
                     });
                 }
             });
+        }
+    }
+
+    /**
+     * Verifies if player's and foe's pokémon are alive and if not a new pokémon is picked.
+     * @return a boolean indicating if player's and foe's pokémon are alive.
+     */
+    private boolean areBothPokemonAlive() {
+        if (player.isPokemonAlive() && cpu.isPokemonAlive()){
+            return true;
         }else if (!player.isPokemonAlive()){
             player.onPokemonDefeat(getApplicationContext(), gameDescription,
                     GameActivity.this::pickAnotherPlayerPokemonOrEndGame);
@@ -189,6 +187,8 @@ public class GameActivity extends AppCompatActivity {
             cpu.onPokemonDefeat(getApplicationContext(), gameDescription,
                     GameActivity.this::pickAnotherCpuPokemonOrEndgame);
         }
+
+        return false;
     }
 
     /**
